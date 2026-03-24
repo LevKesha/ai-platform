@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: n8n
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: n8n-data
+  namespace: n8n
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: gp3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      containers:
+        - name: n8n
+          image: n8nio/n8n:2.12.3
+          ports:
+            - containerPort: 5678
+          env:
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-secret
+                  key: DB_POSTGRESDB_HOST
+            - name: DB_POSTGRESDB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-secret
+                  key: DB_POSTGRESDB_PORT
+            - name: DB_POSTGRESDB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-secret
+                  key: DB_POSTGRESDB_DATABASE
+            - name: DB_POSTGRESDB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-secret
+                  key: DB_POSTGRESDB_USER
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-db-secret
+                  key: DB_POSTGRESDB_PASSWORD
+            # Recommended for RDS PostgreSQL unless you provide custom CA settings.
+            - name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+              value: "false"
+            - name: N8N_PORT
+              value: "5678"
+            - name: N8N_PROTOCOL
+              value: http
+            - name: N8N_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-secret
+                  key: N8N_HOST
+            - name: WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-secret
+                  key: WEBHOOK_URL
+            - name: N8N_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-secret
+                  key: N8N_ENCRYPTION_KEY
+          volumeMounts:
+            - name: n8n-files
+              mountPath: /home/node/.n8n
+          resources:
+            requests:
+              cpu: 250m
+              memory: 320Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: n8n-files
+          persistentVolumeClaim:
+            claimName: n8n-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  type: LoadBalancer
+  selector:
+    app: n8n
+  ports:
+    - port: 5678
+      targetPort: 5678
