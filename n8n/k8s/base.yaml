@@ -58,6 +58,8 @@ spec:
               value: "5678"
             - name: N8N_PROTOCOL
               value: http
+            - name: N8N_SECURE_COOKIE
+              value: "false"
             - name: N8N_HOST
               valueFrom:
                 secretKeyRef:
