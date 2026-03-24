@@ -1,0 +1,583 @@
+{
+  "name": "orchestrator-workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai-orchestrator",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "n1",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = $json.body ?? $json;\nconst mode = String(b.mode ?? '').toLowerCase();\nconst input = String(b.input ?? '').trim();\nconst allowed = ['rag','agent','auto'];\nif (!allowed.includes(mode)) {\n  throw new Error(`mode must be one of: ${allowed.join(', ')}`);\n}\nif (!input) {\n  throw new Error('input is required');\n}\nif (input.length > 8000) {\n  throw new Error('input too long (max 8000 chars)');\n}\nreturn [{ json: { mode, input } }];"
+      },
+      "id": "n2",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.mode}}",
+              "operation": "equal",
+              "value2": "rag"
+            }
+          ]
+        }
+      },
+      "id": "n3",
+      "name": "IF Mode = rag",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.mode}}",
+              "operation": "equal",
+              "value2": "agent"
+            }
+          ]
+        }
+      },
+      "id": "n4",
+      "name": "IF Mode = agent",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        940,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.RAG_SERVICE_BASE + '/query'}}",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={\"question\": $json.input, \"top_k\": 5}",
+        "options": {}
+      },
+      "id": "n5",
+      "name": "Call rag-service /query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        940,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.AGENT_API_BASE + '/agent'}}",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={\"goal\": $json.input}",
+        "options": {}
+      },
+      "id": "n6",
+      "name": "Call agent-api /agent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1180,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.CLAUDE_ROUTER_URL}}",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={\"task\":\"classify_route\", \"allowed_modes\":[\"rag\",\"agent\"], \"input\": $json.input}",
+        "options": {}
+      },
+      "id": "n7",
+      "name": "Classify mode (Claude)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1180,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{String($json.mode ?? $json.route ?? '').toLowerCase()}}",
+              "operation": "equal",
+              "value2": "rag"
+            }
+          ]
+        }
+      },
+      "id": "n8",
+      "name": "IF Auto->rag?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.RAG_SERVICE_BASE + '/query'}}",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={\"question\": $item(0).$node[\"Validate Input\"].json.input, \"top_k\": 5}",
+        "options": {}
+      },
+      "id": "n9",
+      "name": "Call rag-service /query (auto)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.AGENT_API_BASE + '/agent'}}",
+        "sendBody": true,
+        "contentType": "json",
+        "bodyParametersJson": "={\"goal\": $item(0).$node[\"Validate Input\"].json.input}",
+        "options": {}
+      },
+      "id": "n10",
+      "name": "Call agent-api /agent (auto)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1660,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "mode_used",
+              "value": "rag"
+            },
+            {
+              "name": "answer",
+              "value": "={{$json.answer ?? ''}}"
+            }
+          ],
+          "json": [
+            {
+              "name": "meta",
+              "value": "={{ { sources: $json.sources ?? [], request_id: $json.request_id ?? null } }}"
+            }
+          ]
+        }
+      },
+      "id": "n11",
+      "name": "Normalize RAG Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1180,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "mode_used",
+              "value": "agent"
+            },
+            {
+              "name": "answer",
+              "value": "={{$json.answer ?? ''}}"
+            }
+          ],
+          "json": [
+            {
+              "name": "meta",
+              "value": "={{ { steps: $json.steps ?? [], request_id: $json.request_id ?? null } }}"
+            }
+          ]
+        }
+      },
+      "id": "n12",
+      "name": "Normalize Agent Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1420,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "mode_used",
+              "value": "rag"
+            },
+            {
+              "name": "answer",
+              "value": "={{$json.answer ?? ''}}"
+            }
+          ],
+          "json": [
+            {
+              "name": "meta",
+              "value": "={{ { sources: $json.sources ?? [], request_id: $json.request_id ?? null, route: 'auto' } }}"
+            }
+          ]
+        }
+      },
+      "id": "n13",
+      "name": "Normalize Auto->RAG",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1900,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "mode_used",
+              "value": "agent"
+            },
+            {
+              "name": "answer",
+              "value": "={{$json.answer ?? ''}}"
+            }
+          ],
+          "json": [
+            {
+              "name": "meta",
+              "value": "={{ { steps: $json.steps ?? [], request_id: $json.request_id ?? null, route: 'auto' } }}"
+            }
+          ]
+        }
+      },
+      "id": "n14",
+      "name": "Normalize Auto->Agent",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1900,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "n15",
+      "name": "Webhook Response OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2140,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "boolean": [
+            {
+              "name": "ok",
+              "value": false
+            }
+          ],
+          "string": [
+            {
+              "name": "error",
+              "value": "={{$json.error?.message ?? $json.message ?? 'workflow_error'}}"
+            }
+          ],
+          "json": [
+            {
+              "name": "meta",
+              "value": "={{ { source: 'n8n-orchestrator' } }}"
+            }
+          ]
+        }
+      },
+      "id": "n16",
+      "name": "Format Error",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1180,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "n17",
+      "name": "Webhook Response Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1420,
+        760
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "IF Mode = rag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Mode = rag": {
+      "main": [
+        [
+          {
+            "node": "Call rag-service /query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IF Mode = agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call rag-service /query": {
+      "main": [
+        [
+          {
+            "node": "Normalize RAG Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize RAG Output": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Mode = agent": {
+      "main": [
+        [
+          {
+            "node": "Call agent-api /agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Classify mode (Claude)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call agent-api /agent": {
+      "main": [
+        [
+          {
+            "node": "Normalize Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify mode (Claude)": {
+      "main": [
+        [
+          {
+            "node": "IF Auto->rag?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Auto->rag?": {
+      "main": [
+        [
+          {
+            "node": "Call rag-service /query (auto)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call agent-api /agent (auto)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call rag-service /query (auto)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Auto->RAG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call agent-api /agent (auto)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Auto->Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Auto->RAG": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Auto->Agent": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger.error": {
+      "main": [
+        [
+          {
+            "node": "Format Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Error": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "theme4-orchestrator-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "id": "theme4-orchestrator",
+  "tags": []
+}
