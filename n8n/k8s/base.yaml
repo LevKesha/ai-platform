@@ -3,19 +3,6 @@ kind: Namespace
 metadata:
   name: n8n
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: n8n-data
-  namespace: n8n
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  storageClassName: gp3
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -98,8 +85,7 @@ spec:
               memory: 1Gi
       volumes:
         - name: n8n-files
-          persistentVolumeClaim:
-            claimName: n8n-data
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
