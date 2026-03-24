@@ -1,1 +1,4 @@
 n8n/k8s/secrets.yaml
+
+# Local session notes (optional)
+SESSION_*.md
