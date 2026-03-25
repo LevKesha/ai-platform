@@ -34,6 +34,7 @@
     },
     {
       "parameters": {
+        "combineOperation": "all",
         "conditions": {
           "string": [
             {
@@ -47,7 +48,7 @@
       "id": "n3",
       "name": "IF Mode = rag",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
+      "typeVersion": 1,
       "position": [
         700,
         300
@@ -55,6 +56,7 @@
     },
     {
       "parameters": {
+        "combineOperation": "all",
         "conditions": {
           "string": [
             {
@@ -68,7 +70,7 @@
       "id": "n4",
       "name": "IF Mode = agent",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
+      "typeVersion": 1,
       "position": [
         940,
         420
@@ -133,6 +135,7 @@
     },
     {
       "parameters": {
+        "combineOperation": "all",
         "conditions": {
           "string": [
             {
@@ -146,7 +149,7 @@
       "id": "n8",
       "name": "IF Auto->rag?",
       "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
+      "typeVersion": 1,
       "position": [
         1420,
         560
