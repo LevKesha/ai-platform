@@ -1,87 +1,65 @@
-# Theme 4 - n8n Orchestrator Workflow
+# Theme 4 — n8n Orchestrator Workflow
 
-This folder contains the n8n Cloud artifact for Theme 4:
+Artifact for **self-hosted n8n** (EKS) or n8n Cloud:
 
-- `orchestrator-workflow.json` - import this workflow into n8n
+- **`orchestrator-workflow.json`** — import into n8n (or sync via GitOps).
 
 ## Outcome
 
-One webhook endpoint orchestrates:
+One webhook orchestrates:
 
-- `rag-service` (`/query`)
-- `agent-api` (`/agent`)
-- `auto` mode via Claude classification, then route to RAG or Agent
+- **`rag-service`** → `POST /query`
+- **`agent-api`** → `POST /agent`
+- **`auto`** → classifier HTTP node, then branch to RAG or Agent
 
-Output is normalized to:
+Normalized JSON responses (shape depends on branch; see nodes **Normalize** / **Respond to Webhook**).
 
-```json
-{
-  "mode_used": "rag|agent",
-  "answer": "...",
-  "meta": {}
-}
-```
+## Workflow layout (current repo)
 
-## Workflow Layout
+1. **Webhook** — `POST` path `ai-orchestrator`; response mode **Respond to Webhook**.
+2. **Validate Input** — **Code** node (v2): reads `body` or top-level JSON; `mode` ∈ `rag`, `agent`, `auto`; validates `input`.
+3. **IF mode = rag / agent / auto** — chained **If** nodes.
+4. **HTTP Request** nodes — `POST`, JSON body; **in-cluster URLs** (example dev namespace):  
+   `http://rag-service.dev.svc.cluster.local/query`,  
+   `http://agent-api.dev.svc.cluster.local/agent`,  
+   `http://claude-router.dev.svc.cluster.local/route` (adjust if your Services differ).
+5. **Normalize** + **Respond to Webhook** / error branch.
 
-1. **Webhook** `POST /ai-orchestrator`
-2. **Validate Input** (Function)
-3. **IF mode**
-   - `rag` -> HTTP `rag-service /query`
-   - `agent` -> HTTP `agent-api /agent`
-   - `auto` -> Claude classify -> IF result -> rag/agent HTTP
-4. **Normalize output** (Set)
-5. **Respond to Webhook**
-6. **Error branch** -> normalized error response
+### Critical: If node version
 
-## Required n8n Variables / Credentials
+Workflow JSON uses **If node `typeVersion: 1`** with **`conditions.string`** (value1 / operation / value2).  
+**If v2** expects the newer **filter** condition format; **legacy `conditions.string` under v2 is not evaluated correctly** and can route all traffic to the wrong branch. Re-import from this repo after edits.
 
-Configure in n8n Cloud:
+### n8n v2 and `$env`
 
-- `RAG_SERVICE_BASE` (example: `https://rag-service.dev.example.com`)
-- `AGENT_API_BASE` (example: `https://agent-api.dev.example.com`)
-- `CLAUDE_ROUTER_URL` (optional direct classifier endpoint)
-- `SERVICE_API_KEY` (if services require bearer auth)
+Self-hosted n8n v2 may block **`$env.*`** in expressions unless you relax security. This workflow uses **static cluster DNS URLs** in HTTP nodes instead of `$env.RAG_SERVICE_BASE`.
 
-Use HTTP header auth in HTTP Request nodes where needed:
+## URLs (test vs production)
 
-- `Authorization: Bearer {{$env.SERVICE_API_KEY}}`
+- **Test:** `/webhook-test/ai-orchestrator` (while the workflow is listening in test mode).
+- **Production:** `/webhook/ai-orchestrator` (active workflow).
 
-## Webhook Security
+Full URL: `http://<n8n-host>:5678/webhook/...` (or HTTPS via LB/Ingress).
 
-- Use **Production URL** for real calls; Test URL only for manual testing.
-- Enable webhook auth (header or basic auth) in n8n.
-- Add input length validation and mode allow-list.
-- Keep business logic heavy lifting in your Python services, not in n8n scripts.
+## Webhook security
 
-## Example Requests
+- Prefer **Production** URL for real traffic; test URL only for manual runs.
+- Add auth (header / basic) on the webhook in n8n for anything beyond dev.
+- Keep heavy logic in **rag-service** / **agent-api**; n8n validates and routes only.
 
-RAG mode:
+## Example requests
 
 ```bash
-curl -X POST "$N8N_WEBHOOK_URL/ai-orchestrator" \
+curl -X POST "http://<n8n-host>:5678/webhook/ai-orchestrator" \
   -H "Content-Type: application/json" \
-  -d '{"mode":"rag","input":"Summarize latest ECS cluster issues"}'
+  -d '{"mode":"rag","input":"Your question"}'
+
+curl -X POST "http://<n8n-host>:5678/webhook/ai-orchestrator" \
+  -H "Content-Type: application/json" \
+  -d '{"mode":"agent","input":"Your goal"}'
 ```
 
-Agent mode:
+## Cross-repo reference
 
-```bash
-curl -X POST "$N8N_WEBHOOK_URL/ai-orchestrator" \
-  -H "Content-Type: application/json" \
-  -d '{"mode":"agent","input":"List S3 buckets and inspect alarms"}'
-```
-
-Auto mode:
-
-```bash
-curl -X POST "$N8N_WEBHOOK_URL/ai-orchestrator" \
-  -H "Content-Type: application/json" \
-  -d '{"mode":"auto","input":"Why did ingestion fail after deploy?"}'
-```
-
-## Notes
-
-- `mcp-server` is part of Theme 4 scope and can be added as another HTTP branch later.
-- Current workflow focuses on the required mini-project path (rag/agent/auto).
-
+- Infra / destroy / Theme 4 gate: **`infrastructure` repo** → `docs/THEME4_SESSION_2026-03-25.md`
+- agent-api MCP / Bedrock: **`agent-api` repo** → `docs/THEME4_AGENT_MCP_2026-03-25.md`
