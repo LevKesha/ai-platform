@@ -5,7 +5,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "ai-orchestrator",
-        "responseMode": "responseNode",
+        "responseMode": "lastNode",
         "webhookId": "a1b2c3d4-e5f6-7890-abcd-orchestr8wh01",
         "options": {}
       },
@@ -431,42 +431,6 @@
         580,
         300
       ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { mode_used: $json.mode_used, answer: $json.answer, meta: $json.meta ?? {} } }}",
-        "options": {
-          "responseCode": 200,
-          "enableStreaming": false
-        }
-      },
-      "id": "n15",
-      "name": "Webhook Response OK",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        2140,
-        420
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { ok: $json.ok ?? false, error: $json.error, meta: $json.meta ?? {} } }}",
-        "options": {
-          "responseCode": 400,
-          "enableStreaming": false
-        }
-      },
-      "id": "n17",
-      "name": "Webhook Response Error",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        1420,
-        760
-      ]
     }
   ],
   "pinData": {},
@@ -519,19 +483,18 @@
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "Normalize RAG Output": {
-      "main": [
+        ],
         [
           {
-            "node": "Webhook Response OK",
+            "node": "Format HTTP Error",
             "type": "main",
             "index": 0
           }
         ]
       ]
+    },
+    "Normalize RAG Output": {
+      "main": []
     },
     "IF Mode = agent": {
       "main": [
@@ -559,25 +522,31 @@
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "Normalize Agent Output": {
-      "main": [
+        ],
         [
           {
-            "node": "Webhook Response OK",
+            "node": "Format HTTP Error",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
+    "Normalize Agent Output": {
+      "main": []
+    },
     "Classify mode (Claude)": {
       "main": [
         [
           {
             "node": "IF Auto->rag?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format HTTP Error",
             "type": "main",
             "index": 0
           }
@@ -610,6 +579,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Format HTTP Error",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -621,118 +597,27 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Format HTTP Error",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
     "Normalize Auto->RAG": {
-      "main": [
-        [
-          {
-            "node": "Webhook Response OK",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": []
     },
     "Normalize Auto->Agent": {
-      "main": [
-        [
-          {
-            "node": "Webhook Response OK",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook Trigger.error": {
-      "main": [
-        [
-          {
-            "node": "Format Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": []
     },
     "Format Error": {
-      "main": [
-        [
-          {
-            "node": "Webhook Response Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Call rag-service /query.error": {
-      "main": [
-        [
-          {
-            "node": "Format HTTP Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Call agent-api /agent.error": {
-      "main": [
-        [
-          {
-            "node": "Format HTTP Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Classify mode (Claude).error": {
-      "main": [
-        [
-          {
-            "node": "Format HTTP Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Call rag-service /query (auto).error": {
-      "main": [
-        [
-          {
-            "node": "Format HTTP Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Call agent-api /agent (auto).error": {
-      "main": [
-        [
-          {
-            "node": "Format HTTP Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": []
     },
     "Format HTTP Error": {
-      "main": [
-        [
-          {
-            "node": "Webhook Response Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": []
     },
     "Validation OK?": {
       "main": [

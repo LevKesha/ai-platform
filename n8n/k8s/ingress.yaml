@@ -12,6 +12,7 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:126366239504:certificate/e2886bca-78d5-4e90-9b04-2526ad4446ce
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/success-codes: '200,401,403'
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=120
 spec:
   ingressClassName: alb
   rules:

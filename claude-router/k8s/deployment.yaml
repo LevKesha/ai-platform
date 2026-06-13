@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: claude-router
+  namespace: dev
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::126366239504:role/AgentApiIRSA-dev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: claude-router
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: claude-router
+  template:
+    metadata:
+      labels:
+        app: claude-router
+    spec:
+      serviceAccountName: claude-router
+      containers:
+        - name: claude-router
+          image: 126366239504.dkr.ecr.eu-central-1.amazonaws.com/claude-router:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: CLAUDE_MODEL_ID
+              value: eu.anthropic.claude-sonnet-4-5-20250929-v1:0
+            - name: AWS_REGION
+              value: eu-central-1
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
