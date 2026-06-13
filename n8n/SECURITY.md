@@ -2,8 +2,9 @@
 
 ## Public edge (internet)
 
-- **Only n8n** is reachable from the internet, and **only on HTTPS port 443** (ALB listener).
-- There is **no public HTTP:80** listener on the n8n ALB.
+- **Only n8n** is reachable from the internet via the ALB.
+- **HTTPS:443** serves traffic; **HTTP:80** redirects to HTTPS (`ssl-redirect: '443'`).
+- HSTS enabled on the HTTPS listener.
 - Backends (`rag-service`, `agent-api`, `claude-router`, `mcp-server`) use **ClusterIP** — not routable from the internet.
 
 Optional hardening on `n8n/k8s/ingress.yaml`:
