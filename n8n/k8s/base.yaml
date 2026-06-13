@@ -57,9 +57,11 @@ spec:
             - name: N8N_PORT
               value: "5678"
             - name: N8N_PROTOCOL
-              value: http
+              value: https
             - name: N8N_SECURE_COOKIE
-              value: "false"
+              value: "true"
+            - name: N8N_PROXY_HOPS
+              value: "1"
             - name: N8N_HOST
               valueFrom:
                 secretKeyRef:
@@ -94,14 +96,8 @@ kind: Service
 metadata:
   name: n8n
   namespace: n8n
-  annotations:
-    # Use NLB (L4), not legacy Classic ELB, when the AWS cloud/LB controller honors this.
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-    # Prefer IP targets with the AWS VPC CNI (common on EKS).
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: n8n
   ports:

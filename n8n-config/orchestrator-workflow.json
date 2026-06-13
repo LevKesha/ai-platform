@@ -6,11 +6,13 @@
         "httpMethod": "POST",
         "path": "ai-orchestrator",
         "responseMode": "responseNode",
+        "webhookId": "a1b2c3d4-e5f6-7890-abcd-orchestr8wh01",
         "options": {}
       },
       "id": "n1",
       "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
+      "webhookId": "a1b2c3d4-e5f6-7890-abcd-orchestr8wh01",
       "typeVersion": 2.1,
       "position": [
         220,
@@ -21,7 +23,7 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const b = $json.body ?? $json;\nconst mode = String(b.mode ?? '').toLowerCase();\nconst input = String(b.input ?? '').trim();\nconst allowed = ['rag','agent','auto'];\nif (!allowed.includes(mode)) {\n  throw new Error(`mode must be one of: ${allowed.join(', ')}`);\n}\nif (!input) {\n  throw new Error('input is required');\n}\nif (input.length > 8000) {\n  throw new Error('input too long (max 8000 chars)');\n}\nreturn [{ json: { mode, input } }];"
+        "jsCode": "const b = $json.body ?? $json;\nconst mode = String(b.mode ?? '').toLowerCase();\nconst input = String(b.input ?? '').trim();\nconst allowed = ['rag','agent','auto'];\nif (!allowed.includes(mode)) {\n  return [{ json: { validationFailed: true, error: `mode must be one of: ${allowed.join(', ')}` } }];\n}\nif (!input) {\n  return [{ json: { validationFailed: true, error: 'input is required' } }];\n}\nif (input.length > 8000) {\n  return [{ json: { validationFailed: true, error: 'input too long (max 8000 chars)' } }];\n}\nreturn [{ json: { mode, input, validationFailed: false } }];"
       },
       "id": "n2",
       "name": "Validate Input",
@@ -90,6 +92,7 @@
       "name": "Call rag-service /query",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
       "position": [
         940,
         180
@@ -109,6 +112,7 @@
       "name": "Call agent-api /agent",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
       "position": [
         1180,
         420
@@ -128,6 +132,7 @@
       "name": "Classify mode (Claude)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
       "position": [
         1180,
         560
@@ -169,6 +174,7 @@
       "name": "Call rag-service /query (auto)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
       "position": [
         1660,
         500
@@ -188,6 +194,7 @@
       "name": "Call agent-api /agent (auto)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
       "position": [
         1660,
         620
@@ -195,25 +202,29 @@
     },
     {
       "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
+              "id": "r1",
               "name": "mode_used",
-              "value": "rag"
+              "value": "rag",
+              "type": "string"
             },
             {
+              "id": "r2",
               "name": "answer",
-              "value": "={{$json.answer ?? ''}}"
-            }
-          ],
-          "json": [
+              "value": "={{$json.answer ?? ''}}",
+              "type": "string"
+            },
             {
+              "id": "r3",
               "name": "meta",
-              "value": "={{ { sources: $json.sources ?? [], request_id: $json.request_id ?? null } }}"
+              "value": "={{ { sources: $json.sources ?? [], request_id: $json.request_id ?? null } }}",
+              "type": "object"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "id": "n11",
       "name": "Normalize RAG Output",
@@ -226,25 +237,29 @@
     },
     {
       "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
+              "id": "a1",
               "name": "mode_used",
-              "value": "agent"
+              "value": "agent",
+              "type": "string"
             },
             {
+              "id": "a2",
               "name": "answer",
-              "value": "={{$json.answer ?? ''}}"
-            }
-          ],
-          "json": [
+              "value": "={{$json.answer ?? ''}}",
+              "type": "string"
+            },
             {
+              "id": "a3",
               "name": "meta",
-              "value": "={{ { steps: $json.steps ?? [], request_id: $json.request_id ?? null } }}"
+              "value": "={{ { steps: $json.steps ?? [], request_id: $json.request_id ?? null } }}",
+              "type": "object"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "id": "n12",
       "name": "Normalize Agent Output",
@@ -257,25 +272,29 @@
     },
     {
       "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
+              "id": "ar1",
               "name": "mode_used",
-              "value": "rag"
+              "value": "rag",
+              "type": "string"
             },
             {
+              "id": "ar2",
               "name": "answer",
-              "value": "={{$json.answer ?? ''}}"
-            }
-          ],
-          "json": [
+              "value": "={{$json.answer ?? ''}}",
+              "type": "string"
+            },
             {
+              "id": "ar3",
               "name": "meta",
-              "value": "={{ { sources: $json.sources ?? [], request_id: $json.request_id ?? null, route: 'auto' } }}"
+              "value": "={{ { sources: $json.sources ?? [], request_id: $json.request_id ?? null, route: 'auto' } }}",
+              "type": "object"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "id": "n13",
       "name": "Normalize Auto->RAG",
@@ -288,25 +307,29 @@
     },
     {
       "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
+              "id": "aa1",
               "name": "mode_used",
-              "value": "agent"
+              "value": "agent",
+              "type": "string"
             },
             {
+              "id": "aa2",
               "name": "answer",
-              "value": "={{$json.answer ?? ''}}"
-            }
-          ],
-          "json": [
+              "value": "={{$json.answer ?? ''}}",
+              "type": "string"
+            },
             {
+              "id": "aa3",
               "name": "meta",
-              "value": "={{ { steps: $json.steps ?? [], request_id: $json.request_id ?? null, route: 'auto' } }}"
+              "value": "={{ { steps: $json.steps ?? [], request_id: $json.request_id ?? null, route: 'auto' } }}",
+              "type": "object"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "id": "n14",
       "name": "Normalize Auto->Agent",
@@ -319,8 +342,100 @@
     },
     {
       "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe1",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "fe2",
+              "name": "error",
+              "value": "={{$json.error ?? $json.error?.message ?? $json.message ?? 'workflow_error'}}",
+              "type": "string"
+            },
+            {
+              "id": "fe3",
+              "name": "meta",
+              "value": "={{ { source: 'n8n-orchestrator' } }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "n16",
+      "name": "Format Error",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1180,
+        760
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fh1",
+              "name": "ok",
+              "value": false,
+              "type": "boolean"
+            },
+            {
+              "id": "fh2",
+              "name": "error",
+              "value": "={{$json.error?.message ?? $json.message ?? 'http_request_failed'}}",
+              "type": "string"
+            },
+            {
+              "id": "fh3",
+              "name": "meta",
+              "value": "={{ { source: 'n8n-orchestrator', node: $prevNode.name } }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "n18",
+      "name": "Format HTTP Error",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1180,
+        900
+      ]
+    },
+    {
+      "parameters": {
+        "combineOperation": "all",
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{String($json.validationFailed)}}",
+              "operation": "notEqual",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "id": "n19",
+      "name": "Validation OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        580,
+        300
+      ]
+    },
+    {
+      "parameters": {
         "respondWith": "json",
-        "responseBody": "={{$json}}",
+        "responseBody": "={{ { mode_used: $json.mode_used, answer: $json.answer, meta: $json.meta ?? {} } }}",
         "options": {
           "responseCode": 200,
           "enableStreaming": false
@@ -337,41 +452,8 @@
     },
     {
       "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "boolean": [
-            {
-              "name": "ok",
-              "value": false
-            }
-          ],
-          "string": [
-            {
-              "name": "error",
-              "value": "={{$json.error?.message ?? $json.message ?? 'workflow_error'}}"
-            }
-          ],
-          "json": [
-            {
-              "name": "meta",
-              "value": "={{ { source: 'n8n-orchestrator' } }}"
-            }
-          ]
-        }
-      },
-      "id": "n16",
-      "name": "Format Error",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1180,
-        760
-      ]
-    },
-    {
-      "parameters": {
         "respondWith": "json",
-        "responseBody": "={{$json}}",
+        "responseBody": "={{ { ok: $json.ok ?? false, error: $json.error, meta: $json.meta ?? {} } }}",
         "options": {
           "responseCode": 400,
           "enableStreaming": false
@@ -380,7 +462,7 @@
       "id": "n17",
       "name": "Webhook Response Error",
       "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
+      "typeVersion": 1.1,
       "position": [
         1420,
         760
@@ -404,7 +486,7 @@
       "main": [
         [
           {
-            "node": "IF Mode = rag",
+            "node": "Validation OK?",
             "type": "main",
             "index": 0
           }
@@ -580,6 +662,90 @@
         [
           {
             "node": "Webhook Response Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call rag-service /query.error": {
+      "main": [
+        [
+          {
+            "node": "Format HTTP Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call agent-api /agent.error": {
+      "main": [
+        [
+          {
+            "node": "Format HTTP Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify mode (Claude).error": {
+      "main": [
+        [
+          {
+            "node": "Format HTTP Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call rag-service /query (auto).error": {
+      "main": [
+        [
+          {
+            "node": "Format HTTP Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call agent-api /agent (auto).error": {
+      "main": [
+        [
+          {
+            "node": "Format HTTP Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format HTTP Error": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validation OK?": {
+      "main": [
+        [
+          {
+            "node": "IF Mode = rag",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Error",
             "type": "main",
             "index": 0
           }
