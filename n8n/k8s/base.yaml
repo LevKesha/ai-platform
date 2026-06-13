@@ -67,6 +67,11 @@ spec:
                 secretKeyRef:
                   name: n8n-secret
                   key: N8N_HOST
+            - name: N8N_EDITOR_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: n8n-secret
+                  key: N8N_EDITOR_BASE_URL
             - name: WEBHOOK_URL
               valueFrom:
                 secretKeyRef:

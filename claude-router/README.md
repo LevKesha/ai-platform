@@ -24,4 +24,6 @@ Uses IRSA (`AgentApiIRSA-dev`) for Bedrock invoke. Trust policy must include `sy
 
 ## K8s
 
-Namespace `dev`, service `claude-router.dev.svc.cluster.local` (port **80**, same as rag-service/agent-api).
+Namespace `dev`, ClusterIP **port 8000** (not internet-exposed):
+
+`http://claude-router.dev.svc.cluster.local:8000/route`

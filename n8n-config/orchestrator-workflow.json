@@ -81,7 +81,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://rag-service.dev.svc.cluster.local/query",
+        "url": "http://rag-service.dev.svc.cluster.local:8000/query",
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
@@ -101,7 +101,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://agent-api.dev.svc.cluster.local/agent",
+        "url": "http://agent-api.dev.svc.cluster.local:8000/agent",
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
@@ -121,7 +121,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://claude-router.dev.svc.cluster.local/route",
+        "url": "http://claude-router.dev.svc.cluster.local:8000/route",
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
@@ -163,7 +163,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://rag-service.dev.svc.cluster.local/query",
+        "url": "http://rag-service.dev.svc.cluster.local:8000/query",
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
@@ -183,7 +183,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://agent-api.dev.svc.cluster.local/agent",
+        "url": "http://agent-api.dev.svc.cluster.local:8000/agent",
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",

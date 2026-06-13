@@ -1,0 +1,83 @@
+# Restrict dev backends to in-cluster callers only (no internet route to these Services).
+# n8n orchestrator (namespace n8n) may call rag, agent-api, claude-router on app port 8000.
+# agent-api may call mcp-server within dev.
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: rag-service-ingress
+  namespace: dev
+spec:
+  podSelector:
+    matchLabels:
+      app: rag-service
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: n8n
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: agent-api-ingress
+  namespace: dev
+spec:
+  podSelector:
+    matchLabels:
+      app: agent-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: n8n
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: claude-router-ingress
+  namespace: dev
+spec:
+  podSelector:
+    matchLabels:
+      app: claude-router
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: n8n
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mcp-server-ingress
+  namespace: dev
+spec:
+  podSelector:
+    matchLabels:
+      app: mcp-server
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: agent-api
+      ports:
+        - protocol: TCP
+          port: 8000

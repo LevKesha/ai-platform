@@ -7,8 +7,10 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/subnets: subnet-00c56427ac2c185e1,subnet-02bf64a61cba188cd
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/listener-attributes.HTTPS-443: routing.http.response.strict_transport_security.header_value=max-age=31536000;includeSubDomains
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-central-1:126366239504:certificate/e2886bca-78d5-4e90-9b04-2526ad4446ce
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/success-codes: '200,401,403'
