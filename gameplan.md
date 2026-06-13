@@ -308,7 +308,7 @@ kubectl -n n8n scale deploy/n8n --replicas=1
 
 1. **Codify imperative infra in Terraform** — import LBC role, ACM cert; `enable_*` apply when ready
 2. **claude-router CI** — GitHub Action build/push (like agent-api); add ECR repo to Terraform
-3. **Commit gameplan + n8n SECURITY.md** locally (already in ai-platform); optional WAF / `inbound-cidrs` on n8n ingress
+3. **Optional hardening** — WAF / `inbound-cidrs` on n8n ingress; codify claude-router IRSA in TF
 4. **Phase 2** — support-runbook-copilot agent (when Theme 4 stable)
 5. **Destroy/redeploy smoke** — run `terraform-destroy-dev` workflow green after changes
 
