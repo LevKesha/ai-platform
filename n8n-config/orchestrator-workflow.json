@@ -147,8 +147,10 @@
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ incident_summary: $json.input }) }}",
-        "options": {}
+        "jsonBody": "={{ JSON.stringify({ incident_summary: $('Validate Input').first().json.input }) }}",
+        "options": {
+          "timeout": 120000
+        }
       },
       "id": "n21",
       "name": "Call support-runbook-copilot /invoke",
@@ -173,13 +175,13 @@
             {
               "id": "rb2",
               "name": "answer",
-              "value": "={{$json.action_plan ?? ''}}",
+              "value": "={{$json.action_plan}}",
               "type": "string"
             },
             {
               "id": "rb3",
               "name": "meta",
-              "value": "={{$json.meta ?? {}}}",
+              "value": "={{ { request_id: $json.meta.request_id ?? null, model: $json.meta.model ?? null } }}",
               "type": "object"
             }
           ]
