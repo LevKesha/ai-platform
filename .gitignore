@@ -1,5 +1,10 @@
 n8n/k8s/secrets.yaml
 
+# Python bytecode (never commit)
+__pycache__/
+*.pyc
+*.py[cod]
+
 # Cursor / IDE (local only — never commit)
 .cursor/
 .idea/
