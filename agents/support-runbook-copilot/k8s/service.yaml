@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: support-runbook-copilot
+  namespace: dev
+spec:
+  type: ClusterIP
+  selector:
+    app: support-runbook-copilot
+  ports:
+    - port: 8000
+      targetPort: 8000

@@ -1,5 +1,5 @@
 # Restrict dev backends to in-cluster callers only (no internet route to these Services).
-# n8n orchestrator (namespace n8n) may call rag, agent-api, claude-router on app port 8000.
+# n8n orchestrator (namespace n8n) may call rag, agent-api, claude-router, support-runbook-copilot on app port 8000.
 # agent-api may call mcp-server within dev.
 ---
 apiVersion: networking.k8s.io/v1
@@ -78,6 +78,26 @@ spec:
         - podSelector:
             matchLabels:
               app: agent-api
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: support-runbook-copilot-ingress
+  namespace: dev
+spec:
+  podSelector:
+    matchLabels:
+      app: support-runbook-copilot
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: n8n
       ports:
         - protocol: TCP
           port: 8000

@@ -23,7 +23,7 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const b = $json.body ?? $json;\nconst mode = String(b.mode ?? '').toLowerCase();\nconst input = String(b.input ?? '').trim();\nconst allowed = ['rag','agent','auto'];\nif (!allowed.includes(mode)) {\n  return [{ json: { validationFailed: true, error: `mode must be one of: ${allowed.join(', ')}` } }];\n}\nif (!input) {\n  return [{ json: { validationFailed: true, error: 'input is required' } }];\n}\nif (input.length > 8000) {\n  return [{ json: { validationFailed: true, error: 'input too long (max 8000 chars)' } }];\n}\nreturn [{ json: { mode, input, validationFailed: false } }];"
+        "jsCode": "const b = $json.body ?? $json;\nconst mode = String(b.mode ?? '').toLowerCase();\nconst input = String(b.input ?? '').trim();\nconst allowed = ['rag','agent','auto','runbook'];\nif (!allowed.includes(mode)) {\n  return [{ json: { validationFailed: true, error: `mode must be one of: ${allowed.join(', ')}` } }];\n}\nif (!input) {\n  return [{ json: { validationFailed: true, error: 'input is required' } }];\n}\nif (input.length > 8000) {\n  return [{ json: { validationFailed: true, error: 'input too long (max 8000 chars)' } }];\n}\nreturn [{ json: { mode, input, validationFailed: false } }];"
       },
       "id": "n2",
       "name": "Validate Input",
@@ -116,6 +116,83 @@
       "position": [
         1180,
         420
+      ]
+    },
+    {
+      "parameters": {
+        "combineOperation": "all",
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.mode}}",
+              "operation": "equal",
+              "value2": "runbook"
+            }
+          ]
+        }
+      },
+      "id": "n20",
+      "name": "IF Mode = runbook",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        490
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://support-runbook-copilot.dev.svc.cluster.local:8000/invoke",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ incident_summary: $json.input }) }}",
+        "options": {}
+      },
+      "id": "n21",
+      "name": "Call support-runbook-copilot /invoke",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
+      "position": [
+        1420,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "rb1",
+              "name": "mode_used",
+              "value": "runbook",
+              "type": "string"
+            },
+            {
+              "id": "rb2",
+              "name": "answer",
+              "value": "={{$json.action_plan ?? ''}}",
+              "type": "string"
+            },
+            {
+              "id": "rb3",
+              "name": "meta",
+              "value": "={{$json.meta ?? {}}}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "n22",
+      "name": "Normalize Runbook Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1660,
+        400
       ]
     },
     {
@@ -507,12 +584,51 @@
         ],
         [
           {
+            "node": "IF Mode = runbook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Mode = runbook": {
+      "main": [
+        [
+          {
+            "node": "Call support-runbook-copilot /invoke",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "Classify mode (Claude)",
             "type": "main",
             "index": 0
           }
         ]
       ]
+    },
+    "Call support-runbook-copilot /invoke": {
+      "main": [
+        [
+          {
+            "node": "Normalize Runbook Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format HTTP Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Runbook Output": {
+      "main": []
     },
     "Call agent-api /agent": {
       "main": [

@@ -1,0 +1,43 @@
+apiVersion: agents.platform/v1alpha1
+kind: Agent
+metadata:
+  name: support-runbook-copilot
+  version: "0.1.0"
+  description: >
+    Advises on incidents by generating a suggested action plan via Bedrock Claude.
+
+spec:
+  runtime:
+    image: 126366239504.dkr.ecr.eu-central-1.amazonaws.com/support-runbook-copilot:<tag>
+    port: 8000
+    healthcheck:
+      path: /health
+      intervalSeconds: 30
+
+  invocation:
+    mode: orchestrated
+    transport:
+      protocol: http
+    endpoint: /invoke
+    method: POST
+
+  llm:
+    provider: bedrock
+    model: eu.anthropic.claude-sonnet-4-5-20250929-v1:0
+    temperature: 0.2
+    maxTokens: 1200
+
+  security:
+    runAsNonRoot: true
+    serviceAccount: support-runbook-copilot
+    iamRole: arn:aws:iam::126366239504:role/AgentApiIRSA-dev
+
+  scalability:
+    minReplicas: 1
+    maxReplicas: 2
+    scaleMetric: cpu
+    scaleTarget: 60
+
+  resources:
+    cpu: "250m"
+    memory: "512Mi"

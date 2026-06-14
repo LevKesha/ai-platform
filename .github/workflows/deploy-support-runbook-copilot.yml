@@ -1,0 +1,87 @@
+name: Deploy support-runbook-copilot
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agents/support-runbook-copilot/**'
+      - '.github/workflows/deploy-support-runbook-copilot.yml'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY: support-runbook-copilot
+  SERVICE_NAME: support-runbook-copilot
+  K8S_NAMESPACE: dev
+  EKS_CLUSTER_NAME: dev-cluster
+  AGENT_DIR: agents/support-runbook-copilot
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Lint and import check
+        working-directory: ${{ env.AGENT_DIR }}
+        run: |
+          pip install -r requirements.txt ruff
+          ruff check .
+          python -c "from app.main import app"
+
+  build-and-push:
+    name: Build & Push to ECR
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::126366239504:role/GitHubOIDCRole
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-ecr
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+      - name: Build, tag & push
+        id: meta
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./${{ env.AGENT_DIR }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  deploy:
+    name: Deploy to EKS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::126366239504:role/GitHubOIDCRole
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-eks
+      - uses: azure/setup-kubectl@v3
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+      - name: Apply manifests
+        env:
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+        run: |
+          sed "s/IMAGE_TAG/${IMAGE_TAG}/g" ${{ env.AGENT_DIR }}/k8s/deployment.yaml | kubectl apply -f -
+          kubectl apply -f ${{ env.AGENT_DIR }}/k8s/service.yaml
+      - name: Wait for rollout
+        run: kubectl rollout status deployment/${{ env.SERVICE_NAME }} -n ${{ env.K8S_NAMESPACE }} --timeout=120s
