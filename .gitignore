@@ -1,4 +1,9 @@
 n8n/k8s/secrets.yaml
 
-# Local session notes (optional)
+# Cursor / IDE (local only — never commit)
+.cursor/
+.idea/
+
+# Local session notes / workplans (do not commit)
 SESSION_*.md
+gameplan.md
