@@ -1,0 +1,120 @@
+name: Deploy claude-router
+
+on:
+  push:
+    branches: [main]
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY: claude-router
+  SERVICE_NAME: claude-router
+  K8S_NAMESPACE: dev
+  IMAGE_REGISTRY: 126366239504.dkr.ecr.eu-central-1.amazonaws.com
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: claude-router
+        run: pip install -r requirements.txt ruff
+
+      - name: Lint
+        working-directory: claude-router
+        run: ruff check .
+
+      - name: Import check
+        working-directory: claude-router
+        run: python -c "from app.main import app"
+
+  build-and-push:
+    name: Build & Push to ECR
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::126366239504:role/GitHubOIDCRole
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-ecr
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag & push image
+        id: meta
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./claude-router
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  deploy:
+    name: Deploy to EKS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::126366239504:role/GitHubOIDCRole
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-eks
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --name ${{ secrets.EKS_CLUSTER_NAME }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Verify cluster connection
+        run: kubectl get nodes
+
+      - name: Ensure namespace
+        run: |
+          kubectl create namespace ${{ env.K8S_NAMESPACE }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply manifests
+        env:
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+        run: |
+          sed "s/IMAGE_TAG/${IMAGE_TAG}/g" claude-router/k8s/deployment.yaml | kubectl apply -f -
+          kubectl apply -f claude-router/k8s/service.yaml
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/${{ env.SERVICE_NAME }} \
+            -n ${{ env.K8S_NAMESPACE }} \
+            --timeout=120s

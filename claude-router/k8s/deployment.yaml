@@ -24,7 +24,8 @@ spec:
       serviceAccountName: claude-router
       containers:
         - name: claude-router
-          image: 126366239504.dkr.ecr.eu-central-1.amazonaws.com/claude-router:latest
+          # IMAGE_TAG replaced by deploy-claude-router workflow (github.sha)
+          image: 126366239504.dkr.ecr.eu-central-1.amazonaws.com/claude-router:IMAGE_TAG
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
