@@ -10,6 +10,7 @@ env:
   ECR_REPOSITORY: claude-router
   SERVICE_NAME: claude-router
   K8S_NAMESPACE: dev
+  EKS_CLUSTER_NAME: dev-cluster
   IMAGE_REGISTRY: 126366239504.dkr.ecr.eu-central-1.amazonaws.com
 
 jobs:
@@ -96,7 +97,7 @@ jobs:
       - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig \
-            --name ${{ secrets.EKS_CLUSTER_NAME }} \
+            --name ${{ env.EKS_CLUSTER_NAME }} \
             --region ${{ env.AWS_REGION }}
 
       - name: Verify cluster connection
