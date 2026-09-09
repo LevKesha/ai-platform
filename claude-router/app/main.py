@@ -1,17 +1,16 @@
-import json
 import os
 import re
 
-import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+
+from platform_common.bedrock import claude_text, invoke_claude
 
 MODEL_ID = os.getenv("CLAUDE_MODEL_ID", "eu.anthropic.claude-sonnet-4-5-20250929-v1:0")
 AWS_REGION = os.getenv("AWS_REGION", "eu-central-1")
 
 app = FastAPI(title="claude-router", version="0.1.0")
-bedrock = boto3.client("bedrock-runtime", region_name=AWS_REGION)
 
 SYSTEM = (
     "Route user input to exactly one mode: rag or agent. "
@@ -32,15 +31,15 @@ class RouteResponse(BaseModel):
     route: str
 
 
-def invoke_claude(user_input: str) -> str:
-    body = {
-        "anthropic_version": "bedrock-2023-05-31",
-        "max_tokens": 16,
-        "system": SYSTEM,
-        "messages": [{"role": "user", "content": f"Classify:\n\n{user_input}"}],
-    }
-    response = bedrock.invoke_model(modelId=MODEL_ID, body=json.dumps(body))
-    return json.loads(response["body"].read())["content"][0]["text"].strip()
+def invoke_claude_route(user_input: str) -> str:
+    result = invoke_claude(
+        MODEL_ID,
+        AWS_REGION,
+        messages=[{"role": "user", "content": f"Classify:\n\n{user_input}"}],
+        system=SYSTEM,
+        max_tokens=16,
+    )
+    return claude_text(result)
 
 
 def pick_mode(text: str, allowed: list[str]) -> str:
@@ -65,7 +64,7 @@ def route(req: RouteRequest):
 
     allowed = [m.lower() for m in req.allowed_modes] or ["rag", "agent"]
     try:
-        mode = pick_mode(invoke_claude(req.input), allowed)
+        mode = pick_mode(invoke_claude_route(req.input), allowed)
     except (BotoCoreError, ClientError) as exc:
         raise HTTPException(status_code=503, detail=f"bedrock error: {exc}")
 

@@ -1,17 +1,16 @@
-import json
 import os
 import uuid
 
-import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+
+from platform_common.bedrock import claude_text, invoke_claude
 
 MODEL_ID = os.getenv("CLAUDE_MODEL_ID", "eu.anthropic.claude-sonnet-4-5-20250929-v1:0")
 AWS_REGION = os.getenv("AWS_REGION", "eu-central-1")
 
 app = FastAPI(title="support-runbook-copilot", version="0.1.0")
-bedrock = boto3.client("bedrock-runtime", region_name=AWS_REGION)
 
 SYSTEM = (
     "You are an incident response copilot. Given an incident summary, produce a concise "
@@ -41,15 +40,15 @@ def resolve_summary(req: InvokeRequest) -> str:
 
 
 def invoke_bedrock(incident_summary: str) -> str:
-    body = {
-        "anthropic_version": "bedrock-2023-05-31",
-        "max_tokens": 1200,
-        "temperature": 0.2,
-        "system": SYSTEM,
-        "messages": [{"role": "user", "content": f"Incident:\n\n{incident_summary}"}],
-    }
-    response = bedrock.invoke_model(modelId=MODEL_ID, body=json.dumps(body))
-    return json.loads(response["body"].read())["content"][0]["text"].strip()
+    result = invoke_claude(
+        MODEL_ID,
+        AWS_REGION,
+        messages=[{"role": "user", "content": f"Incident:\n\n{incident_summary}"}],
+        system=SYSTEM,
+        max_tokens=1200,
+        temperature=0.2,
+    )
+    return claude_text(result)
 
 
 @app.get("/health")

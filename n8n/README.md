@@ -31,7 +31,7 @@ Cost controls:
 
 1. Copy `k8s/secrets.example.yaml` to `k8s/secrets.yaml` (do not commit).
 2. Set RDS endpoint/port/db/user/password, stable `N8N_ENCRYPTION_KEY`, `N8N_HOST`, and `WEBHOOK_URL`.
-3. Confirm `k8s/ingress.yaml` has the ACM cert ARN and public subnet annotation (required when EKS nodes are in private subnets).
+3. Confirm `k8s/ingress.yaml` was rendered from `platform-infra.dev.json` (`python scripts/render-from-infra.py` from repo root). Do not hand-edit ACM/subnet annotations — refresh the JSON from infrastructure terraform outputs first.
 
 ### Apply order
 
