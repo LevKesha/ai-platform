@@ -1,0 +1,30 @@
+# Platform model / LLM registry — SINGLE SOURCE OF TRUTH (GA: LevKesha/ai-platform)
+#
+# Consumers (agent-api, rag-service, mcp-server, claude-router, agents/*) MUST mirror
+# these values in agent-spec.yaml, k8s/helm values, and .env.example.
+# Do not invent a second model ID in app code or charts.
+#
+# Verify: python scripts/check-platform-config.py
+# Sibling clones expected under ../agent-api, ../rag-service, ../mcp-server, ../infrastructure
+
+aws:
+  region: eu-central-1
+  account_id: "126366239504"
+  ecr_registry: 126366239504.dkr.ecr.eu-central-1.amazonaws.com
+
+llm:
+  provider: bedrock
+  # Env var name used by all Bedrock text services
+  env_var: CLAUDE_MODEL_ID
+  model_id: eu.anthropic.claude-sonnet-4-5-20250929-v1:0
+  # Env var name used by rag-service embeddings
+  embedding_env_var: EMBEDDING_MODEL_ID
+  embedding_model_id: amazon.titan-embed-text-v2:0
+
+# Deprecated IDs — must not appear as active defaults in helm / agent-spec / .env.example
+deprecated_model_ids:
+  - anthropic.claude-3-5-sonnet-20241022-v2:0
+  - eu.anthropic.claude-3-5-sonnet-20241022-v2:0
+  - eu.anthropic.claude-sonnet-4-20250514-v1:0
+  - anthropic.claude-sonnet-4-20250514-v1:0
+  - anthropic.claude-haiku-20240307-v1:0

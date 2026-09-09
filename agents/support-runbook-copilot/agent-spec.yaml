@@ -23,6 +23,7 @@ spec:
 
   llm:
     provider: bedrock
+    # SSOT: LevKesha/ai-platform platform-config.yaml → llm.model_id
     model: eu.anthropic.claude-sonnet-4-5-20250929-v1:0
     temperature: 0.2
     maxTokens: 1200
