@@ -3,9 +3,11 @@ AI Platform POC — agent-api, rag-service, mcp-server, n8n orchestration on AWS
 
 ## Platform SSOT
 
-- **`platform-config.yaml`** — single source of truth for Bedrock model IDs, embedding model, AWS region/account defaults.
-- Sibling service repos (`agent-api`, `rag-service`, `mcp-server`) must mirror those IDs in `agent-spec.yaml`, Helm values, and `.env.example`.
-- Drift check: `python scripts/check-platform-config.py` (requires PyYAML; expects sibling clones next to this repo).
+- **`platform-config.yaml`** — Bedrock model IDs / embedding model (LLM SSOT).
+- **`platform-infra.dev.json`** — infra IDs snapshot (ACM, subnets, IRSA, ECR). **Owner:** `LevKesha/infrastructure` terraform outputs; refresh via `../infrastructure/scripts/export-platform-outputs.py`.
+- Render k8s from snapshot: `python scripts/render-from-infra.py`
+- Sync sibling helm/agent-spec IRSA+ECR: `python scripts/sync-sibling-irsa.py`
+- Drift checks: `python scripts/check-platform-config.py` and `python scripts/check-infra-consumers.py`
 
 ## Theme 4 status
 

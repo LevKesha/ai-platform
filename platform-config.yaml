@@ -4,7 +4,12 @@
 # these values in agent-spec.yaml, k8s/helm values, and .env.example.
 # Do not invent a second model ID in app code or charts.
 #
-# Verify: python scripts/check-platform-config.py
+# Infra IDs (IRSA, ACM, subnets, ECR URLs): see platform-infra.dev.json
+# (exported from LevKesha/infrastructure terraform outputs — that repo is SSOT).
+#
+# Verify:
+#   python scripts/check-platform-config.py
+#   python scripts/check-infra-consumers.py
 # Sibling clones expected under ../agent-api, ../rag-service, ../mcp-server, ../infrastructure
 
 aws:
