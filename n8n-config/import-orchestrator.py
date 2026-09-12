@@ -13,7 +13,7 @@ import urllib.request
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_WORKFLOW_JSON = os.path.join(SCRIPT_DIR, "orchestrator-workflow.json")
 DEFAULT_HOST = "https://n8n.levkesha.com"
-DEFAULT_WORKFLOW_ID = "JW6BZO6PZnExaOa5"
+DEFAULT_WORKFLOW_ID = "XBInJO2kGldHOK4o"
 WEBHOOK_PATH = "/webhook/ai-orchestrator"
 READ_ONLY_FIELDS = ("id", "active", "versionId", "meta", "tags")
 

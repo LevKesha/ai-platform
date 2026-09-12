@@ -6,7 +6,7 @@ Update the live n8n orchestrator from `orchestrator-workflow.json` via REST API.
 
 - Owner account claimed in n8n UI
 - API key in env with scopes: `workflow:read`, `workflow:update`, `workflow:activate`
-- Workflow id `JW6BZO6PZnExaOa5` (override with `N8N_WORKFLOW_ID` if needed)
+- Workflow id `XBInJO2kGldHOK4o` (script also matches `orchestrator-workflow` by name; override with `N8N_WORKFLOW_ID` if needed)
 - Python 3.10+ (stdlib only)
 
 ## Environment
@@ -14,7 +14,7 @@ Update the live n8n orchestrator from `orchestrator-workflow.json` via REST API.
 ```powershell
 $env:N8N_HOST = "https://n8n.levkesha.com"   # default
 $env:N8N_API_KEY = "<from n8n Settings → API>"
-$env:N8N_WORKFLOW_ID = "JW6BZO6PZnExaOa5"    # optional
+$env:N8N_WORKFLOW_ID = "XBInJO2kGldHOK4o"    # optional; omit to resolve by name
 ```
 
 From ai-platform repo root:
