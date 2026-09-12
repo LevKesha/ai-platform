@@ -65,6 +65,24 @@ def put_workflow(host: str, api_key: str, workflow_id: str, wf: dict) -> dict:
     return api_request(host, api_key, "PUT", f"/api/v1/workflows/{workflow_id}", wf)
 
 
+def create_workflow(host: str, api_key: str, wf: dict) -> dict:
+    return api_request(host, api_key, "POST", "/api/v1/workflows", wf)
+
+
+def list_workflows(host: str, api_key: str) -> list[dict]:
+    payload = api_request(host, api_key, "GET", "/api/v1/workflows")
+    if isinstance(payload, list):
+        return payload
+    return payload.get("data", [])
+
+
+def find_workflow_id(host: str, api_key: str, name: str, fallback_id: str) -> str | None:
+    for item in list_workflows(host, api_key):
+        if item.get("name") == name or item.get("id") == fallback_id:
+            return item.get("id")
+    return None
+
+
 def activate_workflow(host: str, api_key: str, workflow_id: str) -> dict:
     return api_request(host, api_key, "POST", f"/api/v1/workflows/{workflow_id}/activate")
 
@@ -130,12 +148,21 @@ def main() -> None:
         raise SystemExit("N8N_API_KEY is required")
 
     wf = load_and_prepare(args.json_path)
-    print(f"PUT workflow {args.workflow_id} -> {host}")
-    result = put_workflow(host, api_key, args.workflow_id, wf)
-    print(f"updated: {result.get('name', '?')} (id={result.get('id', args.workflow_id)})")
+    workflow_id = find_workflow_id(host, api_key, wf.get("name", ""), args.workflow_id)
+    if workflow_id:
+        print(f"PUT workflow {workflow_id} -> {host}")
+        result = put_workflow(host, api_key, workflow_id, wf)
+        print(f"updated: {result.get('name', '?')} (id={result.get('id', workflow_id)})")
+    else:
+        print(f"POST workflow {wf.get('name', '?')} -> {host} (fresh instance, no existing id)")
+        result = create_workflow(host, api_key, wf)
+        workflow_id = result.get("id")
+        if not workflow_id:
+            raise SystemExit(f"Create returned no id: {result!r}")
+        print(f"created: {result.get('name', '?')} (id={workflow_id})")
 
     print("POST activate")
-    active = activate_workflow(host, api_key, args.workflow_id)
+    active = activate_workflow(host, api_key, workflow_id)
     print(f"active: {active.get('active', True)}")
 
     if args.smoke:
