@@ -5,19 +5,22 @@
   "aws_account_id": "126366239504",
   "cluster_name": "dev-cluster",
   "public_subnet_ids": [
-    "subnet-00c56427ac2c185e1",
-    "subnet-02bf64a61cba188cd"
+    "subnet-017ec34dd41249391",
+    "subnet-011498a69de5c5c10"
   ],
-  "private_subnet_ids": [],
+  "private_subnet_ids": [
+    "subnet-08795c75eeaf5c819",
+    "subnet-0292e08db1bc3d1ee"
+  ],
   "n8n_domain_name": "n8n.levkesha.com",
   "n8n_route53_zone_id": "Z06888972YCZFH8ESA559",
-  "n8n_acm_certificate_arn": "arn:aws:acm:eu-central-1:126366239504:certificate/e2886bca-78d5-4e90-9b04-2526ad4446ce",
+  "n8n_acm_certificate_arn": "arn:aws:acm:eu-central-1:126366239504:certificate/6391adb4-610d-4094-bda7-9e1207d112b4",
   "n8n_alb_arn": null,
   "n8n_waf_web_acl_arn": null,
   "agent_api_irsa_arn": "arn:aws:iam::126366239504:role/AgentApiIRSA-dev",
   "rag_service_irsa_arn": "arn:aws:iam::126366239504:role/RagServiceIRSA-dev",
   "mcp_service_irsa_arn": "arn:aws:iam::126366239504:role/McpServiceIRSA-dev",
-  "lbc_irsa_arn": null,
+  "lbc_irsa_arn": "arn:aws:iam::126366239504:role/AmazonEKSLoadBalancerControllerRole",
   "ecr_rag_service_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/rag-service",
   "ecr_mcp_server_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/mcp-server",
   "ecr_agent_api_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/agent-api",
