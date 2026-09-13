@@ -18,7 +18,7 @@ Then open `http://127.0.0.1:8080/`.
 
 Public static host: `https://olympus.levkesha.com` (S3 + CloudFront).
 
-Only public runtime edge: `https://n8n.levkesha.com`.
+n8n runtime: `https://n8n.levkesha.com` (own host at `/`). n8n 2.25 has no supported reverse-proxy path under Olympus. Login-gated; interview demo is screenshare.
 
 ## Pages
 

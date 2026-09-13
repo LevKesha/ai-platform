@@ -17,6 +17,7 @@
         <a href="projects.html">Selected Work</a>
         <a href="evidence.html">Evidence</a>
         <a href="console.html">Console</a>
+        <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
       </nav>
     </div>
   </header>
@@ -25,7 +26,7 @@
     <p class="lede">Four services on EKS <span class="mono">dev-cluster</span> in <span class="mono">eu-central-1</span>. Bedrock IDs are owned by <span class="mono">platform-config.yaml</span> in LevKesha/ai-platform.</p>
 
     <figure class="diagram">
-      <img src="architecture.svg" alt="EKS topology: agent-api, rag-service, mcp-server, and n8n on dev-cluster. Only n8n is public via n8n.levkesha.com.">
+      <img src="architecture.svg" alt="EKS topology: agent-api, rag-service, mcp-server, and n8n on dev-cluster. n8n is on n8n.levkesha.com (own host; n8n has no supported path under Olympus).">
       <figcaption>
         <a href="architecture.svg">Open architecture.svg</a>
         — static diagram, no telemetry.
@@ -66,7 +67,7 @@
             </tr>
             <tr>
               <th scope="row"><span class="mono">n8n</span></th>
-              <td>Workflow automation. Lives in ai-platform (no standalone LevKesha/n8n repo).</td>
+              <td>Workflow automation in ai-platform. Own host — n8n 2.25 has no supported reverse-proxy subpath. Login; screenshare demo.</td>
               <td>Helm / EKS</td>
               <td>
                 <span class="badge"><span class="badge-icon" aria-hidden="true">↗</span> Public ALB</span>
@@ -86,7 +87,7 @@
   <footer class="site-footer">
     <p>The Olympus — static evidence site. No build step. Inventory verified 2026-09-13.</p>
     <p>Public static site: <a href="https://olympus.levkesha.com">olympus.levkesha.com</a>.</p>
-    <p>Live public edge today:
+    <p>n8n runtime (own host; login; screenshare demo):
       <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n.levkesha.com <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>.
     </p>
   </footer>

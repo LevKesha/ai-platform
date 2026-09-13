@@ -16,7 +16,7 @@ window.OLYMPUS_CONSOLE = {
     { id: "spend", label: "Services & Spend" },
   ],
   topology: {
-    note: "Four Helm-deployed services on EKS. Only n8n has a public edge.",
+    note: "Four Helm-deployed services on EKS. n8n is on its own host (n8n path-under-proxy limit). Other services are ClusterIP.",
     services: [
       {
         name: "agent-api",
@@ -38,7 +38,7 @@ window.OLYMPUS_CONSOLE = {
       },
       {
         name: "n8n",
-        role: "Workflow automation",
+        role: "Workflow automation. Own host; login; screenshare demo.",
         edge: "Public ALB",
         public: true,
         url: "https://n8n.levkesha.com",
@@ -103,6 +103,6 @@ window.OLYMPUS_CONSOLE = {
       "No public endpoint. This surface is ClusterIP or laptop port-forward only.",
     demoData: "Demo data — read-only fixture. Not live telemetry.",
     n8nUnavailable:
-      "n8n public edge unavailable. This site does not invent a fallback URL. Retry https://n8n.levkesha.com or continue with static evidence.",
+      "n8n host unavailable. This site does not invent a fallback URL or a /n8n path. Retry https://n8n.levkesha.com or continue with static evidence.",
   },
 };

@@ -12,7 +12,7 @@ window.OLYMPUS_PUBLIC = {
   },
   publicEdge: {
     label: "n8n workflow automation",
-    note: "Only current public runtime edge",
+    note: "Own host. n8n 2.25 has no supported reverse-proxy path under Olympus. Login-gated; interview demo is screenshare.",
     url: "https://n8n.levkesha.com",
   },
   flagship: {
@@ -74,5 +74,7 @@ window.OLYMPUS_PUBLIC = {
     "Infra main is parked; live IaC is branch dev; no production cluster.",
     "LiteLLM, Headroom, Theseus, and spend are ClusterIP / laptop port-forward — not public.",
     "CLI build hop is laptop compose; platform proxy is EKS ClusterIP.",
+    "n8n stays on n8n.levkesha.com at / — n8n 2.25 does not support a reverse-proxy path under olympus.levkesha.com.",
+    "n8n editor demo is screenshare; login required. Not an anonymous portfolio app.",
   ],
 };
