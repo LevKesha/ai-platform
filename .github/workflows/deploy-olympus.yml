@@ -1,0 +1,45 @@
+name: Deploy Olympus
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "olympus/**"
+      - ".github/workflows/deploy-olympus.yml"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-central-1
+  OLYMPUS_DOMAIN: olympus.levkesha.com
+
+jobs:
+  sync:
+    name: Sync S3 + invalidate CloudFront
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::126366239504:role/GitHubOIDCRole
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-olympus
+
+      - name: Sync origin and invalidate
+        run: |
+          set -euo pipefail
+          DIST_ID="$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, '${OLYMPUS_DOMAIN}')].Id | [0]" --output text)"
+          if [[ -z "${DIST_ID}" || "${DIST_ID}" == "None" ]]; then
+            echo "No CloudFront distribution aliased to ${OLYMPUS_DOMAIN}"
+            exit 1
+          fi
+          ORIGIN="$(aws cloudfront get-distribution --id "${DIST_ID}" --query "Distribution.DistributionConfig.Origins.Items[0].DomainName" --output text)"
+          BUCKET="${ORIGIN%%.*}"
+          echo "distribution=${DIST_ID} bucket=${BUCKET}"
+          aws s3api head-bucket --bucket "${BUCKET}"
+          aws s3 sync olympus/ "s3://${BUCKET}/" --delete --exclude README.md
+          aws cloudfront create-invalidation --distribution-id "${DIST_ID}" --paths "/*"

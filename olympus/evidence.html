@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Olympus — Evidence</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">The Olympus</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Overview</a>
+        <a href="architecture.html">Architecture</a>
+        <a href="projects.html">Selected Work</a>
+        <a href="evidence.html" aria-current="page">Evidence</a>
+        <a href="console.html">Console</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <h1>Evidence inventory</h1>
+    <p class="lede">Verified 2026-09-13. Public GitHub link only for ai-platform. Skipped old public learning repos.</p>
+
+    <div class="table-wrap">
+      <table>
+        <caption class="visually-hidden">Repository inventory with visibility and evidence</caption>
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Visibility</th>
+            <th scope="col">Evidence</th>
+            <th scope="col">Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"><span class="mono">ai-platform</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Verified public</span></td>
+            <td>EKS orchestration of agent-api, rag-service, mcp-server, n8n; Bedrock SSOT <span class="mono">platform-config.yaml</span>.</td>
+            <td>
+              <a href="https://github.com/LevKesha/ai-platform" rel="noopener noreferrer" target="_blank">
+                GitHub
+                <span aria-hidden="true">↗</span>
+                <span class="visually-hidden">View ai-platform repository on GitHub (opens in new tab)</span>
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="mono">infrastructure</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
+            <td>Terraform/Helm, active branch dev, main parked, cluster dev-cluster eu-central-1. No production cluster.</td>
+            <td>No public link</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="mono">cicd</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
+            <td>Reusable GitHub Actions: ECR + Helm.</td>
+            <td>No public link</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="mono">agent-api</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
+            <td>FastAPI Bedrock /agent; Helm/EKS; Theseus GitHub-as-user. /agent unwired from LiteLLM.</td>
+            <td>No public link</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="mono">rag-service</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
+            <td>Ingestion + semantic search + Claude on EKS; Helm. README empty.</td>
+            <td>No public link</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="mono">mcp-server</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
+            <td>MCP tools/resources/prompts; Helm; IRSA.</td>
+            <td>No public link</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="mono">llm-cost</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
+            <td>LiteLLM ClusterIP + Headroom sidecar + spend; Helm. Not public.</td>
+            <td>No public link</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="mono">microservices</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
+            <td>Older services. Helm charts live in infrastructure.</td>
+            <td>No public link</td>
+          </tr>
+          <tr>
+            <th scope="row"><span class="mono">n8n</span></th>
+            <td><span class="badge"><span class="badge-icon" aria-hidden="true">↗</span> Public edge</span></td>
+            <td>Lives in ai-platform. Only current public runtime edge.</td>
+            <td>
+              <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">
+                n8n.levkesha.com
+                <span aria-hidden="true">↗</span>
+                <span class="visually-hidden">(opens in new tab)</span>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <section aria-labelledby="skip-title">
+      <h2 id="skip-title">Skipped</h2>
+      <p class="muted">Old public learning repos are not evidence: peakyblinders, moviescicd, APIs, azurepipeline, WorldOfGames.</p>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <p>The Olympus — static evidence site. No build step. Inventory verified 2026-09-13.</p>
+    <p>Public static site: <a href="https://olympus.levkesha.com">olympus.levkesha.com</a>.</p>
+    <p>Live public edge today:
+      <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n.levkesha.com <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>.
+    </p>
+  </footer>
+</body>
+</html>

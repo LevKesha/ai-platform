@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" role="img" aria-labelledby="title desc">
+  <title id="title">The Olympus EKS topology</title>
+  <desc id="desc">Four services on EKS dev-cluster in eu-central-1: agent-api, rag-service, mcp-server, and n8n. Only n8n is reached through the public ALB at n8n.levkesha.com. Bedrock configuration is owned by platform-config.yaml.</desc>
+  <rect width="860" height="420" fill="#14181d"/>
+  <rect x="24" y="18" width="812" height="54" fill="#1a1f26" stroke="#2c333c"/>
+  <text x="40" y="40" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">public edge</text>
+  <text x="40" y="58" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">n8n.levkesha.com � n8n ALB (only live public runtime)</text>
+
+  <rect x="24" y="90" width="812" height="308" fill="#0c0e11" stroke="#8ec8b8"/>
+  <text x="40" y="114" fill="#8ec8b8" font-family="ui-monospace, Consolas, monospace" font-size="13">EKS  dev-cluster  /  eu-central-1  /  branch: dev (main parked)</text>
+  <text x="40" y="134" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">Bedrock SSOT: platform-config.yaml</text>
+
+  <rect x="40" y="160" width="180" height="110" fill="#1a1f26" stroke="#2c333c"/>
+  <text x="54" y="186" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">agent-api</text>
+  <text x="54" y="208" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">FastAPI /agent</text>
+  <text x="54" y="226" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">Helm / ClusterIP</text>
+  <text x="54" y="250" fill="#d4a84b" font-family="ui-monospace, Consolas, monospace" font-size="11">unwired from LiteLLM</text>
+
+  <rect x="240" y="160" width="180" height="110" fill="#1a1f26" stroke="#2c333c"/>
+  <text x="254" y="186" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">rag-service</text>
+  <text x="254" y="208" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">ingest + search</text>
+  <text x="254" y="226" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">Claude on EKS</text>
+  <text x="254" y="250" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="11">Helm / ClusterIP</text>
+
+  <rect x="440" y="160" width="180" height="110" fill="#1a1f26" stroke="#2c333c"/>
+  <text x="454" y="186" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">mcp-server</text>
+  <text x="454" y="208" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">tools / resources</text>
+  <text x="454" y="226" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">prompts / IRSA</text>
+  <text x="454" y="250" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="11">Helm / ClusterIP</text>
+
+  <rect x="640" y="160" width="180" height="110" fill="#1a1f26" stroke="#8ec8b8"/>
+  <text x="654" y="186" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">n8n</text>
+  <text x="654" y="208" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">workflows</text>
+  <text x="654" y="226" fill="#8ec8b8" font-family="Segoe UI, sans-serif" font-size="12">public ALB</text>
+  <text x="654" y="250" fill="#8ec8b8" font-family="ui-monospace, Consolas, monospace" font-size="11">only public edge</text>
+
+  <line x1="730" y1="72" x2="730" y2="160" stroke="#8ec8b8" stroke-width="1.5"/>
+
+  <rect x="40" y="294" width="780" height="82" fill="#1a1f26" stroke="#2c333c"/>
+  <text x="54" y="320" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">cluster-internal / laptop port-forward � not public</text>
+  <text x="54" y="344" fill="#e6e9ed" font-family="Segoe UI, sans-serif" font-size="13">LiteLLM / Headroom sidecar / Theseus / spend</text>
+  <text x="54" y="364" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">No Headroom token-savings claim on Theseus. No production cluster.</text>
+</svg>

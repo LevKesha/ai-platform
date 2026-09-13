@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Olympus — Console</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-console">
+  <a class="skip-link" href="#console-panel">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">The Olympus</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Overview</a>
+        <a href="architecture.html">Architecture</a>
+        <a href="projects.html">Selected Work</a>
+        <a href="evidence.html">Evidence</a>
+        <a href="console.html" aria-current="page">Console</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="banner-demo" role="status">Demo Mode – Read-Only</div>
+  <div class="env-bar" aria-label="Environment">
+    <span class="mono">dev-cluster</span>
+    /
+    <span class="mono">eu-central-1</span>
+    /
+    branch: <span class="mono">dev</span> (main parked)
+  </div>
+
+  <div class="console-shell">
+    <nav class="console-nav" id="console-nav" aria-label="Console views"></nav>
+    <main id="console-panel" class="console-panel" tabindex="-1">
+      <p class="muted">Enable JavaScript to switch console views. Static evidence remains on Overview, Architecture, Selected Work, and Evidence.</p>
+    </main>
+  </div>
+  <div id="console-live" class="visually-hidden" aria-live="polite"></div>
+
+  <div id="private-modal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="private-modal-title">
+      <h2 id="private-modal-title">Private repository</h2>
+      <p id="private-modal-body">Private repository. No public GitHub link. Evidence is described here; source is not linked.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="private-modal-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>The Olympus — static evidence site. No build step. Inventory verified 2026-09-13.</p>
+    <p>Public static site: <a href="https://olympus.levkesha.com">olympus.levkesha.com</a>.</p>
+    <p>Live public edge today:
+      <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n.levkesha.com <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>.
+    </p>
+  </footer>
+  <script src="public-data.js"></script>
+  <script src="console-data.js"></script>
+  <script src="console.js"></script>
+</body>
+</html>

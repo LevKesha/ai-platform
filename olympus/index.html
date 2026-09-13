@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Olympus — Overview</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">The Olympus</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html" aria-current="page">Overview</a>
+        <a href="architecture.html">Architecture</a>
+        <a href="projects.html">Selected Work</a>
+        <a href="evidence.html">Evidence</a>
+        <a href="console.html">Console</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="mono muted">The Olympus</p>
+      <h1 id="hero-title">Senior AI-driven cloud and platform engineering</h1>
+      <p class="lede">AWS/EKS orchestration, Bedrock configuration as SSOT, Helm, Terraform, GitHub Actions, and controlled workflow automation. Not a traditional project gallery.</p>
+      <p>Operate the boundary between AI services, Kubernetes, IaC, delivery automation, and read-only interview evidence.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="architecture.html">Architecture</a>
+        <a class="btn" href="projects.html">Selected Work</a>
+        <a class="btn" href="console.html">Open Console</a>
+      </div>
+    </section>
+
+    <section class="grid grid-2" aria-labelledby="edge-title">
+      <article class="card featured">
+        <div class="meta">
+          <span class="badge"><span class="badge-icon" aria-hidden="true">↗</span> Public edge</span>
+        </div>
+        <h2 id="edge-title">n8n workflow automation</h2>
+        <p>Only current public runtime edge.</p>
+        <p>
+          <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">
+            n8n.levkesha.com
+            <span aria-hidden="true">↗</span>
+            <span class="visually-hidden">(opens in new tab)</span>
+          </a>
+        </p>
+      </article>
+      <article class="card">
+        <div class="meta">
+          <span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Verified public</span>
+        </div>
+        <h2>LevKesha/ai-platform</h2>
+        <p>EKS orchestration of agent-api, rag-service, mcp-server, and n8n. Bedrock SSOT via <span class="mono">platform-config.yaml</span>.</p>
+        <p>
+          <a href="https://github.com/LevKesha/ai-platform" rel="noopener noreferrer" target="_blank">
+            View ai-platform on GitHub
+            <span aria-hidden="true">↗</span>
+            <span class="visually-hidden">(opens in new tab)</span>
+          </a>
+        </p>
+      </article>
+    </section>
+
+    <section aria-labelledby="bounds-title">
+      <h2 id="bounds-title">Boundaries</h2>
+      <ul>
+        <li>Live IaC is branch <span class="mono">dev</span>; <span class="mono">main</span> is parked. No production cluster.</li>
+        <li>Cluster: <span class="mono">dev-cluster</span> / <span class="mono">eu-central-1</span>.</li>
+        <li>LiteLLM, Headroom, Theseus, and spend are ClusterIP / laptop port-forward — not public.</li>
+        <li><span class="mono">/agent</span> stays unwired from LiteLLM.</li>
+        <li>Do not claim Headroom token savings on Theseus.</li>
+        <li><span class="mono">olympus.levkesha.com</span> is the public static evidence host. <span class="mono">n8n.levkesha.com</span> remains the only public runtime edge.</li>
+      </ul>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <p>The Olympus — static evidence site. No build step. Inventory verified 2026-09-13.</p>
+    <p>Public static site: <a href="https://olympus.levkesha.com">olympus.levkesha.com</a>.</p>
+    <p>Live public edge today:
+      <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n.levkesha.com <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>.
+    </p>
+  </footer>
+</body>
+</html>
