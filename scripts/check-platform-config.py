@@ -31,6 +31,7 @@ CHECKS: list[tuple[str, str, str]] = [
     ("rag-service", "k8s/helm/values.yaml", "helm_both"),
     ("rag-service", ".env.example", "env_both"),
     ("infrastructure", "charts/rag-service/values.yaml", "helm_both"),
+    ("llm-cost", "k8s/helm/litellm/files/litellm_config.yaml", "litellm_model"),
 ]
 
 
@@ -109,6 +110,12 @@ def main() -> int:
                 got = m.group(1) if m else None
             if got != want_claude:
                 errors.append(f"{path}: {claude_var}/model want={want_claude!r} got={got!r}")
+        if kind == "litellm_model":
+            m = re.search(r"model_name:\s*([^\s#]+)", text)
+            got = m.group(1) if m else None
+            if got != want_claude:
+                errors.append(f"{path}: model_name want={want_claude!r} got={got!r}")
+            continue
         if kind == "claude_default":
             got = find_default_getenv(text, claude_var)
             if got != want_claude:

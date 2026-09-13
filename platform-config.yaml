@@ -1,6 +1,6 @@
 # Platform model / LLM registry — SINGLE SOURCE OF TRUTH (GA: LevKesha/ai-platform)
 #
-# Consumers (agent-api, rag-service, mcp-server, claude-router, agents/*) MUST mirror
+# Consumers (agent-api, rag-service, mcp-server, claude-router, agents/*, llm-cost) MUST mirror
 # these values in agent-spec.yaml, k8s/helm values, and .env.example.
 # Do not invent a second model ID in app code or charts.
 #
