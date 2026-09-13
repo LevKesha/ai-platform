@@ -3,6 +3,9 @@ name: Deploy claude-router
 on:
   push:
     branches: [main]
+    paths:
+      - "claude-router/**"
+      - ".github/workflows/deploy-claude-router.yml"
   workflow_dispatch:
 
 env:
