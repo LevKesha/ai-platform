@@ -14,7 +14,19 @@ window.OLYMPUS_CONSOLE = {
     { id: "delivery", label: "Delivery" },
     { id: "infrastructure", label: "Infrastructure" },
     { id: "spend", label: "Services & Spend" },
+    { id: "headroom", label: "Headroom Demo" },
   ],
+  headroom: {
+    webhookUrl: "https://n8n.levkesha.com/webhook/headroom-demo",
+    title: "Headroom compress probe",
+    lede: "This button runs a live in-cluster /v1/compress on the Headroom sidecar. The browser calls n8n; n8n calls ClusterIP LiteLLM:8787. No public Headroom URL.",
+    honesty: [
+      "Not Theseus. Not /agent. Research/Perplexity does not hit this path.",
+      "Payload is a fixed tool-heavy JSON dump (same idea as llm-cost/scripts/probe_compress.py).",
+      "applied_guardrails ≠ a promised 90%. Read tokens_before / tokens_after from this click.",
+      "If the webhook or :8787 port is not up yet, the run fails honestly — no fixture ratio.",
+    ],
+  },
   topology: {
     note: "Four Helm-deployed services on EKS. n8n is on its own host (n8n path-under-proxy limit). Other services are ClusterIP.",
     services: [

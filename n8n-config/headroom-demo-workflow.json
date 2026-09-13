@@ -1,0 +1,144 @@
+{
+  "name": "headroom-demo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "headroom-demo",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://olympus.levkesha.com"
+        }
+      },
+      "id": "hd1",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const items = [];\nfor (let i = 1; i <= 24; i++) {\n  items.push({\n    id: i,\n    kind: 'pull',\n    title: 'PR ' + i + ' hop orchestrator through LiteLLM and keep /agent unwired',\n    body: ('Wire RESEARCH and ENGINEERING through LiteLLM when LITELLM_BASE_URL is set. Keep /agent on direct Bedrock. ').repeat(6),\n  });\n}\nreturn [{\n  json: {\n    model: 'eu.anthropic.claude-sonnet-4-5-20250929-v1:0',\n    messages: [{ role: 'tool', tool_call_id: 'call_1', content: JSON.stringify(items) }],\n    profile: 'agent-90',\n  },\n}];"
+      },
+      "id": "hd2",
+      "name": "Build Probe Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://litellm.llm-cost.svc.cluster.local:8787/v1/compress",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: $json.model, messages: $json.messages }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "hd3",
+      "name": "Call Headroom compress",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const d = $json;\nif (d.tokens_before == null) {\n  throw new Error('Headroom did not return tokens_before');\n}\nreturn [{\n  json: {\n    ok: true,\n    tokens_before: d.tokens_before,\n    tokens_after: d.tokens_after,\n    tokens_saved: d.tokens_saved,\n    compression_ratio: d.compression_ratio,\n    transforms_applied: d.transforms_applied,\n    savings_profile: 'agent-90',\n    via: 'n8n webhook → litellm.llm-cost.svc:8787 /v1/compress',\n    honesty: 'Live Headroom sidecar. Not Theseus. Not /agent. Applied ≠ a promised 90%.',\n  },\n}];"
+      },
+      "id": "hd4",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [940, 240]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://olympus.levkesha.com"
+              }
+            ]
+          }
+        }
+      },
+      "id": "hd5",
+      "name": "Webhook Response OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1180, 240]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "e1", "name": "ok", "value": false, "type": "boolean" },
+            { "id": "e2", "name": "error", "value": "={{ $json.error?.message ?? $json.message ?? 'Headroom compress failed' }}", "type": "string" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "hd6",
+      "name": "Format Error",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [940, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 502,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://olympus.levkesha.com"
+              }
+            ]
+          }
+        }
+      },
+      "id": "hd7",
+      "name": "Webhook Response Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1180, 420]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [[{ "node": "Build Probe Payload", "type": "main", "index": 0 }]]
+    },
+    "Build Probe Payload": {
+      "main": [[{ "node": "Call Headroom compress", "type": "main", "index": 0 }]]
+    },
+    "Call Headroom compress": {
+      "main": [
+        [{ "node": "Format Response", "type": "main", "index": 0 }],
+        [{ "node": "Format Error", "type": "main", "index": 0 }]
+      ]
+    },
+    "Format Response": {
+      "main": [[{ "node": "Webhook Response OK", "type": "main", "index": 0 }]]
+    },
+    "Format Error": {
+      "main": [[{ "node": "Webhook Response Error", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

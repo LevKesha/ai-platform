@@ -451,6 +451,17 @@ tbody tr:last-child td {
   }
 }
 
+.headroom-result {
+  margin-top: var(--gap);
+  padding: 0.75rem;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+}
+
+.warn {
+  color: var(--warn);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;

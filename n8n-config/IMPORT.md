@@ -24,6 +24,14 @@ cd C:\Users\zxcv0\PycharmProjects\ai-platform
 python n8n-config/import-orchestrator.py
 ```
 
+Headroom demo webhook (Olympus console):
+
+```powershell
+python n8n-config/import-orchestrator.py --json n8n-config/headroom-demo-workflow.json --workflow-id headroom-demo
+```
+
+Then `POST https://n8n.levkesha.com/webhook/headroom-demo`. Needs LiteLLM Service port `8787` in `llm-cost`.
+
 ## WAF 403 fallback (port-forward)
 
 `n8n-dev` WAF may block `PUT /api/v1/workflows/*` on the public hostname until an allow rule lands in Terraform.

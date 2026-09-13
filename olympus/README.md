@@ -33,6 +33,6 @@ n8n runtime: `https://n8n.levkesha.com` (own host at `/`). n8n 2.25 has no suppo
 
 ## Console
 
-`console.js` switches views from `console-data.js`. Views: Platform Topology, Configuration, Delivery, Infrastructure, Services & Spend. Banner is Demo Mode – Read-Only. No mutation controls.
+`console.js` switches views from `console-data.js`. Views: Platform Topology, Configuration, Delivery, Infrastructure, Services & Spend, **Headroom Demo**. Banner is Demo Mode – Read-Only except Headroom, which POSTs `https://n8n.levkesha.com/webhook/headroom-demo` (n8n → ClusterIP `:8787` `/v1/compress`). No invented ratios on failure.
 
 Verified copy lives in `public-data.js`. Do not invent metrics or extra public URLs.

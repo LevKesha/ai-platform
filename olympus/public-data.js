@@ -76,5 +76,6 @@ window.OLYMPUS_PUBLIC = {
     "CLI build hop is laptop compose; platform proxy is EKS ClusterIP.",
     "n8n stays on n8n.levkesha.com at / — n8n 2.25 does not support a reverse-proxy path under olympus.levkesha.com.",
     "n8n editor demo is screenshare; login required. Not an anonymous portfolio app.",
+    "Headroom demo on Olympus POSTs n8n /webhook/headroom-demo → ClusterIP :8787 /v1/compress. Not a public Headroom edge.",
   ],
 };

@@ -211,12 +211,38 @@
     );
   }
 
+  function renderHeadroom() {
+    var hr = data.headroom;
+    var items = hr.honesty
+      .map(function (line) {
+        return "<li>" + line + "</li>";
+      })
+      .join("");
+    return (
+      "<h1>" +
+      hr.title +
+      "</h1>" +
+      "<p>" +
+      hr.lede +
+      "</p>" +
+      "<ul>" +
+      items +
+      "</ul>" +
+      "<p class=\"mono muted\">POST " +
+      hr.webhookUrl +
+      "</p>" +
+      '<p><button type="button" class="btn btn-primary js-headroom-run">Run compress probe</button></p>' +
+      '<div id="headroom-result" class="headroom-result" aria-live="polite"></div>'
+    );
+  }
+
   var renderers = {
     topology: renderTopology,
     configuration: renderConfiguration,
     delivery: renderDelivery,
     infrastructure: renderInfrastructure,
     spend: renderSpend,
+    headroom: renderHeadroom,
   };
 
   function setView(id) {
@@ -235,7 +261,9 @@
       }
     });
     panel.innerHTML = renderers[id]();
-    announce(view.label + " — demo read-only");
+    announce(
+      view.label + (id === "headroom" ? " — live n8n → Headroom trigger" : " — demo read-only")
+    );
     if (location.hash !== "#" + id) {
       try {
         history.replaceState(null, "", "#" + id);
@@ -257,10 +285,94 @@
   });
 
   panel.addEventListener("click", function (event) {
-    var btn = event.target.closest(".js-private");
-    if (!btn) return;
-    openPrivateModal(btn.getAttribute("data-repo"));
+    var priv = event.target.closest(".js-private");
+    if (priv) {
+      openPrivateModal(priv.getAttribute("data-repo"));
+      return;
+    }
+    var run = event.target.closest(".js-headroom-run");
+    if (!run) return;
+    var box = document.getElementById("headroom-result");
+    var url = data.headroom.webhookUrl;
+    run.disabled = true;
+    box.textContent = "Running…";
+    announce("Headroom probe started");
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    })
+      .then(function (resp) {
+        return resp.text().then(function (text) {
+          var parsed = null;
+          try {
+            parsed = JSON.parse(text);
+          } catch (err) {
+            parsed = { ok: false, error: text || "non-JSON response" };
+          }
+          return { okHttp: resp.ok, body: parsed };
+        });
+      })
+      .then(function (out) {
+        var b = out.body || {};
+        if (!out.okHttp || b.ok === false) {
+          box.innerHTML =
+            "<p class=\"warn\">Probe failed. No invented savings figure.</p>" +
+            "<pre class=\"mono\">" +
+            escapeHtml(b.error || JSON.stringify(b, null, 2)) +
+            "</pre>";
+          announce("Headroom probe failed");
+          return;
+        }
+        box.innerHTML =
+          "<div class=\"table-wrap\"><table><caption class=\"visually-hidden\">This click</caption>" +
+          "<tbody>" +
+          row("tokens_before", b.tokens_before) +
+          row("tokens_after", b.tokens_after) +
+          row("tokens_saved", b.tokens_saved) +
+          row("compression_ratio", b.compression_ratio) +
+          row("transforms", JSON.stringify(b.transforms_applied || [])) +
+          row("profile", b.savings_profile) +
+          row("via", b.via) +
+          "</tbody></table></div>" +
+          "<p class=\"muted\">" +
+          (b.honesty || "") +
+          "</p>";
+        announce(
+          "Headroom probe done. Saved " +
+            String(b.tokens_saved) +
+            " tokens"
+        );
+      })
+      .catch(function (err) {
+        box.innerHTML =
+          "<p class=\"warn\">Request did not complete. No invented savings figure.</p>" +
+          "<pre class=\"mono\">" +
+          escapeHtml(String(err && err.message ? err.message : err)) +
+          "</pre>";
+        announce("Headroom probe failed");
+      })
+      .finally(function () {
+        run.disabled = false;
+      });
   });
+
+  function row(k, v) {
+    return (
+      "<tr><th scope=\"row\"><span class=\"mono\">" +
+      k +
+      "</span></th><td>" +
+      escapeHtml(v == null ? "" : String(v)) +
+      "</td></tr>"
+    );
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
 
   modalClose.addEventListener("click", closePrivateModal);
   modal.addEventListener("click", function (event) {
