@@ -236,6 +236,38 @@
     );
   }
 
+  function renderLiteLLM() {
+    var lt = data.litellm;
+    var items = lt.honesty
+      .map(function (line) {
+        return "<li>" + line + "</li>";
+      })
+      .join("");
+    return (
+      "<h1>" +
+      lt.title +
+      "</h1>" +
+      "<p>" +
+      lt.lede +
+      "</p>" +
+      "<ul>" +
+      items +
+      "</ul>" +
+      "<h2>Screenshare (real Admin UI)</h2>" +
+      "<p class=\"mono muted\">" +
+      lt.screenshare.command +
+      "</p>" +
+      "<p class=\"mono muted\">" +
+      lt.screenshare.localUrl +
+      "</p>" +
+      "<p class=\"mono muted\">POST " +
+      lt.webhookUrl +
+      "</p>" +
+      '<p><button type="button" class="btn btn-primary js-litellm-run">Run health probe</button></p>' +
+      '<div id="litellm-result" class="headroom-result" aria-live="polite"></div>'
+    );
+  }
+
   var renderers = {
     topology: renderTopology,
     configuration: renderConfiguration,
@@ -243,6 +275,7 @@
     infrastructure: renderInfrastructure,
     spend: renderSpend,
     headroom: renderHeadroom,
+    litellm: renderLiteLLM,
   };
 
   function setView(id) {
@@ -262,7 +295,12 @@
     });
     panel.innerHTML = renderers[id]();
     announce(
-      view.label + (id === "headroom" ? " — live n8n → Headroom trigger" : " — demo read-only")
+      view.label +
+        (id === "headroom"
+          ? " — live n8n → Headroom trigger"
+          : id === "litellm"
+            ? " — live n8n → LiteLLM probe"
+            : " — demo read-only")
     );
     if (location.hash !== "#" + id) {
       try {
@@ -290,14 +328,82 @@
       openPrivateModal(priv.getAttribute("data-repo"));
       return;
     }
-    var run = event.target.closest(".js-headroom-run");
-    if (!run) return;
-    var box = document.getElementById("headroom-result");
-    var url = data.headroom.webhookUrl;
-    run.disabled = true;
-    box.textContent = "Running…";
-    announce("Headroom probe started");
-    fetch(url, {
+    var runHr = event.target.closest(".js-headroom-run");
+    if (runHr) {
+      var boxHr = document.getElementById("headroom-result");
+      var urlHr = data.headroom.webhookUrl;
+      runHr.disabled = true;
+      boxHr.textContent = "Running…";
+      announce("Headroom probe started");
+      fetch(urlHr, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      })
+        .then(function (resp) {
+          return resp.text().then(function (text) {
+            var parsed = null;
+            try {
+              parsed = JSON.parse(text);
+            } catch (err) {
+              parsed = { ok: false, error: text || "non-JSON response" };
+            }
+            return { okHttp: resp.ok, body: parsed };
+          });
+        })
+        .then(function (out) {
+          var b = out.body || {};
+          if (!out.okHttp || b.ok === false) {
+            boxHr.innerHTML =
+              "<p class=\"warn\">Probe failed. No invented savings figure.</p>" +
+              "<pre class=\"mono\">" +
+              escapeHtml(b.error || JSON.stringify(b, null, 2)) +
+              "</pre>";
+            announce("Headroom probe failed");
+            return;
+          }
+          boxHr.innerHTML =
+            "<div class=\"table-wrap\"><table><caption class=\"visually-hidden\">This click</caption>" +
+            "<tbody>" +
+            row("tokens_before", b.tokens_before) +
+            row("tokens_after", b.tokens_after) +
+            row("tokens_saved", b.tokens_saved) +
+            row("compression_ratio", b.compression_ratio) +
+            row("transforms", JSON.stringify(b.transforms_applied || [])) +
+            row("profile", b.savings_profile) +
+            row("via", b.via) +
+            "</tbody></table></div>" +
+            "<p class=\"muted\">" +
+            (b.honesty || "") +
+            "</p>";
+          announce(
+            "Headroom probe done. Saved " +
+              String(b.tokens_saved) +
+              " tokens"
+          );
+        })
+        .catch(function (err) {
+          boxHr.innerHTML =
+            "<p class=\"warn\">Request did not complete. No invented savings figure.</p>" +
+            "<pre class=\"mono\">" +
+            escapeHtml(String(err && err.message ? err.message : err)) +
+            "</pre>";
+          announce("Headroom probe failed");
+        })
+        .finally(function () {
+          runHr.disabled = false;
+        });
+      return;
+    }
+
+    var runLt = event.target.closest(".js-litellm-run");
+    if (!runLt) return;
+    var boxLt = document.getElementById("litellm-result");
+    var urlLt = data.litellm.webhookUrl;
+    runLt.disabled = true;
+    boxLt.textContent = "Running…";
+    announce("LiteLLM probe started");
+    fetch(urlLt, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: "{}",
@@ -316,44 +422,34 @@
       .then(function (out) {
         var b = out.body || {};
         if (!out.okHttp || b.ok === false) {
-          box.innerHTML =
-            "<p class=\"warn\">Probe failed. No invented savings figure.</p>" +
+          boxLt.innerHTML =
+            "<p class=\"warn\">Probe failed. No invented health.</p>" +
             "<pre class=\"mono\">" +
             escapeHtml(b.error || JSON.stringify(b, null, 2)) +
             "</pre>";
-          announce("Headroom probe failed");
+          announce("LiteLLM probe failed");
           return;
         }
-        box.innerHTML =
+        boxLt.innerHTML =
           "<div class=\"table-wrap\"><table><caption class=\"visually-hidden\">This click</caption>" +
           "<tbody>" +
-          row("tokens_before", b.tokens_before) +
-          row("tokens_after", b.tokens_after) +
-          row("tokens_saved", b.tokens_saved) +
-          row("compression_ratio", b.compression_ratio) +
-          row("transforms", JSON.stringify(b.transforms_applied || [])) +
-          row("profile", b.savings_profile) +
+          row("health", b.health) +
+          row("path", b.path) +
           row("via", b.via) +
-          "</tbody></table></div>" +
-          "<p class=\"muted\">" +
-          (b.honesty || "") +
-          "</p>";
-        announce(
-          "Headroom probe done. Saved " +
-            String(b.tokens_saved) +
-            " tokens"
-        );
+          row("honesty", b.honesty) +
+          "</tbody></table></div>";
+        announce("LiteLLM probe done. " + String(b.health || "ok"));
       })
       .catch(function (err) {
-        box.innerHTML =
-          "<p class=\"warn\">Request did not complete. No invented savings figure.</p>" +
+        boxLt.innerHTML =
+          "<p class=\"warn\">Request did not complete. No invented health.</p>" +
           "<pre class=\"mono\">" +
           escapeHtml(String(err && err.message ? err.message : err)) +
           "</pre>";
-        announce("Headroom probe failed");
+        announce("LiteLLM probe failed");
       })
       .finally(function () {
-        run.disabled = false;
+        runLt.disabled = false;
       });
   });
 

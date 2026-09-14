@@ -1,0 +1,126 @@
+{
+  "name": "litellm-demo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "litellm-demo",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "https://olympus.levkesha.com"
+        }
+      },
+      "id": "ll1",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://litellm.llm-cost.svc.cluster.local:4000/health/liveliness",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "ll2",
+      "name": "Call LiteLLM health",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "onError": "continueErrorOutput",
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const d = $json;\nlet health = '';\nif (typeof d === 'string') {\n  health = d;\n} else if (typeof d.data === 'string') {\n  health = d.data;\n} else if (d.body != null) {\n  health = String(d.body);\n} else {\n  health = JSON.stringify(d);\n}\nhealth = String(health).trim();\nif (!health) {\n  throw new Error('LiteLLM health body was empty');\n}\nreturn [{\n  json: {\n    ok: true,\n    health: health,\n    path: '/health/liveliness',\n    via: 'n8n webhook → litellm.llm-cost.svc:4000 /health/liveliness',\n    honesty: 'Live LiteLLM proxy. Not a public Admin UI. Real /ui is laptop port-forward screenshare. Not Theseus. Not /agent.',\n  },\n}];"
+      },
+      "id": "ll3",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 240]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://olympus.levkesha.com"
+              }
+            ]
+          }
+        }
+      },
+      "id": "ll4",
+      "name": "Webhook Response OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [940, 240]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const d = $json;\nlet msg = 'LiteLLM health probe failed';\nif (d.error && d.error.message) {\n  msg = String(d.error.message);\n} else if (typeof d.error === 'string') {\n  msg = d.error;\n} else if (d.message) {\n  msg = String(d.message);\n}\nreturn [{ json: { ok: false, error: msg } }];"
+      },
+      "id": "ll5",
+      "name": "Format Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 502,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://olympus.levkesha.com"
+              }
+            ]
+          }
+        }
+      },
+      "id": "ll6",
+      "name": "Webhook Response Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [940, 420]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [[{ "node": "Call LiteLLM health", "type": "main", "index": 0 }]]
+    },
+    "Call LiteLLM health": {
+      "main": [
+        [{ "node": "Format Response", "type": "main", "index": 0 }],
+        [{ "node": "Format Error", "type": "main", "index": 0 }]
+      ]
+    },
+    "Format Response": {
+      "main": [[{ "node": "Webhook Response OK", "type": "main", "index": 0 }]]
+    },
+    "Format Error": {
+      "main": [[{ "node": "Webhook Response Error", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

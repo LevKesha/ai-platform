@@ -15,6 +15,7 @@ window.OLYMPUS_CONSOLE = {
     { id: "infrastructure", label: "Infrastructure" },
     { id: "spend", label: "Services & Spend" },
     { id: "headroom", label: "Headroom Demo" },
+    { id: "litellm", label: "LiteLLM Admin UI" },
   ],
   headroom: {
     webhookUrl: "https://n8n.levkesha.com/webhook/headroom-demo",
@@ -26,6 +27,21 @@ window.OLYMPUS_CONSOLE = {
       "applied_guardrails ≠ a promised 90%. Read tokens_before / tokens_after from this click.",
       "If the webhook or :8787 port is not up yet, the run fails honestly — no fixture ratio.",
     ],
+  },
+  litellm: {
+    webhookUrl: "https://n8n.levkesha.com/webhook/litellm-demo",
+    title: "LiteLLM Admin UI probe",
+    lede: "This button POSTs the n8n litellm-demo webhook. n8n reaches ClusterIP LiteLLM on port 4000 (Admin /ui). No public LiteLLM URL. No iframe. No master key.",
+    honesty: [
+      "Not Theseus. Not /agent. /agent stays unwired from LiteLLM.",
+      "Port 8787 is Headroom — do not map Admin /ui to 8787.",
+      "Real Admin UI is a screenshare: kubectl port-forward svc/litellm 4000:4000, then open /ui locally.",
+      "If the webhook or :4000 is not up yet, the run fails honestly — no invented health.",
+    ],
+    screenshare: {
+      command: "kubectl -n llm-cost port-forward svc/litellm 4000:4000",
+      localUrl: "http://127.0.0.1:4000/ui",
+    },
   },
   topology: {
     note: "Four Helm-deployed services on EKS. n8n is on its own host (n8n path-under-proxy limit). Other services are ClusterIP.",

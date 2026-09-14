@@ -32,6 +32,14 @@ python n8n-config/import-orchestrator.py --json n8n-config/headroom-demo-workflo
 
 Then `POST https://n8n.levkesha.com/webhook/headroom-demo`. Needs LiteLLM Service port `8787` in `llm-cost`.
 
+LiteLLM health-probe webhook (Olympus console):
+
+```powershell
+python n8n-config/import-orchestrator.py --json n8n-config/litellm-demo-workflow.json --workflow-id litellm-demo
+```
+
+Then `POST https://n8n.levkesha.com/webhook/litellm-demo`. Needs LiteLLM Service port `4000` in `llm-cost` (`/health/liveliness`).
+
 ## WAF 403 fallback (port-forward)
 
 `n8n-dev` WAF may block `PUT /api/v1/workflows/*` on the public hostname until an allow rule lands in Terraform.
