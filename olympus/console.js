@@ -253,17 +253,24 @@
       "<ul>" +
       items +
       "</ul>" +
-      "<h2>Screenshare (real Admin UI)</h2>" +
+      "<p><a class=\"btn btn-primary\" href=\"" +
+      lt.adminUrl +
+      "\" rel=\"noopener noreferrer\" target=\"_blank\">Open LiteLLM Admin UI <span aria-hidden=\"true\">↗</span><span class=\"visually-hidden\">(opens in new tab)</span></a></p>" +
+      "<p class=\"mono muted\">" +
+      lt.adminUrl +
+      "</p>" +
+      "<h2>Break-glass (port-forward)</h2>" +
       "<p class=\"mono muted\">" +
       lt.screenshare.command +
       "</p>" +
       "<p class=\"mono muted\">" +
       lt.screenshare.localUrl +
       "</p>" +
+      "<h2>Secondary health probe</h2>" +
       "<p class=\"mono muted\">POST " +
       lt.webhookUrl +
       "</p>" +
-      '<p><button type="button" class="btn btn-primary js-litellm-run">Run health probe</button></p>' +
+      '<p><button type="button" class="btn js-litellm-run">Run health probe</button></p>' +
       '<div id="litellm-result" class="headroom-result" aria-live="polite"></div>'
     );
   }

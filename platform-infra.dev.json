@@ -4,6 +4,8 @@
   "aws_region": "eu-central-1",
   "aws_account_id": "126366239504",
   "cluster_name": "dev-cluster",
+  "n8n_domain_name": "n8n.levkesha.com",
+  "n8n_route53_zone_id": "Z06888972YCZFH8ESA559",
   "public_subnet_ids": [
     "subnet-017ec34dd41249391",
     "subnet-011498a69de5c5c10"
@@ -12,11 +14,9 @@
     "subnet-08795c75eeaf5c819",
     "subnet-0292e08db1bc3d1ee"
   ],
-  "n8n_domain_name": "n8n.levkesha.com",
-  "n8n_route53_zone_id": "Z06888972YCZFH8ESA559",
   "n8n_acm_certificate_arn": "arn:aws:acm:eu-central-1:126366239504:certificate/6391adb4-610d-4094-bda7-9e1207d112b4",
-  "n8n_alb_arn": null,
-  "n8n_waf_web_acl_arn": null,
+  "n8n_alb_arn": "arn:aws:elasticloadbalancing:eu-central-1:126366239504:loadbalancer/app/k8s-n8n-n8n-da81168dc8/a88bbf1cff1d749c",
+  "n8n_waf_web_acl_arn": "arn:aws:wafv2:eu-central-1:126366239504:regional/webacl/n8n-dev/f97d0d64-0c48-43bd-bcec-d88294d2f753",
   "agent_api_irsa_arn": "arn:aws:iam::126366239504:role/AgentApiIRSA-dev",
   "rag_service_irsa_arn": "arn:aws:iam::126366239504:role/RagServiceIRSA-dev",
   "mcp_service_irsa_arn": "arn:aws:iam::126366239504:role/McpServiceIRSA-dev",
@@ -25,5 +25,15 @@
   "ecr_mcp_server_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/mcp-server",
   "ecr_agent_api_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/agent-api",
   "ecr_claude_router_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/claude-router",
-  "ecr_support_runbook_copilot_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/support-runbook-copilot"
+  "ecr_support_runbook_copilot_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/support-runbook-copilot",
+  "litellm_domain_name": "litellm.levkesha.com",
+  "litellm_url": "https://litellm.levkesha.com",
+  "litellm_acm_certificate_arn": "arn:aws:acm:eu-central-1:126366239504:certificate/fa20f7f1-1003-4b74-a70c-ac764a5bd8ed",
+  "litellm_cognito_user_pool_id": "eu-central-1_uEHbR0FFV",
+  "litellm_cognito_user_pool_arn": "arn:aws:cognito-idp:eu-central-1:126366239504:userpool/eu-central-1_uEHbR0FFV",
+  "litellm_cognito_user_pool_client_id": "5fd9qfejdhs66qgbjq7jr0bjoq",
+  "litellm_cognito_user_pool_domain": "olympus-dev-auth",
+  "olympus_bucket_name": "olympus-dev-126366239504",
+  "olympus_cloudfront_domain_name": "d2blpmgw3dbms0.cloudfront.net",
+  "olympus_url": "https://olympus.levkesha.com"
 }

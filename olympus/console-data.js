@@ -29,14 +29,15 @@ window.OLYMPUS_CONSOLE = {
     ],
   },
   litellm: {
+    adminUrl: "https://litellm.levkesha.com/ui",
     webhookUrl: "https://n8n.levkesha.com/webhook/litellm-demo",
-    title: "LiteLLM Admin UI probe",
-    lede: "This button POSTs the n8n litellm-demo webhook. n8n reaches ClusterIP LiteLLM on port 4000 (Admin /ui). No public LiteLLM URL. No iframe. No master key.",
+    title: "LiteLLM Admin UI",
+    lede: "Open the real LiteLLM Admin /ui at litellm.levkesha.com. ALB Cognito login gates access; the Service stays ClusterIP. Optional health probe still goes Olympus → n8n → :4000 /health/liveliness.",
     honesty: [
-      "Not Theseus. Not /agent. /agent stays unwired from LiteLLM.",
-      "Port 8787 is Headroom — do not map Admin /ui to 8787.",
-      "Real Admin UI is a screenshare: kubectl port-forward svc/litellm 4000:4000, then open /ui locally.",
-      "If the webhook or :4000 is not up yet, the run fails honestly — no invented health.",
+      "Cognito-gated — not anonymous public Admin. Not Theseus. Not /agent.",
+      "Ingress publishes :4000 only. Port 8787 is Headroom ClusterIP — not on litellm.levkesha.com.",
+      "No master key in Olympus git. Break-glass: kubectl port-forward svc/litellm 4000:4000.",
+      "Health probe fails honestly if n8n or :4000 is down — no invented status.",
     ],
     screenshare: {
       command: "kubectl -n llm-cost port-forward svc/litellm 4000:4000",
