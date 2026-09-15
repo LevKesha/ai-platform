@@ -255,7 +255,7 @@
       "</ul>" +
       "<p><a class=\"btn btn-primary\" href=\"" +
       lt.adminUrl +
-      "\" rel=\"noopener noreferrer\" target=\"_blank\">Open LiteLLM Admin UI <span aria-hidden=\"true\">↗</span><span class=\"visually-hidden\">(opens in new tab)</span></a></p>" +
+      "\">Open LiteLLM Admin UI</a></p>" +
       "<p class=\"mono muted\">" +
       lt.adminUrl +
       "</p>" +
