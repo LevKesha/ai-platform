@@ -33,6 +33,6 @@ n8n runtime: `https://n8n.levkesha.com` (own host at `/`). n8n 2.25 has no suppo
 
 ## Console
 
-`console.js` switches views from `console-data.js`. Views: Platform Topology, Configuration, Delivery, Infrastructure, Services & Spend, **Headroom Demo**, **LiteLLM Admin UI**. Banner is Demo Mode – Read-Only except live probes and the Cognito-gated Admin link. Headroom POSTs `https://n8n.levkesha.com/webhook/headroom-demo` (n8n → ClusterIP `:8787` `/v1/compress`). LiteLLM primary CTA opens `https://olympus.levkesha.com/litellm` (Cognito → ClusterIP `:4000`); secondary health probe POSTs `https://n8n.levkesha.com/webhook/litellm-demo`. Break-glass: `kubectl -n llm-cost port-forward svc/litellm 4000:4000`. No invented ratios/health on failure.
+`console.js` switches views from `console-data.js`. Views: Platform Topology, Configuration, Delivery, Infrastructure, Services & Spend, **Headroom Demo**, **LiteLLM Admin UI**. Banner is Demo Mode – Read-Only except live probes and the Cognito-gated Admin link. Headroom POSTs `https://n8n.levkesha.com/webhook/headroom-demo` (n8n → ClusterIP `:8787` `/v1/compress`). LiteLLM primary CTA opens `https://olympus.levkesha.com/litellm/ui` (Cognito → ClusterIP `:4000`); secondary health probe POSTs `https://n8n.levkesha.com/webhook/litellm-demo`. Break-glass: `kubectl -n llm-cost port-forward svc/litellm 4000:4000`. No invented ratios/health on failure.
 
 Verified copy lives in `public-data.js`. Do not invent metrics or extra public URLs.

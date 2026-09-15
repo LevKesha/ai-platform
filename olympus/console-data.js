@@ -29,10 +29,10 @@ window.OLYMPUS_CONSOLE = {
     ],
   },
   litellm: {
-    adminUrl: "https://olympus.levkesha.com/litellm",
+    adminUrl: "https://olympus.levkesha.com/litellm/ui",
     webhookUrl: "https://n8n.levkesha.com/webhook/litellm-demo",
     title: "LiteLLM Admin UI",
-    lede: "Open the real LiteLLM Admin at olympus.levkesha.com/litellm. Cognito login gates access; the Service stays ClusterIP. Optional health probe still goes Olympus → n8n → :4000 /health/liveliness.",
+    lede: "Open the real LiteLLM Admin at olympus.levkesha.com/litellm/ui. Cognito login gates access; the Service stays ClusterIP. Optional health probe still goes Olympus → n8n → :4000 /health/liveliness.",
     honesty: [
       "Cognito-gated path under Olympus — not anonymous public Admin. Not Theseus. Not /agent.",
       "Path publishes :4000 only. Port 8787 is Headroom ClusterIP — not on olympus.levkesha.com/litellm.",
