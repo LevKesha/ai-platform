@@ -29,13 +29,13 @@ window.OLYMPUS_CONSOLE = {
     ],
   },
   litellm: {
-    adminUrl: "https://litellm.levkesha.com/ui",
+    adminUrl: "https://olympus.levkesha.com/litellm",
     webhookUrl: "https://n8n.levkesha.com/webhook/litellm-demo",
     title: "LiteLLM Admin UI",
-    lede: "Open the real LiteLLM Admin /ui at litellm.levkesha.com. ALB Cognito login gates access; the Service stays ClusterIP. Optional health probe still goes Olympus → n8n → :4000 /health/liveliness.",
+    lede: "Open the real LiteLLM Admin at olympus.levkesha.com/litellm. Cognito login gates access; the Service stays ClusterIP. Optional health probe still goes Olympus → n8n → :4000 /health/liveliness.",
     honesty: [
-      "Cognito-gated — not anonymous public Admin. Not Theseus. Not /agent.",
-      "Ingress publishes :4000 only. Port 8787 is Headroom ClusterIP — not on litellm.levkesha.com.",
+      "Cognito-gated path under Olympus — not anonymous public Admin. Not Theseus. Not /agent.",
+      "Path publishes :4000 only. Port 8787 is Headroom ClusterIP — not on olympus.levkesha.com/litellm.",
       "No master key in Olympus git. Break-glass: kubectl port-forward svc/litellm 4000:4000.",
       "Health probe fails honestly if n8n or :4000 is down — no invented status.",
     ],
