@@ -32,7 +32,12 @@
   "litellm_cognito_user_pool_id": "eu-central-1_uEHbR0FFV",
   "litellm_cognito_user_pool_arn": "arn:aws:cognito-idp:eu-central-1:126366239504:userpool/eu-central-1_uEHbR0FFV",
   "litellm_cognito_user_pool_client_id": "5fd9qfejdhs66qgbjq7jr0bjoq",
-  "litellm_cognito_user_pool_domain": "olympus-dev-auth",
+  "litellm_cognito_user_pool_domain": "auth.olympus.levkesha.com",
+  "litellm_cognito_custom_domain": "auth.olympus.levkesha.com",
+  "litellm_cognito_custom_domain_cloudfront": "d1neykbget1jhb.cloudfront.net",
+  "litellm_cognito_auth_acm_certificate_arn": "arn:aws:acm:us-east-1:126366239504:certificate/3b0f2215-2754-40ff-a9ac-0fd839355bbb",
+  "litellm_alb_arn": "arn:aws:elasticloadbalancing:eu-central-1:126366239504:loadbalancer/app/k8s-llmcost-litellm-aee3742a06/d523cf0ade3c3c0d",
+  "litellm_alb_dns_name": "k8s-llmcost-litellm-aee3742a06-964485242.eu-central-1.elb.amazonaws.com",
   "olympus_bucket_name": "olympus-dev-126366239504",
   "olympus_cloudfront_domain_name": "d2blpmgw3dbms0.cloudfront.net",
   "olympus_url": "https://olympus.levkesha.com"
