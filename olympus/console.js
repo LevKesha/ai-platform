@@ -228,10 +228,17 @@
       "<ul>" +
       items +
       "</ul>" +
+      "<p><a class=\"btn btn-primary\" href=\"" +
+      hr.adminUrl +
+      "\">Open Headroom Admin</a></p>" +
+      "<p class=\"mono muted\">" +
+      hr.adminUrl +
+      "</p>" +
+      "<h2>Secondary n8n demo</h2>" +
       "<p class=\"mono muted\">POST " +
       hr.webhookUrl +
       "</p>" +
-      '<p><button type="button" class="btn btn-primary js-headroom-run">Run compress probe</button></p>' +
+      '<p><button type="button" class="btn js-headroom-run">Run compress probe</button></p>' +
       '<div id="headroom-result" class="headroom-result" aria-live="polite"></div>'
     );
   }
@@ -304,7 +311,7 @@
     announce(
       view.label +
         (id === "headroom"
-          ? " — live n8n → Headroom trigger"
+          ? " — Cognito Admin + optional n8n demo"
           : id === "litellm"
             ? " — live n8n → LiteLLM probe"
             : " — demo read-only")
