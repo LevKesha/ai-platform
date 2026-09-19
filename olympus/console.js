@@ -211,6 +211,32 @@
     );
   }
 
+  function renderCvJobs() {
+    var cj = data.cvjobs;
+    var items = cj.honesty
+      .map(function (line) {
+        return "<li>" + line + "</li>";
+      })
+      .join("");
+    return (
+      "<h1>" +
+      cj.title +
+      "</h1>" +
+      "<p>" +
+      cj.lede +
+      "</p>" +
+      "<ul>" +
+      items +
+      "</ul>" +
+      "<p><a class=\"btn btn-primary\" href=\"" +
+      cj.demoUrl +
+      "\">Open CV×Jobs Demo</a></p>" +
+      "<p class=\"mono muted\">" +
+      cj.demoUrl +
+      "</p>"
+    );
+  }
+
   function renderHeadroom() {
     var hr = data.headroom;
     var items = hr.honesty
@@ -288,6 +314,7 @@
     delivery: renderDelivery,
     infrastructure: renderInfrastructure,
     spend: renderSpend,
+    cvjobs: renderCvJobs,
     headroom: renderHeadroom,
     litellm: renderLiteLLM,
   };
@@ -314,7 +341,9 @@
           ? " — Cognito Admin + optional n8n demo"
           : id === "litellm"
             ? " — live n8n → LiteLLM probe"
-            : " — demo read-only")
+            : id === "cvjobs"
+              ? " — Cognito CV×Jobs Matcher↔Editor"
+              : " — demo read-only")
     );
     if (location.hash !== "#" + id) {
       try {
