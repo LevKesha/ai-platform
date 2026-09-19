@@ -14,18 +14,21 @@ window.OLYMPUS_CONSOLE = {
     { id: "delivery", label: "Delivery" },
     { id: "infrastructure", label: "Infrastructure" },
     { id: "spend", label: "Services & Spend" },
-    { id: "headroom", label: "Headroom Demo" },
+    { id: "headroom", label: "Headroom Admin" },
     { id: "litellm", label: "LiteLLM Admin UI" },
   ],
   headroom: {
+    adminUrl: "https://olympus.levkesha.com/headroom",
     webhookUrl: "https://n8n.levkesha.com/webhook/headroom-demo",
-    title: "Headroom compress probe",
-    lede: "This button runs a live in-cluster /v1/compress on the Headroom sidecar. The browser calls n8n; n8n calls ClusterIP LiteLLM:8787. No public Headroom URL.",
+    title: "Headroom savings Admin",
+    lede: "Primary: Cognito-gated Admin at olympus.levkesha.com/headroom → thin ClusterIP savings API → Headroom :8787. Secondary n8n demo stays for screenshare without Cognito.",
     honesty: [
-      "Not Theseus. Not /agent. Research/Perplexity does not hit this path.",
-      "Payload is a fixed tool-heavy JSON dump (same idea as llm-cost/scripts/probe_compress.py).",
-      "applied_guardrails ≠ a promised 90%. Read tokens_before / tokens_after from this click.",
-      "If the webhook or :8787 port is not up yet, the run fails honestly — no fixture ratio.",
+      "Cognito path under Olympus — not anonymous public Headroom. Not Theseus. Not LiteLLM spend.",
+      "Admin UI + /headroom/api/* share Cognito with /litellm (same ALB group olympus-admin).",
+      "Payload is Anthropic tool_result + log-like tool output (aligns with llm-cost/scripts/probe_compress.py).",
+      "JSON-stringified PR-array dumps often router:noop on Headroom 0.37.0 — probe uses compressable log lines.",
+      "applied_guardrails ≠ a promised 90%. Read tokens_before / tokens_after from the Admin or this demo click.",
+      "n8n demo fails honestly if webhook or :8787 is down — no fixture ratio.",
     ],
   },
   litellm: {
@@ -105,8 +108,13 @@ window.OLYMPUS_CONSOLE = {
         note: "Not a public URL.",
       },
       {
+        name: "Headroom savings Admin",
+        access: "Cognito at olympus.levkesha.com/headroom → ClusterIP :8790 → :8787",
+        note: "Not Theseus. Not LiteLLM spend. Ledger is Headroom tokens only.",
+      },
+      {
         name: "Headroom sidecar",
-        access: "ClusterIP with LiteLLM",
+        access: "ClusterIP with LiteLLM (:8787)",
         note: "Do not claim Headroom token savings on Theseus.",
       },
       {
