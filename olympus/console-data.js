@@ -14,9 +14,21 @@ window.OLYMPUS_CONSOLE = {
     { id: "delivery", label: "Delivery" },
     { id: "infrastructure", label: "Infrastructure" },
     { id: "spend", label: "Services & Spend" },
+    { id: "cvjobs", label: "CV×Jobs Demo" },
     { id: "headroom", label: "Headroom Admin" },
     { id: "litellm", label: "LiteLLM Admin UI" },
   ],
+  cvjobs: {
+    demoUrl: "https://olympus.levkesha.com/cv-jobs/",
+    title: "CV×Jobs (Olympus v2)",
+    lede: "Cognito-gated Matcher↔Editor at olympus.levkesha.com/cv-jobs → agent-api ClusterIP. Fixture-first; API under /v1/demo. Same ALB group olympus-admin as LiteLLM and Headroom.",
+    honesty: [
+      "Not LinkedIn auto-apply. Not resume.io Job Tracker sync.",
+      "Provenance fixture|user_pasted only — live → 422. Evidence-lock + 3-round feedback cap.",
+      "Demo /v1/demo/headroom = measured tokens on this CV+job — not Theseus, not Headroom savings ledger.",
+      "Develop traffic should also hit /headroom compress (cv_jobs_* profiles) to fill savings rows.",
+    ],
+  },
   headroom: {
     adminUrl: "https://olympus.levkesha.com/headroom",
     webhookUrl: "https://n8n.levkesha.com/webhook/headroom-demo",
@@ -102,6 +114,11 @@ window.OLYMPUS_CONSOLE = {
   },
   spend: {
     surfaces: [
+      {
+        name: "CV×Jobs Demo",
+        access: "Cognito at olympus.levkesha.com/cv-jobs → agent-api :8000 (/cv-jobs + /v1/demo)",
+        note: "Fixture-first. Demo headroom ≠ Headroom savings ledger.",
+      },
       {
         name: "LiteLLM",
         access: "EKS ClusterIP / laptop port-forward",
