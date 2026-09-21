@@ -5,8 +5,10 @@ __pycache__/
 *.pyc
 *.py[cod]
 
-# Cursor / IDE (local only — never commit)
-.cursor/
+# Cursor: ignore local plans/settings; commit project subagents
+.cursor/*
+!.cursor/agents/
+!.cursor/agents/**
 .idea/
 
 # Local session notes / workplans (do not commit)
