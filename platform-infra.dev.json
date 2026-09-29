@@ -7,16 +7,16 @@
   "n8n_domain_name": "n8n.levkesha.com",
   "n8n_route53_zone_id": "Z06888972YCZFH8ESA559",
   "public_subnet_ids": [
-    "subnet-017ec34dd41249391",
-    "subnet-011498a69de5c5c10"
+    "subnet-06fc8bc676f31b71d",
+    "subnet-0b061af93d0f4af33"
   ],
   "private_subnet_ids": [
-    "subnet-08795c75eeaf5c819",
-    "subnet-0292e08db1bc3d1ee"
+    "subnet-07ecbf039d8866e3f",
+    "subnet-04a60468263d371a8"
   ],
-  "n8n_acm_certificate_arn": "arn:aws:acm:eu-central-1:126366239504:certificate/6391adb4-610d-4094-bda7-9e1207d112b4",
-  "n8n_alb_arn": "arn:aws:elasticloadbalancing:eu-central-1:126366239504:loadbalancer/app/k8s-n8n-n8n-da81168dc8/a88bbf1cff1d749c",
-  "n8n_waf_web_acl_arn": "arn:aws:wafv2:eu-central-1:126366239504:regional/webacl/n8n-dev/f97d0d64-0c48-43bd-bcec-d88294d2f753",
+  "n8n_acm_certificate_arn": "arn:aws:acm:eu-central-1:126366239504:certificate/24a89bc6-5f2c-497b-9a26-2bd1fa415c4f",
+  "n8n_alb_arn": null,
+  "n8n_waf_web_acl_arn": "arn:aws:wafv2:eu-central-1:126366239504:regional/webacl/n8n-dev/579c5af5-8ee6-499f-a761-2b3a852652fd",
   "agent_api_irsa_arn": "arn:aws:iam::126366239504:role/AgentApiIRSA-dev",
   "rag_service_irsa_arn": "arn:aws:iam::126366239504:role/RagServiceIRSA-dev",
   "mcp_service_irsa_arn": "arn:aws:iam::126366239504:role/McpServiceIRSA-dev",
@@ -28,17 +28,17 @@
   "ecr_support_runbook_copilot_repository_url": "126366239504.dkr.ecr.eu-central-1.amazonaws.com/support-runbook-copilot",
   "litellm_domain_name": "olympus.levkesha.com",
   "litellm_url": "https://olympus.levkesha.com/litellm",
-  "litellm_acm_certificate_arn": "arn:aws:acm:eu-central-1:126366239504:certificate/ea0410ee-495d-41a2-888b-3accd71c9b1b",
-  "litellm_cognito_user_pool_id": "eu-central-1_uEHbR0FFV",
-  "litellm_cognito_user_pool_arn": "arn:aws:cognito-idp:eu-central-1:126366239504:userpool/eu-central-1_uEHbR0FFV",
-  "litellm_cognito_user_pool_client_id": "5fd9qfejdhs66qgbjq7jr0bjoq",
-  "litellm_cognito_user_pool_domain": "auth.olympus.levkesha.com",
-  "litellm_cognito_custom_domain": "auth.olympus.levkesha.com",
-  "litellm_cognito_custom_domain_cloudfront": "d1neykbget1jhb.cloudfront.net",
-  "litellm_cognito_auth_acm_certificate_arn": "arn:aws:acm:us-east-1:126366239504:certificate/3b0f2215-2754-40ff-a9ac-0fd839355bbb",
-  "litellm_alb_arn": "arn:aws:elasticloadbalancing:eu-central-1:126366239504:loadbalancer/app/k8s-olympusadmin-22835822ac/958e44683cb4ed65",
-  "litellm_alb_dns_name": "k8s-olympusadmin-22835822ac-851801048.eu-central-1.elb.amazonaws.com",
+  "litellm_acm_certificate_arn": null,
+  "litellm_cognito_user_pool_id": null,
+  "litellm_cognito_user_pool_arn": null,
+  "litellm_cognito_user_pool_client_id": null,
+  "litellm_cognito_user_pool_domain": null,
+  "litellm_cognito_custom_domain": null,
+  "litellm_cognito_custom_domain_cloudfront": null,
+  "litellm_cognito_auth_acm_certificate_arn": null,
+  "litellm_alb_arn": null,
+  "litellm_alb_dns_name": null,
   "olympus_bucket_name": "olympus-dev-126366239504",
-  "olympus_cloudfront_domain_name": "d2blpmgw3dbms0.cloudfront.net",
+  "olympus_cloudfront_domain_name": "d3fz1h5s79cg7z.cloudfront.net",
   "olympus_url": "https://olympus.levkesha.com"
 }

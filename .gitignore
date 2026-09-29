@@ -14,3 +14,4 @@ __pycache__/
 # Local session notes / workplans (do not commit)
 SESSION_*.md
 gameplan.md
+.local-destroy-prep/
