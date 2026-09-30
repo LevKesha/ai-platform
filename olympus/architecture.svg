@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 540" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
   <title id="title">The Olympus architecture</title>
-  <desc id="desc">Public host is n8n.levkesha.com only. EKS dev-cluster runs agent-api, rag-service, mcp-server, and n8n. Auth-gated on Olympus: /cv-jobs, /litellm, /headroom, Cognito, plus /oauth2 and /logout via CloudFront to the ALB. Cluster-internal is Theseus and spend, not on the edge.</desc>
+  <desc id="desc">Public host: n8n.levkesha.com. EKS dev-cluster: agent-api, rag-service, mcp-server, n8n. Auth-gated: /cv-jobs, /litellm, /headroom, Cognito. Cluster-internal: Theseus · spend.</desc>
   <defs>
     <filter id="n8nGlow" x="-40%" y="-40%" width="180%" height="180%">
       <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#2dd4bf" flood-opacity="0.12"/>
@@ -48,5 +48,5 @@
 
   <rect x="16" y="444" width="1128" height="76" fill="#0d0d0d" stroke="#2dd4bf" stroke-opacity="0.35"/>
   <text x="32" y="472" fill="#737373" font-family="ui-monospace, Consolas, monospace" font-size="12">cluster-internal</text>
-  <text x="32" y="498" fill="#f5f5f5" font-family="Segoe UI, system-ui, sans-serif" font-size="15">Theseus · spend — not on the edge</text>
+  <text x="32" y="498" fill="#f5f5f5" font-family="Segoe UI, system-ui, sans-serif" font-size="15">Theseus · spend</text>
 </svg>

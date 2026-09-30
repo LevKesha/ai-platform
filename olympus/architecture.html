@@ -26,16 +26,13 @@
     <h1>Architecture</h1>
     <p class="diagram-kicker">Four services on EKS. Bedrock IDs live in <span class="mono">platform-config.yaml</span>.</p>
     <figure class="diagram diagram-hero">
-      <object class="arch-diagram" type="image/svg+xml" data="architecture.svg" aria-label="Public host: n8n.levkesha.com only. EKS dev-cluster: agent-api, rag-service, mcp-server, n8n. Auth-gated on Olympus: /cv-jobs, /litellm, /headroom, Cognito, plus /oauth2 and /logout. Cluster-internal: Theseus and spend, not on the edge.">
-        <img src="architecture.svg" alt="Public host: n8n.levkesha.com only. EKS dev-cluster: agent-api, rag-service, mcp-server, n8n. Auth-gated on Olympus: /cv-jobs, /litellm, /headroom, Cognito, plus /oauth2 and /logout. Cluster-internal: Theseus and spend, not on the edge.">
+      <object class="arch-diagram" type="image/svg+xml" data="architecture.svg" aria-label="Public host: n8n.levkesha.com. EKS dev-cluster: agent-api, rag-service, mcp-server, n8n. Auth-gated: /cv-jobs, /litellm, /headroom, Cognito. Cluster-internal: Theseus · spend.">
+        <img src="architecture.svg" alt="Public host: n8n.levkesha.com. EKS dev-cluster: agent-api, rag-service, mcp-server, n8n. Auth-gated: /cv-jobs, /litellm, /headroom, Cognito. Cluster-internal: Theseus · spend.">
       </object>
       <figcaption>
-        <a href="architecture.svg">Open architecture.svg</a> · static · no telemetry · no production cluster
+        <a href="architecture.svg">Open architecture.svg</a>
       </figcaption>
     </figure>
   </main>
-  <footer class="site-footer">
-    <p>Dev branch · no production cluster · read-only demo · no Theseus↔Headroom claim</p>
-  </footer>
 </body>
 </html>
