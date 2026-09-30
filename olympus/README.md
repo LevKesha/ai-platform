@@ -20,6 +20,14 @@ Public static host: `https://olympus.levkesha.com` (S3 + CloudFront).
 
 n8n runtime: `https://n8n.levkesha.com` (own host at `/`). n8n 2.25 has no supported reverse-proxy path under Olympus. Login-gated; interview demo is screenshare.
 
+## Cognito brand shell
+
+Assets for `auth.olympus.levkesha.com` live in `auth/`. Colors only: background `#0a0a0a`, surface `#141414`, border `#2a2a2a`, text `#f5f5f5` / `#a3a3a3`, accent `#2dd4bf`. No logo file.
+
+`auth/apply-brand-shell.sh` reads the pool from `describe-user-pool-domain` and applies either classic `SetUICustomization` (managed-login version 1) or managed-login branding settings (version 2) to every app client on that pool. It does not contain pool or client IDs. Do not run it from the Olympus S3 deploy. The Cognito module is in LevKesha/infrastructure (`cognito-alb-auth`); that module still documents the prefix domain and is not edited here.
+
+Hosted UI and managed login cannot set the strings "The Olympus" or "Sign in to Olympus". Those stay Cognito defaults until AWS exposes editable heading text.
+
 ## Pages
 
 | File | Purpose |
@@ -27,6 +35,7 @@ n8n runtime: `https://n8n.levkesha.com` (own host at `/`). n8n 2.25 has no suppo
 | `index.html` | Positioning |
 | `architecture.html` | Topology + `architecture.svg` |
 | `projects.html` | ai-platform featured; private evidence cards |
+| `proof.html` | SolarEdge case, timeline rail, skills/certs chips |
 | `evidence.html` | Inventory table |
 | `console.html` | Demo console (no auth, read-only) |
 | `404.html` | Empty / not-found |

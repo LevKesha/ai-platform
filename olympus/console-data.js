@@ -1,6 +1,6 @@
 /** Demo fixtures for the read-only console. Not live telemetry. */
 window.OLYMPUS_CONSOLE = {
-  banner: "Demo Mode – Read-Only",
+  banner: "Demo Mode — Read-Only",
   env: {
     cluster: "dev-cluster",
     region: "eu-central-1",
@@ -13,15 +13,16 @@ window.OLYMPUS_CONSOLE = {
     { id: "configuration", label: "Configuration" },
     { id: "delivery", label: "Delivery" },
     { id: "infrastructure", label: "Infrastructure" },
+    { id: "cvjobs", label: "CV×Jobs" },
     { id: "spend", label: "Services & Spend" },
-    { id: "cvjobs", label: "CV×Jobs Demo" },
     { id: "headroom", label: "Headroom Admin" },
     { id: "litellm", label: "LiteLLM Admin UI" },
   ],
   cvjobs: {
     demoUrl: "https://olympus.levkesha.com/cv-jobs/",
-    title: "CV×Jobs (Olympus v2)",
-    lede: "Cognito-gated Matcher↔Editor at olympus.levkesha.com/cv-jobs → agent-api ClusterIP. Fixture-first; API under /v1/demo. Same ALB group olympus-admin as LiteLLM and Headroom.",
+    title: "CV×Jobs",
+    lede: "Matcher ↔ Editor · fixture-first",
+    chip: "Not LinkedIn auto-apply",
     honesty: [
       "Not LinkedIn auto-apply. Not resume.io Job Tracker sync.",
       "Provenance fixture|user_pasted only — live → 422. Evidence-lock + 3-round feedback cap.",
@@ -60,29 +61,29 @@ window.OLYMPUS_CONSOLE = {
     },
   },
   topology: {
-    note: "Four Helm-deployed services on EKS. n8n is on its own host (n8n path-under-proxy limit). Other services are ClusterIP.",
+    note: "Four Helm services on EKS. n8n on its own host.",
     services: [
       {
         name: "agent-api",
-        role: "FastAPI Bedrock /agent gateway",
+        role: "FastAPI Bedrock /agent",
         edge: "ClusterIP",
         public: false,
       },
       {
         name: "rag-service",
-        role: "Ingestion + semantic search + Claude on EKS",
+        role: "ingest + search · Claude on EKS",
         edge: "ClusterIP",
         public: false,
       },
       {
         name: "mcp-server",
-        role: "MCP tools/resources/prompts; IRSA",
+        role: "tools · resources · prompts · IRSA",
         edge: "ClusterIP",
         public: false,
       },
       {
         name: "n8n",
-        role: "Workflow automation. Own host; login; screenshare demo.",
+        role: "workflows · login · screenshare",
         edge: "Public ALB",
         public: true,
         url: "https://n8n.levkesha.com",
@@ -156,7 +157,8 @@ window.OLYMPUS_CONSOLE = {
     noPublicEndpoint:
       "No public endpoint. This surface is ClusterIP or laptop port-forward only.",
     demoData: "Demo data — read-only fixture. Not live telemetry.",
-    n8nUnavailable:
-      "n8n host unavailable. This site does not invent a fallback URL or a /n8n path. Retry https://n8n.levkesha.com or continue with static evidence.",
+    n8nOfflineTitle: "n8n is offline",
+    n8nOfflineBody:
+      "Host unreachable. Continue with Architecture and Selected Work — no invented `/n8n` path.",
   },
 };

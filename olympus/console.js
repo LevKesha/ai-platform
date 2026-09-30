@@ -48,10 +48,7 @@
             '" rel="noopener noreferrer" target="_blank">' +
             svc.url.replace("https://", "") +
             ' <span class="visually-hidden">(opens in new tab)</span></a>'
-          : badge("⬡", "ClusterIP") +
-            " <span class=\"muted\">" +
-            data.empty.noPublicEndpoint +
-            "</span>";
+          : badge("⬡", "ClusterIP");
         return (
           "<tr><th scope=\"row\"><span class=\"mono\">" +
           svc.name +
@@ -81,9 +78,20 @@
       "<p class=\"lede\">" +
       data.topology.note +
       "</p>" +
-      "<div class=\"empty\"><strong>n8n unavailable</strong>" +
-      data.empty.n8nUnavailable +
-      "</div>" +
+      '<div class="alert-calm" role="status">' +
+      '<p class="alert-title">' +
+      data.empty.n8nOfflineTitle +
+      "</p>" +
+      "<p>" +
+      data.empty.n8nOfflineBody +
+      "</p>" +
+      '<p class="alert-actions">' +
+      '<a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">Retry n8n.levkesha.com<span class="visually-hidden"> (opens in new tab)</span></a>' +
+      "<span aria-hidden=\"true\">·</span>" +
+      '<a href="architecture.html">Architecture</a>' +
+      "<span aria-hidden=\"true\">·</span>" +
+      '<a href="projects.html">Selected Work</a>' +
+      "</p></div>" +
       "<div class=\"table-wrap\"><table><caption class=\"visually-hidden\">Platform services</caption>" +
       "<thead><tr><th scope=\"col\">Service</th><th scope=\"col\">Role</th><th scope=\"col\">Edge</th></tr></thead>" +
       "<tbody>" +
@@ -99,12 +107,8 @@
 
   function renderConfiguration() {
     var cfg = data.configuration;
-    var notes = cfg.notes.map(function (n) {
-      return "<li>" + n + "</li>";
-    }).join("");
     return (
       "<h1>Configuration</h1>" +
-      "<p class=\"lede\">Bedrock SSOT is a file in the public ai-platform repo. This panel is read-only.</p>" +
       "<article class=\"card\"><dl class=\"kvs\">" +
       "<dt>SSOT file</dt><dd>" +
       cfg.ssotFile +
@@ -115,9 +119,7 @@
       "<dt>Model ID</dt><dd>" +
       cfg.modelId +
       "</dd>" +
-      "</dl><ul>" +
-      notes +
-      "</ul></article>"
+      "</dl></article>"
     );
   }
 
@@ -125,13 +127,10 @@
     var d = data.delivery;
     return (
       "<h1>Delivery</h1>" +
-      "<p class=\"lede\">Reusable GHA pattern only. No mutate controls.</p>" +
       "<article class=\"card\"><p>" +
       d.cicd +
       "</p><p>" +
       d.infraWorkflows +
-      "</p><p class=\"muted\">" +
-      d.note +
       "</p></article>"
     );
   }
@@ -190,6 +189,8 @@
       .join("");
     return (
       "<h1>Services &amp; Spend</h1>" +
+      "<p class=\"lede\">Fixture honesty. Read-only.</p>" +
+      "<p>No Theseus ↔ Headroom savings claim.</p>" +
       "<div class=\"empty\"><strong>Demo data</strong>" +
       data.empty.demoData +
       "</div>" +
@@ -225,6 +226,9 @@
       "<p>" +
       cj.lede +
       "</p>" +
+      '<p><span class="badge">' +
+      cj.chip +
+      "</span></p>" +
       "<ul>" +
       items +
       "</ul>" +
@@ -319,6 +323,31 @@
     litellm: renderLiteLLM,
   };
 
+  function demoPathNav(current) {
+    var steps = [
+      { id: "configuration", label: "Configuration" },
+      { id: "delivery", label: "Delivery" },
+      { id: "infrastructure", label: "Infrastructure" },
+      { id: "cvjobs", label: "CV×Jobs" },
+      { id: "spend", label: "Spend" },
+    ];
+    var links = steps
+      .map(function (step) {
+        var currentAttr = step.id === current ? ' aria-current="page"' : "";
+        return (
+          '<button type="button" data-view="' +
+          step.id +
+          '"' +
+          currentAttr +
+          ">" +
+          step.label +
+          "</button>"
+        );
+      })
+      .join("");
+    return '<nav class="demo-path" aria-label="Demo path">' + links + "</nav>";
+  }
+
   function setView(id) {
     var view = data.views.find(function (v) {
       return v.id === id;
@@ -334,7 +363,14 @@
         btn.removeAttribute("aria-current");
       }
     });
-    panel.innerHTML = renderers[id]();
+    var onDemoPath =
+      id === "topology" ||
+      id === "configuration" ||
+      id === "delivery" ||
+      id === "infrastructure" ||
+      id === "cvjobs" ||
+      id === "spend";
+    panel.innerHTML = (onDemoPath ? demoPathNav(id) : "") + renderers[id]();
     announce(
       view.label +
         (id === "headroom"
@@ -366,6 +402,11 @@
   });
 
   panel.addEventListener("click", function (event) {
+    var pathBtn = event.target.closest(".demo-path [data-view]");
+    if (pathBtn) {
+      setView(pathBtn.getAttribute("data-view"));
+      return;
+    }
     var priv = event.target.closest(".js-private");
     if (priv) {
       openPrivateModal(priv.getAttribute("data-repo"));
