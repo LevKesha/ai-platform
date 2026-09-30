@@ -6,7 +6,7 @@
   <title>The Olympus — Overview</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="page-overview">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
@@ -15,6 +15,7 @@
         <a href="index.html" aria-current="page">Overview</a>
         <a href="architecture.html">Architecture</a>
         <a href="projects.html">Selected Work</a>
+        <a href="proof.html">Proof</a>
         <a href="evidence.html">Evidence</a>
         <a href="console.html">Console</a>
         <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
@@ -23,96 +24,23 @@
   </header>
   <main id="main">
     <section class="hero" aria-labelledby="hero-title">
-      <p class="mono muted">The Olympus</p>
-      <h1 id="hero-title">Senior AI-driven cloud and platform engineering</h1>
-      <p class="lede">AWS/EKS orchestration, Bedrock configuration as SSOT, Helm, Terraform, GitHub Actions, and controlled workflow automation. Not a traditional project gallery.</p>
-      <p>Operate the boundary between AI services, Kubernetes, IaC, delivery automation, and read-only interview evidence.</p>
+      <p class="eyebrow">Olympus · live platform</p>
+      <h1 id="hero-title">Senior AI-driven cloud &amp; platform engineering</h1>
+      <p class="lede">AI services × K8s × IaC × delivery × read-only evidence. Not a gallery.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="architecture.html">Architecture</a>
-        <a class="btn" href="projects.html">Selected Work</a>
-        <a class="btn" href="console.html">Open Console</a>
+        <a class="btn btn-primary" href="architecture.html">See the architecture</a>
+        <a class="btn" href="console.html">Open console</a>
       </div>
     </section>
-
-    <section class="grid grid-2" aria-labelledby="edge-title">
-      <article class="card featured">
-        <div class="meta">
-          <span class="badge"><span class="badge-icon" aria-hidden="true">↗</span> Public edge</span>
-        </div>
-        <h2 id="edge-title">n8n workflow automation</h2>
-        <p>Own host at <span class="mono">/</span>. n8n 2.25 does not support a reverse-proxy path under this site. Login-gated; interview demo is screenshare.</p>
-        <p>
-          <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">
-            n8n.levkesha.com
-            <span aria-hidden="true">↗</span>
-            <span class="visually-hidden">(opens in new tab)</span>
-          </a>
-        </p>
-      </article>
-      <article class="card">
-        <div class="meta">
-          <span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Verified public</span>
-        </div>
-        <h2>LevKesha/ai-platform</h2>
-        <p>EKS orchestration of agent-api, rag-service, mcp-server, and n8n. Bedrock SSOT via <span class="mono">platform-config.yaml</span>.</p>
-        <p>
-          <a href="https://github.com/LevKesha/ai-platform" rel="noopener noreferrer" target="_blank">
-            View ai-platform on GitHub
-            <span aria-hidden="true">↗</span>
-            <span class="visually-hidden">(opens in new tab)</span>
-          </a>
-        </p>
-      </article>
-    </section>
-
-    <section class="grid grid-2" aria-labelledby="cvjobs-title">
-      <article class="card featured">
-        <div class="meta">
-          <span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Live demo</span>
-        </div>
-        <h2 id="cvjobs-title">CV×Jobs</h2>
-        <p>Cognito-gated Matcher↔Editor at <span class="mono">olympus.levkesha.com/cv-jobs</span> → agent-api. Fixture-first; not LinkedIn auto-apply.</p>
-        <p><a class="btn btn-primary" href="console.html#cvjobs">Open CV×Jobs Demo</a></p>
-      </article>
-      <article class="card featured">
-        <div class="meta">
-          <span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Live demo</span>
-        </div>
-        <h2 id="headroom-title">Headroom savings</h2>
-        <p>Cognito-gated Admin at <span class="mono">olympus.levkesha.com/headroom</span> → thin savings API → ClusterIP <span class="mono">:8787</span>. Not Theseus; not LiteLLM spend.</p>
-        <p><a class="btn btn-primary" href="console.html#headroom">Open Headroom Admin</a></p>
-      </article>
-    </section>
-
-    <section class="grid grid-2" aria-labelledby="litellm-title">
-      <article class="card featured">
-        <div class="meta">
-          <span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Live demo</span>
-        </div>
-        <h2 id="litellm-title">LiteLLM Admin UI</h2>
-        <p>Cognito-gated Admin at <span class="mono">olympus.levkesha.com/litellm/ui</span> → ClusterIP <span class="mono">:4000</span>. Not anonymous; Headroom <span class="mono">:8787</span> stays off this path.</p>
-        <p><a class="btn btn-primary" href="console.html#litellm">Open LiteLLM Demo</a></p>
-      </article>
-    </section>
-
-    <section aria-labelledby="bounds-title">
-      <h2 id="bounds-title">Boundaries</h2>
-      <ul>
-        <li>Live IaC is branch <span class="mono">dev</span>; <span class="mono">main</span> is parked. No production cluster.</li>
-        <li>Cluster: <span class="mono">dev-cluster</span> / <span class="mono">eu-central-1</span>.</li>
-        <li>LiteLLM Admin UI is Cognito-gated at <span class="mono">olympus.levkesha.com/litellm/ui</span>; Service stays ClusterIP. Headroom, Theseus, and spend are not public Admin hosts.</li>
-        <li><span class="mono">/agent</span> stays unwired from LiteLLM.</li>
-        <li>Do not claim Headroom token savings on Theseus.</li>
-        <li><span class="mono">olympus.levkesha.com</span> is the public static portal. n8n stays on <span class="mono">n8n.levkesha.com</span> (n8n path-under-proxy limit). Editor demo is screenshare.</li>
-      </ul>
-    </section>
+    <nav class="explore" aria-label="Explore">
+      <p class="explore-label">Explore</p>
+      <a href="architecture.html">Architecture <span>— one diagram</span></a>
+      <a href="projects.html">Flagship <span>— LevKesha/ai-platform</span></a>
+      <a href="console.html">Live <span>— read-only console</span></a>
+    </nav>
   </main>
   <footer class="site-footer">
-    <p>The Olympus — static evidence site. No build step. Inventory verified 2026-09-13.</p>
-    <p>Public static site: <a href="https://olympus.levkesha.com">olympus.levkesha.com</a>.</p>
-    <p>n8n runtime (own host; login; screenshare demo):
-      <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n.levkesha.com <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>.
-    </p>
+    <p>Dev branch · no production cluster · read-only demo · no Theseus↔Headroom claim</p>
   </footer>
 </body>
 </html>

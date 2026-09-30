@@ -1,43 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" role="img" aria-labelledby="title desc">
-  <title id="title">The Olympus EKS topology</title>
-  <desc id="desc">Four services on EKS dev-cluster in eu-central-1: agent-api, rag-service, mcp-server, and n8n. n8n is reached at n8n.levkesha.com (own host; n8n has no supported path under Olympus). Bedrock configuration is owned by platform-config.yaml.</desc>
-  <rect width="860" height="420" fill="#14181d"/>
-  <rect x="24" y="18" width="812" height="54" fill="#1a1f26" stroke="#2c333c"/>
-  <text x="40" y="40" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">public edge</text>
-  <text x="40" y="58" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">n8n.levkesha.com - n8n ALB (own host; screenshare demo)</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1160 540" role="img" aria-labelledby="title desc">
+  <title id="title">The Olympus architecture</title>
+  <desc id="desc">Public host is n8n.levkesha.com only. EKS dev-cluster runs agent-api, rag-service, mcp-server, and n8n. Auth-gated on Olympus: /cv-jobs, /litellm, /headroom, Cognito, plus /oauth2 and /logout via CloudFront to the ALB. Cluster-internal is Theseus and spend, not on the edge.</desc>
+  <rect width="1160" height="540" fill="#0c0e11"/>
 
-  <rect x="24" y="90" width="812" height="308" fill="#0c0e11" stroke="#8ec8b8"/>
-  <text x="40" y="114" fill="#8ec8b8" font-family="ui-monospace, Consolas, monospace" font-size="13">EKS  dev-cluster  /  eu-central-1  /  branch: dev (main parked)</text>
-  <text x="40" y="134" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">Bedrock SSOT: platform-config.yaml</text>
+  <rect x="16" y="16" width="1128" height="72" fill="#14181d" stroke="#2c333c"/>
+  <text x="32" y="42" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">public host</text>
+  <text x="32" y="66" fill="#e6e9ed" font-family="Segoe UI, system-ui, sans-serif" font-size="16">n8n.levkesha.com · own ALB · screenshare</text>
 
-  <rect x="40" y="160" width="180" height="110" fill="#1a1f26" stroke="#2c333c"/>
-  <text x="54" y="186" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">agent-api</text>
-  <text x="54" y="208" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">FastAPI /agent</text>
-  <text x="54" y="226" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">Helm / ClusterIP</text>
-  <text x="54" y="250" fill="#d4a84b" font-family="ui-monospace, Consolas, monospace" font-size="11">unwired from LiteLLM</text>
+  <rect x="16" y="104" width="1128" height="220" fill="#0c0e11" stroke="#8ec8b8"/>
+  <text x="32" y="132" fill="#8ec8b8" font-family="ui-monospace, Consolas, monospace" font-size="13">EKS</text>
+  <text x="72" y="132" fill="#e6e9ed" font-family="Segoe UI, system-ui, sans-serif" font-size="14">dev-cluster · eu-central-1 · branch dev</text>
 
-  <rect x="240" y="160" width="180" height="110" fill="#1a1f26" stroke="#2c333c"/>
-  <text x="254" y="186" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">rag-service</text>
-  <text x="254" y="208" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">ingest + search</text>
-  <text x="254" y="226" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">Claude on EKS</text>
-  <text x="254" y="250" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="11">Helm / ClusterIP</text>
+  <rect x="32" y="152" width="264" height="148" fill="#1a1f26" stroke="#2c333c"/>
+  <text x="48" y="184" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="15">agent-api</text>
+  <text x="48" y="214" fill="#9aa3ad" font-family="Segoe UI, system-ui, sans-serif" font-size="13">FastAPI /agent · Helm · ClusterIP</text>
 
-  <rect x="440" y="160" width="180" height="110" fill="#1a1f26" stroke="#2c333c"/>
-  <text x="454" y="186" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">mcp-server</text>
-  <text x="454" y="208" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">tools / resources</text>
-  <text x="454" y="226" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">prompts / IRSA</text>
-  <text x="454" y="250" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="11">Helm / ClusterIP</text>
+  <rect x="312" y="152" width="264" height="148" fill="#1a1f26" stroke="#2c333c"/>
+  <text x="328" y="184" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="15">rag-service</text>
+  <text x="328" y="214" fill="#9aa3ad" font-family="Segoe UI, system-ui, sans-serif" font-size="13">ingest + search · Claude on EKS</text>
 
-  <rect x="640" y="160" width="180" height="110" fill="#1a1f26" stroke="#8ec8b8"/>
-  <text x="654" y="186" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="14">n8n</text>
-  <text x="654" y="208" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">workflows</text>
-  <text x="654" y="226" fill="#8ec8b8" font-family="Segoe UI, sans-serif" font-size="12">public ALB</text>
-  <text x="654" y="250" fill="#8ec8b8" font-family="ui-monospace, Consolas, monospace" font-size="11">own host / login</text>
+  <rect x="592" y="152" width="264" height="148" fill="#1a1f26" stroke="#2c333c"/>
+  <text x="608" y="184" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="15">mcp-server</text>
+  <text x="608" y="214" fill="#9aa3ad" font-family="Segoe UI, system-ui, sans-serif" font-size="13">tools · resources · prompts · IRSA</text>
 
-  <line x1="730" y1="72" x2="730" y2="160" stroke="#8ec8b8" stroke-width="1.5"/>
+  <rect x="872" y="152" width="256" height="148" fill="#1a1f26" stroke="#8ec8b8"/>
+  <text x="888" y="184" fill="#e6e9ed" font-family="ui-monospace, Consolas, monospace" font-size="15">n8n</text>
+  <text x="888" y="214" fill="#9aa3ad" font-family="Segoe UI, system-ui, sans-serif" font-size="13">workflows · public ALB</text>
 
-  <rect x="40" y="294" width="780" height="82" fill="#1a1f26" stroke="#2c333c"/>
-  <text x="54" y="320" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">cluster-internal / laptop port-forward - not public</text>
-  <text x="54" y="344" fill="#e6e9ed" font-family="Segoe UI, sans-serif" font-size="13">LiteLLM / Headroom sidecar / Theseus / spend</text>
-  <text x="54" y="364" fill="#9aa3ad" font-family="Segoe UI, sans-serif" font-size="12">No Headroom token-savings claim on Theseus. No production cluster.</text>
+  <line x1="1000" y1="88" x2="1000" y2="152" stroke="#8ec8b8" stroke-width="1.5"/>
+
+  <rect x="16" y="340" width="1128" height="88" fill="#14181d" stroke="#8ec8b8"/>
+  <text x="32" y="368" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">auth-gated (olympus)</text>
+  <text x="32" y="394" fill="#e6e9ed" font-family="Segoe UI, system-ui, sans-serif" font-size="15">/cv-jobs · /litellm · /headroom · Cognito</text>
+  <text x="32" y="414" fill="#9aa3ad" font-family="Segoe UI, system-ui, sans-serif" font-size="12">CF→ALB · /oauth2* · /logout*</text>
+
+  <rect x="16" y="444" width="1128" height="76" fill="#14181d" stroke="#2c333c"/>
+  <text x="32" y="472" fill="#9aa3ad" font-family="ui-monospace, Consolas, monospace" font-size="12">cluster-internal</text>
+  <text x="32" y="498" fill="#e6e9ed" font-family="Segoe UI, system-ui, sans-serif" font-size="15">Theseus · spend — not on the edge</text>
 </svg>

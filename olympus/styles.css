@@ -175,8 +175,94 @@ p {
 
 .hero {
   display: grid;
-  gap: 0.75rem;
-  padding: 1.25rem 0 0.5rem;
+  gap: 0.65rem;
+  padding: 0.85rem 0 0.35rem;
+  animation: hero-fade-up 0.45s ease both;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rail-in {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.case-hero {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1.35rem 0 0.4rem;
+  animation: hero-fade-up 0.45s ease both;
+}
+
+.page-proof .case-hero h1 {
+  font-size: 1.85rem;
+}
+
+.case-bullets {
+  margin: 0.25rem 0 0;
+  padding-left: 1.15rem;
+}
+
+.case-bullets li {
+  margin: 0.35rem 0;
+}
+
+.timeline-rail {
+  display: flex;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0.2rem 0 0.4rem;
+  list-style: none;
+  overflow-x: auto;
+  animation: rail-in 0.5s ease 0.12s both;
+}
+
+.timeline-rail li {
+  flex: 1 0 12rem;
+  margin: 0;
+  padding-top: 0.45rem;
+  border-top: 2px solid var(--border);
+}
+
+.timeline-rail .mono {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--muted);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.55rem;
+}
+
+.hero-actions .btn:hover,
+.hero-actions .btn:focus-visible {
+  transform: translateY(-2px);
 }
 
 .hero-actions {
@@ -306,10 +392,145 @@ tbody tr:last-child td {
   border-bottom: 0;
 }
 
+.explore {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1.1rem;
+  margin-top: 1.75rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+.explore-label {
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.explore a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.explore a span {
+  color: var(--muted);
+}
+
+.explore a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.page-architecture main {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.page-architecture h1,
+.page-architecture .diagram-kicker {
+  max-width: var(--max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.diagram-kicker {
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
 .diagram {
   border: 1px solid var(--border);
   background: var(--bg-elev);
   padding: 0.75rem;
+}
+
+.diagram-hero {
+  margin: 0;
+  padding: 0;
+  border-left: 0;
+  border-right: 0;
+  background: var(--bg);
+}
+
+.diagram-hero img {
+  width: 100%;
+  height: auto;
+}
+
+.diagram-hero figcaption {
+  padding: 0.65rem 1rem 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.glance details {
+  border-top: 1px solid var(--border);
+  padding-top: 0.45rem;
+}
+
+.glance summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.one-liners {
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.one-liners li {
+  margin: 0.35rem 0;
+}
+
+.alert-calm {
+  margin: 0 0 0.85rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+
+.alert-calm .alert-title {
+  margin: 0 0 0.15rem;
+  font-weight: 600;
+}
+
+.alert-calm p {
+  margin: 0;
+}
+
+.alert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.85rem;
+  margin-top: 0.4rem;
+}
+
+.demo-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin: 0 0 0.85rem;
+}
+
+.demo-path button {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.demo-path button:hover,
+.demo-path button[aria-current="page"] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
 }
 
 .diagram svg {
@@ -463,8 +684,16 @@ tbody tr:last-child td {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     transition: none !important;
+    animation: none !important;
+  }
+
+  .hero-actions .btn:hover,
+  .hero-actions .btn:focus-visible {
+    transform: none;
   }
 }
 
