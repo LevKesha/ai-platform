@@ -745,16 +745,64 @@ tbody tr:last-child td {
   padding: 1rem 1.25rem 2rem;
 }
 
-.site-footer {
-  border-top: 1px solid #1f1f1f;
-  padding: 0.85rem 1rem 1.25rem;
-  color: #525252;
-  font-size: 12px;
+.glance-diagram {
+  margin: 0 0 1rem;
 }
 
-.site-footer p {
-  max-width: var(--max);
-  margin: 0 auto 0.35rem;
+.rel-row,
+.topo-services,
+.metric-tiles {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rel-row,
+.metric-tiles {
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+
+.topo-services {
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  margin-top: 0.5rem;
+}
+
+.metric-tiles + .metric-tiles {
+  margin-top: 0.5rem;
+}
+
+.rel-node,
+.topo-node,
+.metric-tile {
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  padding: 0.65rem 0.75rem;
+}
+
+.rel-node h2,
+.topo-node p,
+.metric-tile h2,
+.metric-tile p {
+  margin: 0;
+}
+
+.rel-node h2,
+.topo-name,
+.metric-tile h2 {
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.rel-node p,
+.topo-role,
+.topo-edge,
+.metric-tile p {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
 }
 
 .page-error main {

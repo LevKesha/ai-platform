@@ -11,16 +11,6 @@
 
   if (!data || !nav || !panel) return;
 
-  function badge(icon, label) {
-    return (
-      '<span class="badge"><span class="badge-icon" aria-hidden="true">' +
-      icon +
-      "</span> " +
-      label +
-      "</span>"
-    );
-  }
-
   function announce(text) {
     if (live) live.textContent = text;
   }
@@ -38,28 +28,64 @@
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
-  function renderTopology() {
-    var rows = data.topology.services
+  function renderGlanceDiagram() {
+    var cfg = data.configuration;
+    var del = data.delivery;
+    var inf = data.infrastructure;
+    var rel =
+      '<ul class="rel-row">' +
+      '<li class="rel-node"><h2>Configuration</h2><p class="mono">' +
+      cfg.ssotFile +
+      '</p><p class="mono">' +
+      cfg.modelId +
+      "</p><p>" +
+      cfg.ssotRepo +
+      "</p></li>" +
+      '<li class="rel-node"><h2>Delivery</h2><p>' +
+      del.cicd +
+      "</p><p>" +
+      del.infraWorkflows +
+      "</p></li>" +
+      '<li class="rel-node"><h2>Infrastructure</h2><p class="mono">' +
+      inf.cluster +
+      '</p><p class="mono">' +
+      inf.region +
+      "</p><p>Active branch <span class=\"mono\">" +
+      inf.activeBranch +
+      "</span></p><p>Parked branch <span class=\"mono\">" +
+      inf.parkedBranch +
+      "</span></p></li></ul>";
+    var services = data.topology.services
       .map(function (svc) {
         var edge = svc.public
-          ? badge("↗", "Public ALB") +
-            ' <a href="' +
+          ? '<a href="' +
             svc.url +
             '" rel="noopener noreferrer" target="_blank">' +
             svc.url.replace("https://", "") +
             ' <span class="visually-hidden">(opens in new tab)</span></a>'
-          : badge("⬡", "ClusterIP");
+          : "ClusterIP";
         return (
-          "<tr><th scope=\"row\"><span class=\"mono\">" +
+          '<li class="topo-node"><p class="topo-name mono">' +
           svc.name +
-          "</span></th><td>" +
+          '</p><p class="topo-role">' +
           svc.role +
-          "</td><td>" +
+          '</p><p class="topo-edge">' +
           edge +
-          "</td></tr>"
+          "</p></li>"
         );
       })
       .join("");
+    return (
+      '<figure class="glance-diagram">' +
+      '<figcaption class="visually-hidden">Configuration, Delivery, Infrastructure, and platform services</figcaption>' +
+      rel +
+      '<ul class="topo-services">' +
+      services +
+      "</ul></figure>"
+    );
+  }
+
+  function renderTopology() {
 
     var priv = (pub.privateRepos || [])
       .map(function (repo) {
@@ -92,11 +118,7 @@
       "<span aria-hidden=\"true\">·</span>" +
       '<a href="projects.html">Selected Work</a>' +
       "</p></div>" +
-      "<div class=\"table-wrap\"><table><caption class=\"visually-hidden\">Platform services</caption>" +
-      "<thead><tr><th scope=\"col\">Service</th><th scope=\"col\">Role</th><th scope=\"col\">Edge</th></tr></thead>" +
-      "<tbody>" +
-      rows +
-      "</tbody></table></div>" +
+      renderGlanceDiagram() +
       "<h2>Private evidence</h2>" +
       "<p class=\"muted\">No GitHub links. Open a name for the private-repo note.</p>" +
       "<p>" +
@@ -155,70 +177,47 @@
       "<dt>Parked branch</dt><dd>" +
       i.parkedBranch +
       "</dd>" +
-      "<dt>Production cluster</dt><dd>none</dd>" +
       "</dl></article>" +
       "<p><button type=\"button\" class=\"btn js-private\" data-repo=\"infrastructure\">Why no GitHub link?</button></p>"
     );
   }
 
+  function metricTile(title, value) {
+    return (
+      '<article class="metric-tile"><h2>' +
+      title +
+      "</h2><p>" +
+      value +
+      "</p></article>"
+    );
+  }
+
   function renderSpend() {
     var s = data.spend;
-    var rows = s.surfaces
+    var tiles = s.surfaces
       .map(function (row) {
-        return (
-          "<tr><th scope=\"row\">" +
-          row.name +
-          "</th><td>" +
-          row.access +
-          "</td><td>" +
-          row.note +
-          "</td></tr>"
-        );
+        return metricTile(row.name, row.access);
       })
       .join("");
     var hops = s.hops
       .map(function (h) {
-        return (
-          "<tr><th scope=\"row\">" +
-          h.name +
-          "</th><td>" +
-          h.path +
-          "</td></tr>"
-        );
+        return metricTile(h.name, h.path);
       })
       .join("");
     return (
       "<h1>Services &amp; Spend</h1>" +
-      "<p class=\"lede\">Fixture honesty. Read-only.</p>" +
-      "<p>No Theseus ↔ Headroom savings claim.</p>" +
-      "<div class=\"empty\"><strong>Demo data</strong>" +
-      data.empty.demoData +
+      '<p class="lede">Spend · fixture glance</p>' +
+      '<div class="metric-tiles">' +
+      tiles +
       "</div>" +
-      "<div class=\"empty\"><strong>No public endpoint</strong>" +
-      data.empty.noPublicEndpoint +
-      "</div>" +
-      "<h2>Internal surfaces</h2>" +
-      "<div class=\"table-wrap\"><table><caption class=\"visually-hidden\">Internal AI cost surfaces</caption>" +
-      "<thead><tr><th scope=\"col\">Surface</th><th scope=\"col\">Access</th><th scope=\"col\">Honesty</th></tr></thead>" +
-      "<tbody>" +
-      rows +
-      "</tbody></table></div>" +
-      "<h2>Proxy hops</h2>" +
-      "<div class=\"table-wrap\"><table><caption class=\"visually-hidden\">CLI vs platform proxy</caption>" +
-      "<thead><tr><th scope=\"col\">Hop</th><th scope=\"col\">Path</th></tr></thead>" +
-      "<tbody>" +
+      '<div class="metric-tiles">' +
       hops +
-      "</tbody></table></div>"
+      "</div>"
     );
   }
 
   function renderCvJobs() {
     var cj = data.cvjobs;
-    var items = cj.honesty
-      .map(function (line) {
-        return "<li>" + line + "</li>";
-      })
-      .join("");
     return (
       "<h1>" +
       cj.title +
@@ -229,9 +228,6 @@
       '<p><span class="badge">' +
       cj.chip +
       "</span></p>" +
-      "<ul>" +
-      items +
-      "</ul>" +
       "<p><a class=\"btn btn-primary\" href=\"" +
       cj.demoUrl +
       "\">Open CV×Jobs Demo</a></p>" +
@@ -243,21 +239,10 @@
 
   function renderHeadroom() {
     var hr = data.headroom;
-    var items = hr.honesty
-      .map(function (line) {
-        return "<li>" + line + "</li>";
-      })
-      .join("");
     return (
       "<h1>" +
       hr.title +
       "</h1>" +
-      "<p>" +
-      hr.lede +
-      "</p>" +
-      "<ul>" +
-      items +
-      "</ul>" +
       "<p><a class=\"btn btn-primary\" href=\"" +
       hr.adminUrl +
       "\">Open Headroom Admin</a></p>" +
@@ -275,21 +260,10 @@
 
   function renderLiteLLM() {
     var lt = data.litellm;
-    var items = lt.honesty
-      .map(function (line) {
-        return "<li>" + line + "</li>";
-      })
-      .join("");
     return (
       "<h1>" +
       lt.title +
       "</h1>" +
-      "<p>" +
-      lt.lede +
-      "</p>" +
-      "<ul>" +
-      items +
-      "</ul>" +
       "<p><a class=\"btn btn-primary\" href=\"" +
       lt.adminUrl +
       "\">Open LiteLLM Admin UI</a></p>" +
@@ -456,10 +430,7 @@
             row("transforms", JSON.stringify(b.transforms_applied || [])) +
             row("profile", b.savings_profile) +
             row("via", b.via) +
-            "</tbody></table></div>" +
-            "<p class=\"muted\">" +
-            (b.honesty || "") +
-            "</p>";
+            "</tbody></table></div>";
           announce(
             "Headroom probe done. Saved " +
               String(b.tokens_saved) +
@@ -520,7 +491,6 @@
           row("health", b.health) +
           row("path", b.path) +
           row("via", b.via) +
-          row("honesty", b.honesty) +
           "</tbody></table></div>";
         announce("LiteLLM probe done. " + String(b.health || "ok"));
       })
