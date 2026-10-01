@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Olympus — Cursor</title>
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="page-cursor">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="../index.html">Olympus</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="../index.html">Overview</a>
+        <a href="../proof.html">Proof</a>
+        <a href="../architecture.html">Architecture</a>
+        <a href="../projects.html" aria-current="page">Selected Work</a>
+        <a href="../evidence.html">Evidence</a>
+        <a href="../console.html">Console</a>
+        <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <p class="work-kicker">Selected Work</p>
+    <div class="work-strip">
+      <a class="work-tile" href="../projects.html">
+        <strong>ai-platform</strong>
+        <span>One EKS platform — agents, RAG, MCP, n8n</span>
+      </a>
+      <a class="work-tile is-active" href="index.html" aria-current="page">
+        <strong>Cursor · /cursor</strong>
+        <span>Place A · Agentic eng OS</span>
+      </a>
+    </div>
+    <p class="cursor-sell">Agentic eng OS — Catalog → Plan → Execute → PR</p>
+    <p class="cursor-sub">Grok steers · Cursor codes · GitHub SSOT</p>
+    <figure class="raster-well">
+      <p class="arch-sub well-label">Diagram · cursor-page-v4</p>
+      <img src="../diagrams/cursor-page-v4.png" alt="Catalog, Plan, Execute, PR. Grouped skill tiers. MCP connectors as a separate band. CLI orchestrator. mock omitted on this diagram.">
+      <figcaption>SSOT: olympus-cursor-page-v4.drawio · Eng raster embed · grouped inventory 7+16+8+10 · mock omitted</figcaption>
+    </figure>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="../console.html">Open console</a>
+      <a class="btn" href="../architecture.html">See Architecture</a>
+    </div>
+    <p class="cursor-note">/cursor · Place A under Selected Work · not a top-nav item · no 41-name wall</p>
+
+    <h1 class="fold-title">How the platform gets built.</h1>
+    <p class="cursor-sub">Catalog first. Plan when it needs it. Execute. Ship the PR.</p>
+    <ul class="honesty" aria-label="Honesty">
+      <li>skills = helpers</li>
+      <li>GitHub = SSOT</li>
+      <li>catalog first</li>
+    </ul>
+    <p class="personal-note">I don’t freestyle multi-surface work. Catalog first, then plan, then execute — Cloud Agents get the same brief. Skills help; GitHub stays SSOT for IDs. Grok Bot orchestrates; I take Cursor-shaped work, push back on bad briefs, and ship PRs back. Challenge welcome is load-bearing.</p>
+
+    <section class="fold" aria-labelledby="inv-title">
+      <details>
+        <summary id="inv-title">Full skill inventory — grouped, helpers ≠ ID SSOT</summary>
+        <p>Helpers ≠ ID SSOT. 41 dirs + CATALOG.md + SSOT.md, grouped 7+16+8+10.</p>
+        <h2>Olympus / session (7)</h2>
+        <p><code>olympus-edge</code> · <code>cv-jobs-poc</code> · <code>save-and-exit</code> · <code>restore-and-enter</code> · <code>root-cause-first</code> · <code>ssot-enforcer</code> · <code>daily-summary</code></p>
+        <h2>AWS (16)</h2>
+        <p><code>aws-acm</code> · <code>aws-alb</code> · <code>aws-asg</code> · <code>aws-dns-delegation</code> · <code>aws-ec2</code> · <code>aws-eks</code> · <code>aws-finops</code> · <code>aws-general</code> · <code>aws-iam-least-privilege</code> · <code>aws-nlb</code> · <code>aws-rds</code> · <code>aws-route53</code> · <code>aws-s3</code> · <code>aws-tagging-standards</code> · <code>aws-vpc-patterns</code> · <code>aws-waf</code></p>
+        <h2>Helm · n8n (8)</h2>
+        <p><code>helm-charts</code> · <code>helm-deploy</code> · <code>helm-general</code> · <code>n8n-api</code> · <code>n8n-claude-router</code> · <code>n8n-deploy</code> · <code>n8n-general</code> · <code>n8n-workflows</code></p>
+        <h2>Agents · lang · peers (10)</h2>
+        <p><code>agent-creator</code> · <code>ai-platform-agents</code> · <code>frontend-engineer</code> · <code>ui-ux-engineer</code> · <code>skill-creator</code> · <code>github</code> · <code>terraform</code> · <code>python</code> · <code>powershell</code> · <code>recover-pdf</code></p>
+      </details>
+      <details>
+        <summary>CLI / models — inventory keeps mock</summary>
+        <p>Invoke: <code>python -m orchestrator</code> · subcommands <code>run</code> · <code>theseus</code> · state <code>agent-api/.orchestrator</code></p>
+        <p>Factory providers (all real): <code>mock</code> · <code>bedrock</code> · <code>anthropic</code>/<code>claude</code> · <code>openai</code>/<code>gpt</code> · <code>perplexity</code></p>
+        <p><code>.env.example</code> defaults <code>RESEARCH_PROVIDER=mock</code> · <code>ENGINEERING_PROVIDER=mock</code>. The diagram omits <code>mock</code>. This inventory keeps <code>mock</code>.</p>
+        <p>Theseus (CLI): connector registry v1 = github only.</p>
+        <p>In-cluster agent-api (separate path): Bedrock <code>eu.anthropic.claude-sonnet-4-5-20250929-v1:0</code> + in-cluster MCP — ≠ CLI orchestrator ≠ LiteLLM Admin spend.</p>
+      </details>
+      <details>
+        <summary>MCP / connectors — separate band, not the 41</summary>
+        <p>Tezka 41 ≠ Eng-box MCP list ≠ Theseus github-only. Label separately. Eng-box examples used in Olympus work: GitHub · Origin · ChatPRD · Figma · Notion · Aws-mcp · Awsknowledge · Awsiac · Awspricing · Canva (Finance needsAuth — not usable).</p>
+      </details>
+    </section>
+  </main>
+</body>
+</html>

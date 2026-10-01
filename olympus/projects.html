@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The Olympus — Selected Work</title>
+  <title>Olympus — Selected Work</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="page-work">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="index.html">The Olympus</a>
+      <a class="brand" href="index.html">Olympus</a>
       <nav class="site-nav" aria-label="Primary">
         <a href="index.html">Overview</a>
+        <a href="proof.html">Proof</a>
         <a href="architecture.html">Architecture</a>
         <a href="projects.html" aria-current="page">Selected Work</a>
-        <a href="proof.html">Proof</a>
         <a href="evidence.html">Evidence</a>
         <a href="console.html">Console</a>
         <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
@@ -24,25 +24,30 @@
   </header>
   <main id="main">
     <h1>Selected Work</h1>
-    <p class="lede">Flagship public. Private evidence: authorized viewers only.</p>
+    <div class="work-strip">
+      <a class="work-tile is-active" href="#ai-platform" aria-current="true">
+        <strong>ai-platform</strong>
+        <span>One EKS platform — agents, RAG, MCP, n8n</span>
+      </a>
+      <a class="work-tile" href="cursor/index.html">
+        <strong>Cursor · /cursor</strong>
+        <span>Place A · Agentic eng OS</span>
+      </a>
+    </div>
 
-    <article class="card featured">
+    <article class="card featured" id="ai-platform">
       <div class="meta">
         <span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Verified public</span>
         <span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Featured</span>
       </div>
       <h2 class="mono">ai-platform</h2>
-      <p>EKS · agent-api · rag-service · mcp-server · n8n.<br>Bedrock SSOT via <span class="mono">platform-config.yaml</span>.</p>
+      <p>One EKS platform — agents, RAG, MCP, n8n — Bedrock as SSOT.</p>
       <p>
         <a href="https://github.com/LevKesha/ai-platform" rel="noopener noreferrer" target="_blank">
-          LevKesha/ai-platform
+          Open on GitHub
           <span aria-hidden="true">↗</span>
           <span class="visually-hidden">(opens in new tab)</span>
         </a>
-      </p>
-      <p class="meta">
-        <span class="badge"><span class="mono">dev-cluster / eu-central-1</span></span>
-        <span class="badge"><span class="mono">dev</span> (main parked)</span>
       </p>
     </article>
 

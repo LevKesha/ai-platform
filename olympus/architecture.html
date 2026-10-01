@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The Olympus — Architecture</title>
+  <title>Olympus — Architecture</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="page-architecture">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="index.html">The Olympus</a>
+      <a class="brand" href="index.html">Olympus</a>
       <nav class="site-nav" aria-label="Primary">
         <a href="index.html">Overview</a>
+        <a href="proof.html">Proof</a>
         <a href="architecture.html" aria-current="page">Architecture</a>
         <a href="projects.html">Selected Work</a>
-        <a href="proof.html">Proof</a>
         <a href="evidence.html">Evidence</a>
         <a href="console.html">Console</a>
         <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
@@ -24,15 +24,45 @@
   </header>
   <main id="main">
     <h1>Architecture</h1>
-    <p class="diagram-kicker">Four services on EKS. Bedrock IDs live in <span class="mono">platform-config.yaml</span>.</p>
-    <figure class="diagram diagram-hero">
-      <object class="arch-diagram" type="image/svg+xml" data="architecture.svg" aria-label="Public host: n8n.levkesha.com. EKS dev-cluster: agent-api, rag-service, mcp-server, n8n. Auth-gated: /cv-jobs, /litellm, /headroom, Cognito. Cluster-internal: Theseus · spend.">
-        <img src="architecture.svg" alt="Public host: n8n.levkesha.com. EKS dev-cluster: agent-api, rag-service, mcp-server, n8n. Auth-gated: /cv-jobs, /litellm, /headroom, Cognito. Cluster-internal: Theseus · spend.">
-      </object>
-      <figcaption>
-        <a href="architecture.svg">Open architecture.svg</a>
-      </figcaption>
-    </figure>
+    <div class="arch-grid">
+      <figure class="arch-card">
+        <h2>Olympus edge — three-band</h2>
+        <p class="arch-sub">CF / S3 / Cognito outside VPC · ALB + EKS + NAT inside · eu-central-1</p>
+        <img src="diagrams/edge-three-band-v4.png" alt="Olympus edge three-band: public, auth-gated, and cluster-internal. CloudFront and Cognito outside the VPC. ALB, EKS, and NAT inside eu-central-1.">
+        <figcaption>SSOT: olympus-architecture-three-band-v4.drawio</figcaption>
+      </figure>
+      <figure class="arch-card">
+        <h2>Theseus · ship + runtime</h2>
+        <p class="arch-sub">one canvas · two lanes · left=right · dev-cluster · eu-central-1</p>
+        <img src="diagrams/k8s-internal-hero-v4.png" alt="Theseus ship lane GitHub Actions to ECR to Helm, and runtime lane ingress to agent-api, mcp-server, rag-service, and llm-spend.">
+        <figcaption>SSOT: olympus-k8s-internal-hero-v4.drawio</figcaption>
+      </figure>
+    </div>
+    <div class="arch-row">
+      <figure class="arch-card">
+        <h2>CV×Jobs</h2>
+        <p class="arch-sub">B1 · Architecture detail · sequence</p>
+        <img src="diagrams/b1-cv-jobs-seq-v4.png" alt="CV times Jobs sequence: Master CV, Fit, Tailor, TXT. LiteLLM optional.">
+        <figcaption>SSOT: olympus-cv-jobs-seq-v4.drawio</figcaption>
+      </figure>
+      <figure class="arch-card">
+        <h2>Spend</h2>
+        <p class="arch-sub">B2 · ns llm-cost loop</p>
+        <img src="diagrams/b2-cost-spend-loop-v4.png" alt="Spend loop in namespace llm-cost: llm-spend, Headroom savings, LiteLLM.">
+        <figcaption>SSOT: olympus-cost-spend-loop-v4.drawio</figcaption>
+      </figure>
+      <figure class="arch-card">
+        <h2>Soft-down / restore</h2>
+        <p class="arch-sub">B3 · ops · Proof-optional place</p>
+        <img src="diagrams/b3-soft-down-restore-v4.png" alt="Soft-down restore-and-enter on top. Teardown and restore-after-teardown below. ECR kept.">
+        <figcaption>SSOT: olympus-soft-down-restore-v4.drawio</figcaption>
+      </figure>
+    </div>
+    <div class="arch-footer">
+      <a class="btn btn-primary" href="console.html">Open console</a>
+      <a class="btn" href="proof.html">See Proof</a>
+      <p class="note"><a href="architecture.svg">Open architecture.svg</a> · Eng drawio rasters (sources frozen)</p>
+    </div>
   </main>
 </body>
 </html>

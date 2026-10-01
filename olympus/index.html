@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>The Olympus — Overview</title>
+  <title>Olympus — Overview</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="page-overview">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="index.html">The Olympus</a>
+      <a class="brand" href="index.html">Olympus</a>
       <nav class="site-nav" aria-label="Primary">
         <a href="index.html" aria-current="page">Overview</a>
+        <a href="proof.html">Proof</a>
         <a href="architecture.html">Architecture</a>
         <a href="projects.html">Selected Work</a>
-        <a href="proof.html">Proof</a>
         <a href="evidence.html">Evidence</a>
         <a href="console.html">Console</a>
         <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
@@ -23,21 +23,27 @@
     </div>
   </header>
   <main id="main">
-    <section class="hero" aria-labelledby="hero-title">
-      <p class="eyebrow">Olympus · live platform</p>
-      <h1 id="hero-title">Senior AI-driven cloud &amp; platform engineering</h1>
-      <p class="lede">AI services × K8s × IaC × delivery × read-only evidence. Not a gallery.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="architecture.html">See the architecture</a>
-        <a class="btn" href="console.html">Open console</a>
+    <section class="commerce" aria-labelledby="hero-title">
+      <div class="sell-card">
+        <p class="eyebrow">Olympus · AI platform you can open</p>
+        <h1 id="hero-title">Platform that proves itself.</h1>
+        <p class="stake">AI-Driven Platform Engineer — agents, RAG, MCP on EKS. Open it.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="proof.html">See Proof</a>
+          <a class="btn" href="architecture.html">Architecture</a>
+        </div>
       </div>
+      <aside class="topo-panel" aria-label="EKS, agents, RAG, MCP">
+        <p class="topo-label">EKS · agents · RAG · MCP</p>
+        <ul class="topo-nodes">
+          <li><span class="dot" aria-hidden="true"></span>EKS_CLUSTER</li>
+          <li><span class="dot" aria-hidden="true"></span>AGENT_NODE</li>
+          <li><span class="dot" aria-hidden="true"></span>MCP_PROTOCOL</li>
+          <li><span class="dot" aria-hidden="true"></span>RAG_STORE</li>
+        </ul>
+        <p class="topo-hint">Open it — Proof · Architecture · Console</p>
+      </aside>
     </section>
-    <nav class="explore" aria-label="Explore">
-      <p class="explore-label">Explore</p>
-      <a href="architecture.html">Architecture <span>— one diagram</span></a>
-      <a href="projects.html">Flagship <span>— LevKesha/ai-platform</span></a>
-      <a href="console.html">Live <span>— read-only console</span></a>
-    </nav>
   </main>
 </body>
 </html>

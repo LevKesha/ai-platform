@@ -42,4 +42,9 @@ jobs:
           echo "distribution=${DIST_ID} bucket=${BUCKET}"
           aws s3api head-bucket --bucket "${BUCKET}"
           aws s3 sync olympus/ "s3://${BUCKET}/" --delete --exclude README.md
+          # Place A is olympus/cursor/index.html. Copy an extensionless key so /cursor resolves
+          # on the S3 origin (default root object does not cover subpaths).
+          aws s3 cp olympus/cursor/index.html "s3://${BUCKET}/cursor" \
+            --content-type "text/html; charset=utf-8" \
+            --cache-control "public, max-age=300"
           aws cloudfront create-invalidation --distribution-id "${DIST_ID}" --paths "/*"
