@@ -909,6 +909,13 @@ tbody tr:last-child td {
   box-shadow: none;
 }
 
+.page-overview .site-nav a:not([aria-current="page"]) {
+  color: #a3a3a3;
+  background: transparent;
+  border-radius: 0;
+  padding: 0.4rem 0.15rem;
+}
+
 .page-overview main,
 .page-proof main {
   max-width: 72rem;
@@ -949,6 +956,50 @@ tbody tr:last-child td {
   line-height: 1.05;
   letter-spacing: -0.03em;
   color: #c8c8c8;
+}
+
+.page-overview .commerce {
+  grid-template-rows: auto auto;
+  align-items: start;
+  column-gap: 1.5rem;
+  row-gap: 1.25rem;
+}
+
+.page-overview .sell-card {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+}
+
+.page-overview .sell-card h1 {
+  margin-top: 0;
+  color: #171717;
+}
+
+.page-overview .second-look {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+}
+
+.page-overview .second-look p {
+  margin: 0 0 0.75rem;
+  max-width: 36rem;
+  color: #e8e8e8;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.page-overview .second-look p:last-child {
+  margin-bottom: 0;
+}
+
+.page-overview .topo-panel {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: stretch;
+  height: 100%;
+  min-height: 0;
 }
 
 .sell-card .stake,
@@ -1380,6 +1431,14 @@ tbody tr:last-child td {
   .work-strip,
   .topo-nodes {
     grid-template-columns: 1fr;
+  }
+
+  .page-overview .sell-card,
+  .page-overview .second-look,
+  .page-overview .topo-panel {
+    grid-column: 1;
+    grid-row: auto;
+    height: auto;
   }
 
   .arch-card img,
