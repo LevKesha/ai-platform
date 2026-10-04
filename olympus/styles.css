@@ -939,17 +939,23 @@ tbody tr:last-child td {
 }
 
 .page-proof .commerce {
-  align-items: start;
-  grid-template-columns: minmax(0, 1fr);
-  width: calc((100% - 1.5rem) * 0.525);
-  margin-inline: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  grid-template-columns: none;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
 .page-proof .proof-columns {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: 1fr 1fr;
   column-gap: 2rem;
   align-items: start;
+  align-self: stretch;
+  width: 100%;
   margin-top: 2rem;
 }
 
@@ -959,10 +965,12 @@ tbody tr:last-child td {
 }
 
 .page-proof .sell-card {
-  grid-column: 1;
-  width: auto;
+  flex: 0 0 auto;
+  grid-column: auto;
+  align-self: flex-start;
+  width: calc((100% - 1.5rem) * 0.525);
+  max-width: calc((100% - 1.5rem) * 0.525);
   height: auto;
-  align-self: start;
 }
 
 .sell-card {
@@ -1531,15 +1539,6 @@ body.page-overview {
     grid-column: 1;
   }
 
-  .page-proof .commerce {
-    width: 100%;
-  }
-
-  .page-proof .proof-columns {
-    grid-template-columns: 1fr;
-    row-gap: 2rem;
-  }
-
   .page-overview .sell-card,
   .page-overview .second-look {
     grid-column: 1;
@@ -1550,6 +1549,13 @@ body.page-overview {
   .arch-card img,
   .arch-row .arch-card img {
     max-height: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-proof .proof-columns {
+    grid-template-columns: 1fr;
+    row-gap: 2rem;
   }
 }
 
