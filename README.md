@@ -10,6 +10,7 @@ AI Platform POC — agent-api, rag-service, mcp-server, n8n orchestration on AWS
 - Sync sibling helm/agent-spec IRSA+ECR: `python scripts/sync-sibling-irsa.py`
 - Drift checks: `python scripts/check-platform-config.py` and `python scripts/check-infra-consumers.py`
 - Path ownership: `python3 scripts/check-ownership.py` (`ownership.json`)
+- Security review for auth, secrets, identity, and the public edge: `python3 scripts/check-security-review.py`
 
 ## Theme 4 status
 

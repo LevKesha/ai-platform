@@ -30,6 +30,7 @@ You are the GitHub specialist for **LevKesha/ai-platform**.
 
 - Workflow: `.github/workflows/ai-platform-ci.yml`
 - Ownership gate: `.github/workflows/ownership.yml` runs only `scripts/check-ownership.py`
+- Security review gate: `.github/workflows/security-review.yml` runs only `scripts/check-security-review.py`
 - Umbrella repo for platform services; cross-repo changes may affect agent-api, rag-service, mcp-server
 
 ## Output format

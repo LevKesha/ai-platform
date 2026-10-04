@@ -118,6 +118,26 @@ def policy_errors(doc: dict) -> list[str]:
         for key in CI_PROVES_KEYS:
             if proves.get(key) is not False:
                 errors.append(f"review.ci_proves.{key} must be false")
+
+    sr = doc.get("security_review")
+    if not isinstance(sr, dict):
+        errors.append("security_review missing")
+        return errors
+    reviewers = sr.get("reviewers")
+    if not isinstance(reviewers, list) or any(not isinstance(login, str) or not login for login in reviewers):
+        errors.append("security_review.reviewers must be a list of github logins")
+    paths = sr.get("paths")
+    if not isinstance(paths, list) or not paths:
+        errors.append("security_review.paths missing")
+    else:
+        for entry in paths:
+            if not isinstance(entry, dict):
+                errors.append("security_review path must be an object")
+                continue
+            if entry.get("when") not in {"any", "hunk"} or not isinstance(entry.get("path"), str) or not entry["path"]:
+                errors.append(f"security_review path needs path and when any|hunk: {entry!r}")
+    if not isinstance(sr.get("hunk_signals"), list) or not sr["hunk_signals"]:
+        errors.append("security_review.hunk_signals missing")
     return errors
 
 
@@ -226,6 +246,11 @@ def _fixture() -> tuple[list[str], dict]:
             "eng_cannot_close_stop": True,
             "override": {"by": "grok", "named": True, "expires": True},
             "ci_proves": {"hunk_author": False, "security_stop": False, "override": False},
+        },
+        "security_review": {
+            "reviewers": [],
+            "paths": [{"path": "edge/", "when": "any"}],
+            "hunk_signals": ["role-arn"],
         },
         "rules": [
             {"owner": "eng", "prefixes": ["app/"]},
