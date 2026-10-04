@@ -1317,9 +1317,9 @@ body.page-overview {
 
 .arch-block img {
   display: block;
-  width: 100%;
+  width: min(26rem, 100%);
   height: auto;
-  max-height: none;
+  margin-inline: auto;
   background: #fff;
 }
 
