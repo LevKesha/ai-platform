@@ -4,3 +4,4 @@
 - Personal Cursor skills (`~/.cursor/skills`) are **non-authoritative helpers**. If a skill disagrees with GitHub, follow GitHub, then update the skill.
 - For debugging (errors, failed tests, regressions, “fix” / “why is this broken”), use **root-cause-first**: reproduce → name the mechanism → reject band-aids → fix the source → verify.
 - Do **not** copy a personal skill library into this repo.
+- Path ownership is `ownership.json` (exactly one owner per tracked path). Claim new tracked paths there in the same change. Check: `python3 scripts/check-ownership.py`.

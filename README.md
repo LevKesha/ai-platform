@@ -9,6 +9,7 @@ AI Platform POC — agent-api, rag-service, mcp-server, n8n orchestration on AWS
 - Render k8s from snapshot: `python scripts/render-from-infra.py`
 - Sync sibling helm/agent-spec IRSA+ECR: `python scripts/sync-sibling-irsa.py`
 - Drift checks: `python scripts/check-platform-config.py` and `python scripts/check-infra-consumers.py`
+- Path ownership: `python3 scripts/check-ownership.py` (`ownership.json`)
 
 ## Theme 4 status
 
