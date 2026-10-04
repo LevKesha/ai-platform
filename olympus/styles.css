@@ -1291,7 +1291,7 @@ body.page-overview {
 }
 
 .page-architecture main {
-  max-width: 40rem;
+  max-width: 72rem;
   padding: 1.25rem 1rem 3rem;
 }
 
@@ -1317,9 +1317,8 @@ body.page-overview {
 
 .arch-block img {
   display: block;
-  width: min(26rem, 100%);
+  width: 100%;
   height: auto;
-  margin-inline: auto;
   background: #fff;
 }
 
