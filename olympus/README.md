@@ -33,9 +33,8 @@ Hosted UI and managed login cannot set the strings "The Olympus" or "Sign in to 
 | File | Purpose |
 |------|---------|
 | `index.html` | Positioning |
-| `architecture.html` | Topology + `architecture.svg` |
-| `projects.html` | ai-platform featured; Cursor Place A tile → `/cursor` |
-| `cursor/index.html` | Place A. Production alias key `cursor` (see Deploy Olympus). Not in top nav. |
+| `architecture.html` | One column. Five existing diagrams, copy under each. |
+| `cursor/index.html` | Place A. Production alias key `cursor` (see Deploy Olympus). Top nav item. |
 | `proof.html` | SolarEdge case, timeline rail, skills/certs chips |
 | `evidence.html` | Inventory table |
 | `console.html` | Demo console (no auth, read-only) |

@@ -115,8 +115,6 @@
       '<a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">Retry n8n.levkesha.com<span class="visually-hidden"> (opens in new tab)</span></a>' +
       "<span aria-hidden=\"true\">·</span>" +
       '<a href="architecture.html">Architecture</a>' +
-      "<span aria-hidden=\"true\">·</span>" +
-      '<a href="projects.html">Selected Work</a>' +
       "</p></div>" +
       renderGlanceDiagram() +
       "<h2>Private evidence</h2>" +

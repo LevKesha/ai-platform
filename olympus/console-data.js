@@ -131,6 +131,6 @@ window.OLYMPUS_CONSOLE = {
     demoData: "Demo data — read-only fixture. Not live telemetry.",
     n8nOfflineTitle: "n8n is offline",
     n8nOfflineBody:
-      "Host unreachable. Continue with Architecture and Selected Work — no invented `/n8n` path.",
+      "Host unreachable. Continue with Architecture — no invented `/n8n` path.",
   },
 };
