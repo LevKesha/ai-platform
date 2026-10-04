@@ -29,7 +29,7 @@
     "Security owns no path. n8n/SECURITY.md stays on the n8n prefix.",
     "Grok commits and owns no path. Eng writes. The check does not see who typed a hunk.",
     "A Security stop, and a named Grok acceptance with an expiry, are review rules. ci_proves stays false.",
-    "security_review is not ownership. reviewers is empty: Security has no GitHub login, and none is invented.",
+    "security_review is not ownership. reviewers lists LevKesha, the existing GitHub login.",
     "Vendored platform_common and rendered ingress stay on scripts/sync-platform-common.py --check and scripts/check-infra-consumers.py."
   ],
   "rules": [
@@ -61,7 +61,7 @@
     }
   ],
   "security_review": {
-    "reviewers": [],
+    "reviewers": ["LevKesha"],
     "skip_prefixes": ["olympus/"],
     "skip_except_prefixes": ["olympus/auth/"],
     "skip_suffixes": [".md"],
