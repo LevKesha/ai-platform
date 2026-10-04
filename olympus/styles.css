@@ -958,6 +958,11 @@ tbody tr:last-child td {
   color: #c8c8c8;
 }
 
+html:has(body.page-overview),
+body.page-overview {
+  background: #121212;
+}
+
 .page-overview .commerce {
   grid-template-rows: auto auto;
   align-items: start;
@@ -992,14 +997,6 @@ tbody tr:last-child td {
 
 .page-overview .second-look p:last-child {
   margin-bottom: 0;
-}
-
-.page-overview .topo-panel {
-  grid-column: 2;
-  grid-row: 1;
-  align-self: stretch;
-  height: 100%;
-  min-height: 0;
 }
 
 .sell-card .stake,
@@ -1434,8 +1431,7 @@ tbody tr:last-child td {
   }
 
   .page-overview .sell-card,
-  .page-overview .second-look,
-  .page-overview .topo-panel {
+  .page-overview .second-look {
     grid-column: 1;
     grid-row: auto;
     height: auto;
