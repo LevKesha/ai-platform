@@ -940,6 +940,22 @@ tbody tr:last-child td {
 
 .page-proof .commerce {
   align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+  width: calc((100% - 1.5rem) * 0.525);
+  margin-inline: auto;
+}
+
+.page-proof .proof-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 2rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+.page-proof .proof-columns > .quiet-block {
+  margin-top: 0;
+  min-width: 0;
 }
 
 .page-proof .sell-card {
@@ -1513,6 +1529,15 @@ body.page-overview {
 
   .proof-figures {
     grid-column: 1;
+  }
+
+  .page-proof .commerce {
+    width: 100%;
+  }
+
+  .page-proof .proof-columns {
+    grid-template-columns: 1fr;
+    row-gap: 2rem;
   }
 
   .page-overview .sell-card,
