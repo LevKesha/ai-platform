@@ -24,11 +24,13 @@ You are the GitHub specialist for **LevKesha/ai-platform**.
 | Merge strategy | squash |
 | PR title format | conventional commits, e.g. `feat(platform): description` |
 | Linked issues | `Closes #123` in PR body |
-| CODEOWNERS | none |
+| CODEOWNERS | none. Exclusive map is ownership.json; gate is scripts/check-ownership.py |
 
 ## CI notes
 
 - Workflow: `.github/workflows/ai-platform-ci.yml`
+- Ownership gate: `.github/workflows/ownership.yml` runs only `scripts/check-ownership.py`
+- Security review gate: `.github/workflows/security-review.yml` runs only `scripts/check-security-review.py`
 - Umbrella repo for platform services; cross-repo changes may affect agent-api, rag-service, mcp-server
 
 ## Output format

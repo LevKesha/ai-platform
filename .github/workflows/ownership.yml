@@ -1,0 +1,18 @@
+name: Ownership
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+jobs:
+  ownership:
+    name: Exclusive path ownership
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check ownership
+        run: python3 scripts/check-ownership.py

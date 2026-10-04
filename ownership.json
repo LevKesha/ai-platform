@@ -1,0 +1,112 @@
+{
+  "seats": {
+    "grok": {"role": "committer"},
+    "eng": {"role": "writer"},
+    "product": {"role": "owner"},
+    "design": {"role": "owner"},
+    "platform": {"role": "owner"},
+    "content": {"role": "owner"},
+    "security": {
+      "role": "reviewer",
+      "verdicts": ["pass", "fail", "stop"]
+    }
+  },
+  "review": {
+    "stop_blocks_merge": true,
+    "eng_cannot_close_stop": true,
+    "override": {"by": "grok", "named": true, "expires": true},
+    "ci_proves": {
+      "hunk_author": false,
+      "security_stop": false,
+      "override": false
+    }
+  },
+  "notes": [
+    "Product owns no path: there is no product tree.",
+    "Design owns no path: styles and SVG sit under olympus/. A second owner on that tree is rejected.",
+    "Platform is several existing prefixes, not one directory. No files were moved.",
+    "No Helm chart or Terraform module is tracked. Those classes stay propose-only if a path is added.",
+    "Security owns no path. n8n/SECURITY.md stays on the n8n prefix.",
+    "Grok commits and owns no path. Eng writes. The check does not see who typed a hunk.",
+    "A Security stop, and a named Grok acceptance with an expiry, are review rules. ci_proves stays false.",
+    "security_review is not ownership. reviewers is empty: Security has no GitHub login, and none is invented.",
+    "Vendored platform_common and rendered ingress stay on scripts/sync-platform-common.py --check and scripts/check-infra-consumers.py."
+  ],
+  "rules": [
+    {
+      "owner": "platform",
+      "disposition": "propose-only",
+      "prefixes": [".github/workflows/", "ownership.json"]
+    },
+    {
+      "owner": "platform",
+      "prefixes": [
+        "packages/",
+        "scripts/",
+        "k8s/",
+        "n8n/",
+        "n8n-config/",
+        "platform-config.yaml",
+        "platform-infra.dev.json",
+        "README.md"
+      ]
+    },
+    {
+      "owner": "eng",
+      "prefixes": ["agents/", "claude-router/", ".cursor/", "AGENTS.md", ".gitignore"]
+    },
+    {
+      "owner": "content",
+      "prefixes": ["olympus/"]
+    }
+  ],
+  "security_review": {
+    "reviewers": [],
+    "skip_prefixes": ["olympus/"],
+    "skip_except_prefixes": ["olympus/auth/"],
+    "skip_suffixes": [".md"],
+    "skip_paths": [
+      "ownership.json",
+      "scripts/check-ownership.py",
+      "scripts/check-security-review.py",
+      ".github/workflows/security-review.yml"
+    ],
+    "always_basenames": ["secrets.yaml", "secrets.yml"],
+    "always_suffixes": [".env"],
+    "hunk_signals": [
+      "cognito",
+      "cloudfront",
+      "alb.ingress",
+      "role-arn",
+      "irsa_arn",
+      "iamrole",
+      "rolearn",
+      "role-to-assume",
+      "secretkeyref",
+      "n8n_encryption_key",
+      "id-token",
+      "user-pool",
+      "user_pool",
+      "githuboidc",
+      "certificate-arn",
+      "certificate_arn",
+      "kind: secret"
+    ],
+    "paths": [
+      {"path": "olympus/auth/", "when": "any"},
+      {"path": "n8n/k8s/ingress.yaml", "when": "any"},
+      {"path": "n8n/k8s/ingress.yaml.tpl", "when": "any"},
+      {"path": "n8n/k8s/secrets.example.yaml", "when": "any"},
+      {"path": "n8n/k8s/base.yaml", "when": "hunk"},
+      {"path": "platform-infra.dev.json", "when": "hunk"},
+      {"path": ".github/workflows/deploy-olympus.yml", "when": "hunk"},
+      {"path": ".github/workflows/deploy-claude-router.yml", "when": "hunk"},
+      {"path": ".github/workflows/deploy-support-runbook-copilot.yml", "when": "hunk"},
+      {"path": "scripts/render-from-infra.py", "when": "any"},
+      {"path": "scripts/sync-sibling-irsa.py", "when": "any"},
+      {"path": "claude-router/k8s/deployment.yaml", "when": "hunk"},
+      {"path": "agents/support-runbook-copilot/k8s/deployment.yaml", "when": "hunk"},
+      {"path": "agents/support-runbook-copilot/agent-spec.yaml", "when": "hunk"}
+    ]
+  }
+}
