@@ -1315,6 +1315,11 @@ body.page-overview {
   margin: 0;
 }
 
+.arch-block a {
+  display: block;
+  text-decoration: none;
+}
+
 .arch-block img {
   display: block;
   width: 100%;

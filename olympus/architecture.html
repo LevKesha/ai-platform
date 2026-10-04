@@ -26,27 +26,27 @@
     <h1>Architecture</h1>
     <div class="arch-stack">
       <figure class="arch-block">
-        <img src="diagrams/edge-three-band-v4.png" alt="Olympus edge three-band: public, auth-gated, and cluster-internal. CloudFront and Cognito outside the VPC. ALB, EKS, and NAT inside eu-central-1.">
+        <a href="diagrams/edge-three-band-v4.png"><img src="diagrams/edge-three-band-v4.png" alt="Olympus edge three-band: public, auth-gated, and cluster-internal. CloudFront and Cognito outside the VPC. ALB, EKS, and NAT inside eu-central-1."></a>
         <h2>Three ways in.</h2>
         <p>The public door is n8n. Sign-in covers CV and jobs, LiteLLM, and Headroom. Spend stays inside the cluster.</p>
       </figure>
       <figure class="arch-block">
-        <img src="diagrams/k8s-internal-hero-v4.png" alt="Inside the cluster on dev-cluster in eu-central-1. Ship lane from GitHub Actions to ECR to Helm. Runtime lane from ingress to agent-api, mcp-server, rag-service, and llm-spend.">
+        <a href="diagrams/k8s-internal-hero-v4.png"><img src="diagrams/k8s-internal-hero-v4.png" alt="Inside the cluster on dev-cluster in eu-central-1. Ship lane from GitHub Actions to ECR to Helm. Runtime lane from ingress to agent-api, mcp-server, rag-service, and llm-spend."></a>
         <h2>Inside the cluster.</h2>
         <p>This is the middle of that picture, up close. The API, retrieval, and the tool connections run here, with n8n beside them.</p>
       </figure>
       <figure class="arch-block">
-        <img src="diagrams/b1-cv-jobs-seq-v4.png" alt="CV times Jobs sequence: Master CV, Fit, Tailor, TXT. LiteLLM optional.">
+        <a href="diagrams/b1-cv-jobs-seq-v4.png"><img src="diagrams/b1-cv-jobs-seq-v4.png" alt="CV times Jobs sequence: Master CV, Fit, Tailor, TXT. LiteLLM optional."></a>
         <h2>CV and jobs.</h2>
         <p>The signed-in path. A CV comes in, jobs come back, and the picture is that sequence.</p>
       </figure>
       <figure class="arch-block">
-        <img src="diagrams/b2-cost-spend-loop-v4.png" alt="Spend loop in namespace llm-cost: llm-spend, Headroom savings, LiteLLM.">
+        <a href="diagrams/b2-cost-spend-loop-v4.png"><img src="diagrams/b2-cost-spend-loop-v4.png" alt="Spend loop in namespace llm-cost: llm-spend, Headroom savings, LiteLLM."></a>
         <h2>Spend.</h2>
         <p>What the models cost, on its own loop. Not a savings claim.</p>
       </figure>
       <figure class="arch-block">
-        <img src="diagrams/b3-soft-down-restore-v4.png" alt="Soft-down restore-and-enter on top. Teardown and restore-after-teardown below. ECR kept.">
+        <a href="diagrams/b3-soft-down-restore-v4.png"><img src="diagrams/b3-soft-down-restore-v4.png" alt="Soft-down restore-and-enter on top. Teardown and restore-after-teardown below. ECR kept."></a>
         <h2>Soft-down and restore.</h2>
         <p>Take the demo down without deleting it, then bring it back. The picture is that path.</p>
       </figure>
