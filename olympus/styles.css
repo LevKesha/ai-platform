@@ -645,29 +645,6 @@ tbody tr:last-child td {
   margin-top: 0.4rem;
 }
 
-.demo-path {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.9rem;
-  margin: 0 0 0.85rem;
-}
-
-.demo-path button {
-  padding: 0;
-  border: 0;
-  border-bottom: 1px solid transparent;
-  background: transparent;
-  color: var(--muted);
-  font: inherit;
-  cursor: pointer;
-}
-
-.demo-path button:hover,
-.demo-path button[aria-current="page"] {
-  color: var(--text);
-  border-bottom-color: var(--accent);
-}
-
 .diagram svg {
   display: block;
   width: 100%;
@@ -713,19 +690,71 @@ tbody tr:last-child td {
   margin-inline: auto;
 }
 
-.env-bar {
-  padding: 0.35rem 1rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-elev);
+.console-s1 {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0.75rem 1rem 0.5rem;
+}
+
+.console-s1-intro {
+  margin: 0 0 0.65rem;
   color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hub-frame {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.hub {
+  margin: 0;
+}
+
+.hub-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 64rem;
+}
+
+.hub-fallback {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hub-glossary h2 {
+  margin: 0 0 0.75rem;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.hub-glossary dl {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 9rem) minmax(0, 1fr);
+  gap: 0.45rem 0.75rem;
+  margin: 0;
+}
+
+.hub-glossary dt {
+  color: var(--accent);
   font-family: var(--font-mono);
   font-size: 0.8rem;
 }
 
+.hub-glossary dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .console-shell {
   display: grid;
-  grid-template-columns: 14rem 1fr;
-  min-height: calc(100vh - 10rem);
+  grid-template-columns: 14rem minmax(0, 1fr);
 }
 
 .console-nav {
@@ -761,7 +790,11 @@ tbody tr:last-child td {
   background: var(--bg-panel);
 }
 
-.console-panel {
+.page-console .console-panel {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
   padding: 1rem 1.25rem 2rem;
 }
 
@@ -1500,13 +1533,6 @@ body.page-overview {
 
 .fold p,
 .fold li {
-  color: #a3a3a3;
-  font-size: 0.85rem;
-}
-
-.try-line {
-  margin: 0;
-  padding: 0.35rem 1rem 0.15rem;
   color: #a3a3a3;
   font-size: 0.85rem;
 }

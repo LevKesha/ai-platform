@@ -325,31 +325,6 @@
     n8n: renderN8n,
   };
 
-  function demoPathNav(current) {
-    var steps = [
-      { id: "configuration", label: "Configuration" },
-      { id: "delivery", label: "Delivery" },
-      { id: "infrastructure", label: "Infrastructure" },
-      { id: "cvjobs", label: "CV×Jobs" },
-      { id: "spend", label: "Spend" },
-    ];
-    var links = steps
-      .map(function (step) {
-        var currentAttr = step.id === current ? ' aria-current="page"' : "";
-        return (
-          '<button type="button" data-view="' +
-          step.id +
-          '"' +
-          currentAttr +
-          ">" +
-          step.label +
-          "</button>"
-        );
-      })
-      .join("");
-    return '<nav class="demo-path" aria-label="Demo path">' + links + "</nav>";
-  }
-
   function setView(id) {
     var view = data.views.find(function (v) {
       return v.id === id;
@@ -365,14 +340,7 @@
         btn.removeAttribute("aria-current");
       }
     });
-    var onDemoPath =
-      id === "topology" ||
-      id === "configuration" ||
-      id === "delivery" ||
-      id === "infrastructure" ||
-      id === "cvjobs" ||
-      id === "spend";
-    panel.innerHTML = (onDemoPath ? demoPathNav(id) : "") + renderers[id]();
+    panel.innerHTML = renderers[id]();
     announce(
       view.label +
         (id === "headroom"
@@ -404,11 +372,6 @@
   });
 
   panel.addEventListener("click", function (event) {
-    var pathBtn = event.target.closest(".demo-path [data-view]");
-    if (pathBtn) {
-      setView(pathBtn.getAttribute("data-view"));
-      return;
-    }
     var priv = event.target.closest(".js-private");
     if (priv) {
       openPrivateModal(priv.getAttribute("data-repo"));
@@ -562,6 +525,17 @@
     }
   });
 
-  var initial = (location.hash || "#topology").slice(1);
-  setView(initial);
+  var initial = (location.hash || "").replace(/^#/, "");
+  var hasView = data.views.some(function (view) {
+    return view.id === initial;
+  });
+  if (initial && hasView) {
+    setView(initial);
+  } else if (location.hash) {
+    try {
+      history.replaceState(null, "", location.pathname + location.search);
+    } catch (err) {
+      location.hash = "";
+    }
+  }
 })();

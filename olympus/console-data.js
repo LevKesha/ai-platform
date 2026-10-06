@@ -1,13 +1,5 @@
 /** Demo fixtures for the read-only console. Not live telemetry. */
 window.OLYMPUS_CONSOLE = {
-  banner: "Demo Mode — Read-Only",
-  env: {
-    cluster: "dev-cluster",
-    region: "eu-central-1",
-    branch: "dev",
-    main: "parked",
-    productionCluster: false,
-  },
   views: [
     { id: "topology", label: "Platform Topology" },
     { id: "configuration", label: "Configuration" },
