@@ -127,39 +127,38 @@
         </noscript>
       </figure>
     </div>
-    <details class="hub-glossary">
-      <summary>What these labels mean</summary>
-      <dl>
-        <dt>sits on</dt>
-        <dd>Lives on that host or service.</dd>
-        <dt>beside</dt>
-        <dd>Next to it in the stack, not inside it.</dd>
-        <dt>runs in</dt>
-        <dd>Executes inside that cluster or service.</dd>
-        <dt>describes</dt>
-        <dd>Names how it&#8217;s set up; not a live control.</dd>
-        <dt>SSOT</dt>
-        <dd>Single source of truth for that setting.</dd>
-        <dt>deploys</dt>
-        <dd>Puts the change onto the cluster.</dd>
-        <dt>optional hop</dt>
-        <dd>An extra stop only when that path is turned on.</dd>
-        <dt>sidecar</dt>
-        <dd>A helper process that rides next to the main service.</dd>
-        <dt>webhook</dt>
-        <dd>An HTTP callback that triggers a workflow.</dd>
-        <dt>public door</dt>
-        <dd>The internet-facing entry (n8n&#8217;s host).</dd>
-        <dt>aggregates</dt>
-        <dd>Pulls cost or usage into one view.</dd>
-      </dl>
-    </details>
   </section>
 
-  <div class="console-shell is-landing">
+  <div class="console-shell">
     <nav class="console-nav" id="console-nav" aria-label="Console views"></nav>
     <main id="console-panel" class="console-panel" tabindex="-1">
-      <p class="muted">Enable JavaScript to switch console views. Static evidence remains on Overview, Architecture, and Evidence.</p>
+      <section class="hub-glossary" aria-labelledby="hub-glossary-title">
+        <h2 id="hub-glossary-title">What these labels mean</h2>
+        <dl>
+          <dt>sits on</dt>
+          <dd>Lives on that host or service.</dd>
+          <dt>beside</dt>
+          <dd>Next to it in the stack, not inside it.</dd>
+          <dt>runs in</dt>
+          <dd>Executes inside that cluster or service.</dd>
+          <dt>describes</dt>
+          <dd>Names how it&#8217;s set up; not a live control.</dd>
+          <dt>SSOT</dt>
+          <dd>Single source of truth for that setting.</dd>
+          <dt>deploys</dt>
+          <dd>Puts the change onto the cluster.</dd>
+          <dt>optional hop</dt>
+          <dd>An extra stop only when that path is turned on.</dd>
+          <dt>sidecar</dt>
+          <dd>A helper process that rides next to the main service.</dd>
+          <dt>webhook</dt>
+          <dd>An HTTP callback that triggers a workflow.</dd>
+          <dt>public door</dt>
+          <dd>The internet-facing entry (n8n&#8217;s host).</dd>
+          <dt>aggregates</dt>
+          <dd>Pulls cost or usage into one view.</dd>
+        </dl>
+      </section>
     </main>
   </div>
   <div id="console-live" class="visually-hidden" aria-live="polite"></div>

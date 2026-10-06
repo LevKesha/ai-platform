@@ -727,26 +727,17 @@ tbody tr:last-child td {
   height: auto;
 }
 
-.hub-glossary {
-  margin-top: 0.75rem;
-  border-top: 1px solid var(--border);
-  padding-top: 0.45rem;
-}
-
-.hub-glossary summary {
-  cursor: pointer;
-  color: var(--muted);
-}
-
-.hub-glossary summary:hover {
+.hub-glossary h2 {
+  margin: 0 0 0.75rem;
   color: var(--text);
+  font-size: 1rem;
 }
 
 .hub-glossary dl {
   display: grid;
-  grid-template-columns: 9rem 1fr;
-  gap: 0.35rem 0.75rem;
-  margin: 0.65rem 0 0;
+  grid-template-columns: minmax(7.5rem, 9rem) minmax(0, 1fr);
+  gap: 0.45rem 0.75rem;
+  margin: 0;
 }
 
 .hub-glossary dt {
@@ -763,15 +754,7 @@ tbody tr:last-child td {
 
 .console-shell {
   display: grid;
-  grid-template-columns: 14rem 1fr;
-}
-
-.console-shell.is-landing {
-  grid-template-columns: 14rem;
-}
-
-.console-shell.is-landing .console-panel {
-  display: none;
+  grid-template-columns: 14rem minmax(0, 1fr);
 }
 
 .console-nav {
@@ -807,7 +790,11 @@ tbody tr:last-child td {
   background: var(--bg-panel);
 }
 
-.console-panel {
+.page-console .console-panel {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
   padding: 1rem 1.25rem 2rem;
 }
 
@@ -905,8 +892,7 @@ tbody tr:last-child td {
 }
 
 @media (max-width: 720px) {
-  .console-shell,
-  .console-shell.is-landing {
+  .console-shell {
     grid-template-columns: 1fr;
   }
 

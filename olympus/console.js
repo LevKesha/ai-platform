@@ -325,8 +325,6 @@
     n8n: renderN8n,
   };
 
-  var shell = nav.parentElement;
-
   function setView(id) {
     var view = data.views.find(function (v) {
       return v.id === id;
@@ -335,7 +333,6 @@
       id = "topology";
       view = data.views[0];
     }
-    if (shell) shell.classList.remove("is-landing");
     nav.querySelectorAll("button").forEach(function (btn) {
       if (btn.getAttribute("data-view") === id) {
         btn.setAttribute("aria-current", "page");
@@ -534,15 +531,11 @@
   });
   if (initial && hasView) {
     setView(initial);
-  } else {
-    panel.innerHTML = "";
-    if (shell) shell.classList.add("is-landing");
-    if (location.hash) {
-      try {
-        history.replaceState(null, "", location.pathname + location.search);
-      } catch (err) {
-        location.hash = "";
-      }
+  } else if (location.hash) {
+    try {
+      history.replaceState(null, "", location.pathname + location.search);
+    } catch (err) {
+      location.hash = "";
     }
   }
 })();
