@@ -145,7 +145,13 @@ def main() -> None:
     host = args.host or os.environ.get("N8N_HOST", DEFAULT_HOST)
     api_key = os.environ.get("N8N_API_KEY")
     if not api_key:
-        raise SystemExit("N8N_API_KEY is required")
+        raise SystemExit(
+            "N8N_API_KEY is unset. Durable SSOT is Secrets Manager "
+            "dev-cluster-n8n/api-key (JSON key N8N_API_KEY). "
+            "Inject with scripts/inject-secrets-from-sm.ps1 "
+            "(or source scripts/inject-secrets-from-sm.sh). "
+            "A gitignored .env is not the source of truth."
+        )
 
     wf = load_and_prepare(args.json_path)
     workflow_id = find_workflow_id(host, api_key, wf.get("name", ""), args.workflow_id)
