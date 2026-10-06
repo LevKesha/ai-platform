@@ -764,7 +764,6 @@ tbody tr:last-child td {
 .console-shell {
   display: grid;
   grid-template-columns: 14rem 1fr;
-  min-height: calc(100vh - 10rem);
 }
 
 .console-nav {
