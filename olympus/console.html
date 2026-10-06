@@ -18,12 +18,26 @@
         <a href="cursor/index.html">Cursor</a>
         <a href="evidence.html">Evidence</a>
         <a href="console.html" aria-current="page">Console</a>
-        <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
       </nav>
     </div>
   </header>
 
-  <div class="banner-demo" role="status">Demo Mode — Read-Only</div>
+  <section class="n8n-section" aria-labelledby="n8n-sell">
+    <h2 id="n8n-sell">Workflows on their own host — open them, don’t rebuild them.</h2>
+    <div class="banner-demo" role="status">Demo Mode — Read-Only</div>
+    <ol class="n8n-cards">
+      <li>
+        <p><span class="mono">orchestrator-workflow</span> — One webhook routes rag, agent, or auto into the cluster services.</p>
+      </li>
+      <li>
+        <p><span class="mono">litellm-demo</span> — Webhook health check for LiteLLM.</p>
+      </li>
+      <li>
+        <p><span class="mono">headroom-demo</span> — Webhook probe into Headroom compress.</p>
+      </li>
+    </ol>
+    <p class="n8n-secondary"><a class="btn" href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">Open n8n<span class="visually-hidden"> (opens in new tab)</span></a> <span class="mono muted">https://n8n.levkesha.com</span></p>
+  </section>
   <p class="try-line">Open Config · Delivery · Infra — live surfaces, not a lecture.</p>
   <div class="env-bar" aria-label="Environment">
     <span class="mono">dev-cluster</span>

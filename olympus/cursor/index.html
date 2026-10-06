@@ -18,7 +18,6 @@
         <a href="index.html" aria-current="page">Cursor</a>
         <a href="../evidence.html">Evidence</a>
         <a href="../console.html">Console</a>
-        <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">n8n <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
       </nav>
     </div>
   </header>
@@ -44,11 +43,6 @@
 
     <h1 class="fold-title">How the platform gets built.</h1>
     <p class="cursor-sub">Catalog first. Plan when it needs it. Execute. Ship the PR.</p>
-    <ul class="honesty" aria-label="Honesty">
-      <li>skills = helpers</li>
-      <li>GitHub = SSOT</li>
-      <li>catalog first</li>
-    </ul>
     <p class="personal-note">I don’t freestyle multi-surface work. Catalog first, then plan, then execute — Cloud Agents get the same brief. Skills help; GitHub stays SSOT for IDs. Grok Bot orchestrates; I take Cursor-shaped work, push back on bad briefs, and ship PRs back. Challenge welcome is load-bearing.</p>
 
     <section class="fold" aria-labelledby="inv-title">
@@ -66,15 +60,14 @@
       </details>
       <details>
         <summary>CLI / models — inventory keeps mock</summary>
-        <p>Invoke: <code>python -m orchestrator</code> · subcommands <code>run</code> · <code>theseus</code> · state <code>agent-api/.orchestrator</code></p>
+        <p>Invoke: <code>python -m orchestrator</code> · subcommand <code>run</code> · state <code>agent-api/.orchestrator</code></p>
         <p>Factory providers (all real): <code>mock</code> · <code>bedrock</code> · <code>anthropic</code>/<code>claude</code> · <code>openai</code>/<code>gpt</code> · <code>perplexity</code></p>
-        <p><code>.env.example</code> defaults <code>RESEARCH_PROVIDER=mock</code> · <code>ENGINEERING_PROVIDER=mock</code>. The diagram omits <code>mock</code>. This inventory keeps <code>mock</code>.</p>
-        <p>Theseus (CLI): connector registry v1 = github only.</p>
         <p>In-cluster agent-api (separate path): Bedrock <code>eu.anthropic.claude-sonnet-4-5-20250929-v1:0</code> + in-cluster MCP — ≠ CLI orchestrator ≠ LiteLLM Admin spend.</p>
       </details>
       <details>
         <summary>MCP / connectors — separate band, not the 41</summary>
-        <p>Tezka 41 ≠ Eng-box MCP list ≠ Theseus github-only. Label separately. Eng-box examples used in Olympus work: GitHub · Origin · ChatPRD · Figma · Notion · Aws-mcp · Awsknowledge · Awsiac · Awspricing · Canva (Finance needsAuth — not usable).</p>
+        <p>Tezka 41 ≠ Eng-box MCP list ≠ GitHub-only CLI connectors. Label separately.</p>
+        <p>Eng-box examples used in Olympus work: GitHub · Origin · ChatPRD · Figma · Notion · Aws-mcp · Awsknowledge · Awsiac · Awspricing · Canva (Finance needsAuth — not usable).</p>
       </details>
     </section>
   </main>
