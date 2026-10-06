@@ -17,6 +17,7 @@ window.OLYMPUS_CONSOLE = {
     { id: "spend", label: "Services & Spend" },
     { id: "headroom", label: "Headroom Admin" },
     { id: "litellm", label: "LiteLLM Admin UI" },
+    { id: "n8n", label: "n8n" },
   ],
   cvjobs: {
     demoUrl: "https://olympus.levkesha.com/cv-jobs/",
@@ -28,6 +29,26 @@ window.OLYMPUS_CONSOLE = {
     adminUrl: "https://olympus.levkesha.com/headroom",
     webhookUrl: "https://n8n.levkesha.com/webhook/headroom-demo",
     title: "Headroom savings Admin",
+  },
+  n8n: {
+    title: "n8n",
+    url: "https://n8n.levkesha.com",
+    sell: "Workflows on their own host — open them, don’t rebuild them.",
+    demo: "Demo Mode — Read-Only",
+    workflows: [
+      {
+        name: "orchestrator-workflow",
+        note: "One webhook routes rag, agent, or auto into the cluster services.",
+      },
+      {
+        name: "litellm-demo",
+        note: "Webhook health check for LiteLLM.",
+      },
+      {
+        name: "headroom-demo",
+        note: "Webhook probe into Headroom compress.",
+      },
+    ],
   },
   litellm: {
     adminUrl: "https://olympus.levkesha.com/litellm/ui",

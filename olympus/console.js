@@ -252,6 +252,39 @@
     );
   }
 
+  function renderN8n() {
+    var n = data.n8n;
+    var flows = (n.workflows || [])
+      .map(function (w) {
+        return (
+          '<li><span class="mono">' +
+          w.name +
+          "</span> — " +
+          w.note +
+          "</li>"
+        );
+      })
+      .join("");
+    return (
+      "<h1>" +
+      n.title +
+      "</h1>" +
+      "<p>" +
+      n.sell +
+      "</p>" +
+      '<p class="muted">' +
+      n.demo +
+      "</p>" +
+      '<p><a class="btn btn-primary" href="' +
+      n.url +
+      '">Open n8n</a></p>' +
+      '<p class="mono muted">' +
+      n.url +
+      "</p>" +
+      (flows ? '<ul class="muted">' + flows + "</ul>" : "")
+    );
+  }
+
   function renderLiteLLM() {
     var lt = data.litellm;
     return (
@@ -289,6 +322,7 @@
     cvjobs: renderCvJobs,
     headroom: renderHeadroom,
     litellm: renderLiteLLM,
+    n8n: renderN8n,
   };
 
   function demoPathNav(current) {

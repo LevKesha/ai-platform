@@ -684,51 +684,6 @@ tbody tr:last-child td {
   margin-bottom: 0.25rem;
 }
 
-.banner-demo {
-  padding: 0.4rem 1rem;
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--warn);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-}
-
-.n8n-section h2 {
-  margin: 0;
-  padding: 0.85rem 1rem 0.65rem;
-  font-size: 1.05rem;
-  color: var(--text);
-}
-
-.n8n-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-  gap: 0.75rem;
-  margin: 0.75rem 1rem;
-  padding: 0;
-  list-style: none;
-}
-
-.n8n-cards li {
-  margin: 0;
-  border: 1px solid var(--border);
-  background: var(--bg-elev);
-  padding: 0.85rem 1rem;
-}
-
-.n8n-cards p,
-.n8n-secondary {
-  margin: 0;
-}
-
-.n8n-secondary {
-  padding: 0 1rem 0.85rem;
-}
-
-.n8n-secondary .mono {
-  margin-left: 0.75rem;
-}
-
 .page-arch-viewer main {
   max-width: none;
   padding: 0.75rem 0 2rem;
@@ -752,9 +707,13 @@ tbody tr:last-child td {
 
 .page-arch-viewer .viewer-shot img {
   display: block;
-  width: 112.5vw;
-  max-width: none;
+  width: 100%;
+  max-width: min(100vw, 1440px);
   height: auto;
+  max-height: calc(100vh - 6.5rem);
+  margin-inline: auto;
+  object-fit: contain;
+  object-position: center top;
 }
 
 .env-bar {
@@ -1592,8 +1551,7 @@ body.page-overview {
   .skip-link,
   .site-nav,
   .console-nav,
-  .hero-actions,
-  .banner-demo {
+  .hero-actions {
     display: none;
   }
 
