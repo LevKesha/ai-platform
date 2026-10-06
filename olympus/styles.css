@@ -766,6 +766,14 @@ tbody tr:last-child td {
   grid-template-columns: 14rem 1fr;
 }
 
+.console-shell.is-landing {
+  grid-template-columns: 14rem;
+}
+
+.console-shell.is-landing .console-panel {
+  display: none;
+}
+
 .console-nav {
   display: flex;
   flex-direction: column;
@@ -897,7 +905,8 @@ tbody tr:last-child td {
 }
 
 @media (max-width: 720px) {
-  .console-shell {
+  .console-shell,
+  .console-shell.is-landing {
     grid-template-columns: 1fr;
   }
 
