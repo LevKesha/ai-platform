@@ -110,7 +110,7 @@ window.OLYMPUS_CONSOLE = {
         access: "ClusterIP with LiteLLM (:8787)",
       },
       {
-        name: "Theseus",
+        name: "agent-api · GitHub",
         access: "ClusterIP / laptop port-forward",
       },
       {

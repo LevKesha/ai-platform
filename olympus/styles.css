@@ -693,6 +693,70 @@ tbody tr:last-child td {
   font-size: 0.8rem;
 }
 
+.n8n-section h2 {
+  margin: 0;
+  padding: 0.85rem 1rem 0.65rem;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.n8n-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.75rem;
+  margin: 0.75rem 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.n8n-cards li {
+  margin: 0;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  padding: 0.85rem 1rem;
+}
+
+.n8n-cards p,
+.n8n-secondary {
+  margin: 0;
+}
+
+.n8n-secondary {
+  padding: 0 1rem 0.85rem;
+}
+
+.n8n-secondary .mono {
+  margin-left: 0.75rem;
+}
+
+.page-arch-viewer main {
+  max-width: none;
+  padding: 0.75rem 0 2rem;
+  overflow-x: auto;
+}
+
+.page-arch-viewer .viewer-back {
+  margin: 0 0 0.75rem;
+  padding: 0 1rem;
+}
+
+.page-arch-viewer .viewer-shot {
+  display: none;
+  margin: 0;
+}
+
+.page-arch-viewer .viewer-shot:target,
+.page-arch-viewer main:not(:has(.viewer-shot:target)) .viewer-shot:first-of-type {
+  display: block;
+}
+
+.page-arch-viewer .viewer-shot img {
+  display: block;
+  width: 112.5vw;
+  max-width: none;
+  height: auto;
+}
+
 .env-bar {
   padding: 0.35rem 1rem;
   border-bottom: 1px solid var(--border);
@@ -1018,6 +1082,13 @@ body.page-overview {
 .page-overview .sell-card h1 {
   margin-top: 0;
   color: #171717;
+}
+
+.page-overview .sell-card .role {
+  margin: 0 0 0.85rem;
+  color: #3f3f3f;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .page-overview .second-look {
@@ -1448,25 +1519,6 @@ body.page-overview {
   color: #737373;
   font-family: var(--font-mono);
   font-size: 0.68rem;
-}
-
-.honesty {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 1rem 0 0.6rem;
-  padding: 0;
-  list-style: none;
-}
-
-.honesty li {
-  margin: 0;
-  padding: 0.2rem 0.5rem;
-  border: 1px solid #333;
-  border-radius: 999px;
-  color: #a3a3a3;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
 }
 
 .personal-note {

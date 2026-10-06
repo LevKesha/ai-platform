@@ -58,11 +58,7 @@
     var services = data.topology.services
       .map(function (svc) {
         var edge = svc.public
-          ? '<a href="' +
-            svc.url +
-            '" rel="noopener noreferrer" target="_blank">' +
-            svc.url.replace("https://", "") +
-            ' <span class="visually-hidden">(opens in new tab)</span></a>'
+          ? '<a href="' + svc.url + '">' + svc.url.replace("https://", "") + "</a>"
           : "ClusterIP";
         return (
           '<li class="topo-node"><p class="topo-name mono">' +
@@ -112,7 +108,7 @@
       data.empty.n8nOfflineBody +
       "</p>" +
       '<p class="alert-actions">' +
-      '<a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">Retry n8n.levkesha.com<span class="visually-hidden"> (opens in new tab)</span></a>' +
+      '<a href="https://n8n.levkesha.com">Retry n8n.levkesha.com</a>' +
       "<span aria-hidden=\"true\">·</span>" +
       '<a href="architecture.html">Architecture</a>' +
       "</p></div>" +

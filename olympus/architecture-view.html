@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Olympus — Architecture</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-arch-viewer">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">Olympus</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Overview</a>
+        <a href="proof.html">Proof</a>
+        <a href="architecture.html" aria-current="page">Architecture</a>
+        <a href="cursor/index.html">Cursor</a>
+        <a href="evidence.html">Evidence</a>
+        <a href="console.html">Console</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <p class="viewer-back"><a href="architecture.html">Architecture</a></p>
+    <figure class="viewer-shot" id="edge">
+      <img src="diagrams/edge-three-band-v4.png" alt="Olympus edge three-band: public, auth-gated, and cluster-internal. CloudFront and Cognito outside the VPC. ALB, EKS, and NAT inside eu-central-1.">
+    </figure>
+    <figure class="viewer-shot" id="cluster">
+      <img src="diagrams/k8s-internal-hero-v4.png" alt="Inside the cluster on dev-cluster in eu-central-1. Ship lane from GitHub Actions to ECR to Helm. Runtime lane from ingress to agent-api, mcp-server, rag-service, and llm-spend.">
+    </figure>
+    <figure class="viewer-shot" id="cv-jobs">
+      <img src="diagrams/b1-cv-jobs-seq-v4.png" alt="CV times Jobs sequence: Master CV, Fit, Tailor, TXT. LiteLLM optional.">
+    </figure>
+    <figure class="viewer-shot" id="spend">
+      <img src="diagrams/b2-cost-spend-loop-v4.png" alt="Spend loop in namespace llm-cost: llm-spend, Headroom savings, LiteLLM.">
+    </figure>
+    <figure class="viewer-shot" id="restore">
+      <img src="diagrams/b3-soft-down-restore-v4.png" alt="Soft-down restore-and-enter on top. Teardown and restore-after-teardown below. ECR kept.">
+    </figure>
+  </main>
+</body>
+</html>

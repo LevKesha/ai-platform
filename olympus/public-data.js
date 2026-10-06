@@ -42,7 +42,7 @@ window.OLYMPUS_PUBLIC = {
     {
       name: "agent-api",
       summary:
-        "FastAPI Bedrock /agent gateway; Helm/EKS; local orchestrator Research→UX→Frontend→Engineering; Theseus GitHub-as-user. LiteLLM hop only when LITELLM_BASE_URL is set. /agent stays unwired from LiteLLM.",
+        "FastAPI Bedrock /agent gateway; Helm/EKS; local orchestrator Research→UX→Frontend→Engineering; GitHub-as-user via agent-api. LiteLLM hop only when LITELLM_BASE_URL is set. /agent stays unwired from LiteLLM.",
       tags: ["FastAPI", "Helm"],
     },
     {
