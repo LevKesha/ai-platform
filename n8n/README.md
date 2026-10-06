@@ -57,11 +57,11 @@ Create a Route53 alias (or CNAME) for `n8n.levkesha.com` to the ALB hostname fro
 ### Post-deploy (first login)
 
 1. **Claim owner** — open `https://n8n.levkesha.com`, complete the owner signup form (first user becomes instance owner).
-2. **Create API key** — Settings → n8n API → create a key for automation/CI if needed.
+2. **API key** — Settings → n8n API, mint once. Durable store is Secrets Manager `dev-cluster-n8n/api-key` (JSON `N8N_API_KEY`). Load it with `scripts/inject-secrets-from-sm.ps1` before import. Do not put it in git or treat a `.env` file as the source of truth.
 3. **Import orchestrator workflow** — Workflows → Import from File → select `n8n-config/orchestrator-workflow.json` from this repo. Configure credentials/variables per `n8n-config/README.md`, then activate the workflow.
 
 ## Recommended next hardening
 
 - Restrict source CIDRs / add WAF.
-- Keep secrets out of git (or use External Secrets + AWS Secrets Manager).
+- Keep secrets out of git. Durable SSOT is AWS Secrets Manager. `k8s/secrets.yaml` is only the gitignored apply source for the cluster runtime projection (`n8n/n8n-secret`, `n8n-db-secret`). RDS passwords stay in `dev-cluster-n8n-db/db-password`. `N8N_API_KEY` stays in `dev-cluster-n8n/api-key`, not in that manifest.
 - Enforce TLS validation to RDS by mounting AWS RDS CA bundle and enabling strict cert checks.

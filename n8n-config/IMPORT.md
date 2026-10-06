@@ -11,11 +11,15 @@ Update the live n8n orchestrator from `orchestrator-workflow.json` via REST API.
 
 ## Environment
 
+`N8N_API_KEY` durable SSOT is Secrets Manager `dev-cluster-n8n/api-key` (JSON key `N8N_API_KEY`, region `eu-central-1`). Owner: minted once in the n8n UI (Settings → API), then stored there. Process env is an ephemeral inject. A gitignored `.env` is legacy only — do not read it as the source of truth, and do not paste the value.
+
 ```powershell
 $env:N8N_HOST = "https://n8n.levkesha.com"   # default
-$env:N8N_API_KEY = "<from n8n Settings → API>"
+. .\scripts\inject-secrets-from-sm.ps1       # sets N8N_API_KEY; prints PRESENT/ABSENT only
 $env:N8N_WORKFLOW_ID = "XBInJO2kGldHOK4o"    # optional; omit to resolve by name
 ```
+
+Bash: `source scripts/inject-secrets-from-sm.sh`
 
 From ai-platform repo root:
 
@@ -90,7 +94,7 @@ curl -X POST "$env:N8N_HOST/webhook/ai-orchestrator" `
 
 ```
 - [ ] Edit orchestrator-workflow.json
-- [ ] N8N_API_KEY set (never commit)
+- [ ] N8N_API_KEY injected from SM dev-cluster-n8n/api-key (never commit, never print)
 - [ ] python n8n-config/import-orchestrator.py
 - [ ] --smoke runbook (and rag) pass
 - [ ] Report workflow id and webhook URL

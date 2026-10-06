@@ -60,6 +60,10 @@ Validation errors (`invalid` mode, missing input) use **Format Error** → **Web
 
 **n8n 2.12.3 note:** the error respond branch may return HTTP 200 with an empty body (RespondToWebhook `getParentNodes` bug). `rag` / `agent` success paths work. Upgrade n8n or use the UI to fix error respond wiring if you need HTTP 400 for validation errors.
 
+## API key
+
+Import and activate go through the n8n REST API. `N8N_API_KEY` is durable in Secrets Manager `dev-cluster-n8n/api-key` (JSON). Inject it with `scripts/inject-secrets-from-sm.ps1` (see [IMPORT.md](IMPORT.md)). A gitignored `.env` is not the source of truth.
+
 ## Required n8n Variables / Credentials
 
 Configure in n8n Cloud:
