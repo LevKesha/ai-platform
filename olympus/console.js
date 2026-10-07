@@ -38,10 +38,23 @@
       "<dt>SSOT repo</dt><dd>" +
       cfg.ssotRepo +
       "</dd>" +
-      "<dt>Model ID</dt><dd>" +
+      "<dt>Model (default)</dt><dd>" +
       cfg.modelId +
+      ' <span class="muted">(' +
+      cfg.modelLabel +
+      ")</span></dd>" +
+      "<dt>Model (max)</dt><dd>" +
+      cfg.maxModelId +
+      ' <span class="muted">(' +
+      cfg.maxModelLabel +
+      ")</span></dd>" +
+      "<dt>Max slot</dt><dd>" +
+      cfg.maxSlot +
       "</dd>" +
-      "</dl></article>"
+      "</dl>" +
+      '<p class="muted">' +
+      cfg.slotNote +
+      "</p></article>"
     );
   }
 

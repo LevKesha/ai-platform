@@ -129,6 +129,14 @@ def repo_path(repo: str, rel: str) -> Path:
     return (ROOT if repo == "ai-platform" else PARENT / repo) / rel
 
 
+def js_string_field(text: str, field: str) -> list[str]:
+    """Quoted JS field. Boundary so maxModelId is not read as modelId."""
+    return re.findall(
+        rf'(?<![A-Za-z0-9_]){re.escape(field)}:\s*"([^"]+)"',
+        text,
+    )
+
+
 def main() -> int:
     llm = load_ssot()
     want_claude = llm["model_id"]
@@ -225,17 +233,36 @@ def main() -> int:
         if not path.exists():
             errors.append(f"missing: {path}")
             continue
-        found = re.findall(r'modelId:\s*"([^"]+)"', path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        found = js_string_field(text, "modelId")
         if found != [want_claude]:
             errors.append(f"{path}: modelId want={want_claude!r} got={found!r}")
+        max_found = js_string_field(text, "maxModelId")
+        want_max = mix["max_bedrock_id"]
+        if rel == "olympus/console-data.js":
+            if max_found != [want_max]:
+                errors.append(f"{path}: maxModelId want={[want_max]!r} got={max_found!r}")
+            slot = js_string_field(text, "maxSlot")
+            if slot != [mix["max_litellm_model_name"]]:
+                errors.append(
+                    f"{path}: maxSlot want={[mix['max_litellm_model_name']]!r} got={slot!r}"
+                )
+        elif max_found and max_found != [want_max]:
+            errors.append(f"{path}: maxModelId want={[want_max]!r} got={max_found!r}")
 
     cursor_html = ROOT / "olympus" / "cursor" / "index.html"
     if not cursor_html.exists():
         errors.append(f"missing: {cursor_html}")
     else:
-        ids = re.findall(r"eu\.anthropic\.[A-Za-z0-9._:-]+", cursor_html.read_text(encoding="utf-8"))
-        if ids != [want_claude]:
-            errors.append(f"{cursor_html}: bedrock ids want={[want_claude]!r} got={ids!r}")
+        cursor_text = cursor_html.read_text(encoding="utf-8")
+        ids = re.findall(r"eu\.anthropic\.[A-Za-z0-9._:-]+", cursor_text)
+        want_ids = [want_claude, mix["max_bedrock_id"]]
+        if ids != want_ids:
+            errors.append(f"{cursor_html}: bedrock ids want={want_ids!r} got={ids!r}")
+        if mix["max_litellm_model_name"] not in cursor_text:
+            errors.append(
+                f"{cursor_html}: missing max slot name {mix['max_litellm_model_name']!r}"
+            )
 
     if errors:
         print("SSOT drift detected:")
