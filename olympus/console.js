@@ -1,6 +1,5 @@
 (function () {
   var data = window.OLYMPUS_CONSOLE;
-  var pub = window.OLYMPUS_PUBLIC;
   var nav = document.getElementById("console-nav");
   var panel = document.getElementById("console-panel");
   var live = document.getElementById("console-live");
@@ -26,99 +25,6 @@
   function closePrivateModal() {
     modal.hidden = true;
     if (lastFocus && lastFocus.focus) lastFocus.focus();
-  }
-
-  function renderGlanceDiagram() {
-    var cfg = data.configuration;
-    var del = data.delivery;
-    var inf = data.infrastructure;
-    var rel =
-      '<ul class="rel-row">' +
-      '<li class="rel-node"><h2>Configuration</h2><p class="mono">' +
-      cfg.ssotFile +
-      '</p><p class="mono">' +
-      cfg.modelId +
-      "</p><p>" +
-      cfg.ssotRepo +
-      "</p></li>" +
-      '<li class="rel-node"><h2>Delivery</h2><p>' +
-      del.cicd +
-      "</p><p>" +
-      del.infraWorkflows +
-      "</p></li>" +
-      '<li class="rel-node"><h2>Infrastructure</h2><p class="mono">' +
-      inf.cluster +
-      '</p><p class="mono">' +
-      inf.region +
-      "</p><p>Active branch <span class=\"mono\">" +
-      inf.activeBranch +
-      "</span></p><p>Parked branch <span class=\"mono\">" +
-      inf.parkedBranch +
-      "</span></p></li></ul>";
-    var services = data.topology.services
-      .map(function (svc) {
-        var edge = svc.public
-          ? '<a href="' + svc.url + '">' + svc.url.replace("https://", "") + "</a>"
-          : "ClusterIP";
-        return (
-          '<li class="topo-node"><p class="topo-name mono">' +
-          svc.name +
-          '</p><p class="topo-role">' +
-          svc.role +
-          '</p><p class="topo-edge">' +
-          edge +
-          "</p></li>"
-        );
-      })
-      .join("");
-    return (
-      '<figure class="glance-diagram">' +
-      '<figcaption class="visually-hidden">Configuration, Delivery, Infrastructure, and platform services</figcaption>' +
-      rel +
-      '<ul class="topo-services">' +
-      services +
-      "</ul></figure>"
-    );
-  }
-
-  function renderTopology() {
-
-    var priv = (pub.privateRepos || [])
-      .map(function (repo) {
-        return (
-          '<button type="button" class="btn js-private" data-repo="' +
-          repo.name +
-          '">' +
-          repo.name +
-          "</button>"
-        );
-      })
-      .join(" ");
-
-    return (
-      "<h1>Platform Topology</h1>" +
-      "<p class=\"lede\">" +
-      data.topology.note +
-      "</p>" +
-      '<div class="alert-calm" role="status">' +
-      '<p class="alert-title">' +
-      data.empty.n8nOfflineTitle +
-      "</p>" +
-      "<p>" +
-      data.empty.n8nOfflineBody +
-      "</p>" +
-      '<p class="alert-actions">' +
-      '<a href="https://n8n.levkesha.com">Retry n8n.levkesha.com</a>' +
-      "<span aria-hidden=\"true\">·</span>" +
-      '<a href="architecture.html">Architecture</a>' +
-      "</p></div>" +
-      renderGlanceDiagram() +
-      "<h2>Private evidence</h2>" +
-      "<p class=\"muted\">No GitHub links. Open a name for the private-repo note.</p>" +
-      "<p>" +
-      priv +
-      "</p>"
-    );
   }
 
   function renderConfiguration() {
@@ -314,7 +220,6 @@
   }
 
   var renderers = {
-    topology: renderTopology,
     configuration: renderConfiguration,
     delivery: renderDelivery,
     infrastructure: renderInfrastructure,
@@ -330,8 +235,8 @@
       return v.id === id;
     });
     if (!view) {
-      id = "topology";
       view = data.views[0];
+      id = view.id;
     }
     nav.querySelectorAll("button").forEach(function (btn) {
       if (btn.getAttribute("data-view") === id) {
@@ -526,16 +431,7 @@
   });
 
   var initial = (location.hash || "").replace(/^#/, "");
-  var hasView = data.views.some(function (view) {
-    return view.id === initial;
-  });
-  if (initial && hasView) {
+  if (initial) {
     setView(initial);
-  } else if (location.hash) {
-    try {
-      history.replaceState(null, "", location.pathname + location.search);
-    } catch (err) {
-      location.hash = "";
-    }
   }
 })();

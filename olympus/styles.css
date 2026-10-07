@@ -798,60 +798,36 @@ tbody tr:last-child td {
   padding: 1rem 1.25rem 2rem;
 }
 
-.glance-diagram {
-  margin: 0 0 1rem;
-}
-
-.rel-row,
-.topo-services,
 .metric-tiles {
   display: grid;
   gap: 0.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-.rel-row,
-.metric-tiles {
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-}
-
-.topo-services {
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  margin-top: 0.5rem;
 }
 
 .metric-tiles + .metric-tiles {
   margin-top: 0.5rem;
 }
 
-.rel-node,
-.topo-node,
 .metric-tile {
   border: 1px solid var(--border);
   background: var(--bg-elev);
   padding: 0.65rem 0.75rem;
 }
 
-.rel-node h2,
-.topo-node p,
 .metric-tile h2,
 .metric-tile p {
   margin: 0;
 }
 
-.rel-node h2,
-.topo-name,
 .metric-tile h2 {
   color: var(--text-strong);
   font-size: 0.9rem;
   font-weight: 600;
 }
 
-.rel-node p,
-.topo-role,
-.topo-edge,
 .metric-tile p {
   color: var(--muted);
   font-size: 0.8rem;
@@ -1138,7 +1114,6 @@ body.page-overview {
   color: #042f2e;
 }
 
-.topo-panel,
 .proof-panel {
   background: #141414;
   border: 1px solid #2a2a2a;
@@ -1147,49 +1122,12 @@ body.page-overview {
   min-height: 18rem;
 }
 
-.topo-label,
 .proof-label {
   margin: 0 0 0.85rem;
   color: #a3a3a3;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
-}
-
-.topo-nodes {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.45rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.topo-nodes li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  min-height: 6.5rem;
-  padding: 0.75rem 0.65rem;
-  background: #0a0a0a;
-  border-radius: 10px;
-  color: #e8e8e8;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.02em;
-}
-
-.topo-nodes .dot {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background: #2dd4bf;
-}
-
-.topo-hint {
-  margin: 0.9rem 0 0;
-  color: #d4d4d4;
-  font-size: 0.85rem;
 }
 
 .trust-chips {
@@ -1541,8 +1479,7 @@ body.page-overview {
   .commerce,
   .arch-grid,
   .arch-row,
-  .work-strip,
-  .topo-nodes {
+  .work-strip {
     grid-template-columns: 1fr;
   }
 

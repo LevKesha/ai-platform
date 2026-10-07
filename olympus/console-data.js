@@ -1,7 +1,6 @@
 /** Demo fixtures for the read-only console. Not live telemetry. */
 window.OLYMPUS_CONSOLE = {
   views: [
-    { id: "topology", label: "Platform Topology" },
     { id: "configuration", label: "Configuration" },
     { id: "delivery", label: "Delivery" },
     { id: "infrastructure", label: "Infrastructure" },
@@ -50,36 +49,6 @@ window.OLYMPUS_CONSOLE = {
       command: "kubectl -n llm-cost port-forward svc/litellm 4000:4000",
       localUrl: "http://127.0.0.1:4000/ui",
     },
-  },
-  topology: {
-    note: "Four Helm services on EKS. n8n on its own host.",
-    services: [
-      {
-        name: "agent-api",
-        role: "FastAPI Bedrock /agent",
-        edge: "ClusterIP",
-        public: false,
-      },
-      {
-        name: "rag-service",
-        role: "ingest + search · Claude on EKS",
-        edge: "ClusterIP",
-        public: false,
-      },
-      {
-        name: "mcp-server",
-        role: "tools · resources · prompts · IRSA",
-        edge: "ClusterIP",
-        public: false,
-      },
-      {
-        name: "n8n",
-        role: "workflows · login · screenshare",
-        edge: "Public ALB",
-        public: true,
-        url: "https://n8n.levkesha.com",
-      },
-    ],
   },
   configuration: {
     ssotFile: "platform-config.yaml",
@@ -139,11 +108,5 @@ window.OLYMPUS_CONSOLE = {
   empty: {
     privateRepo:
       "Private repository. No public GitHub link. Evidence is described here; source is not linked.",
-    noPublicEndpoint:
-      "No public endpoint. This surface is ClusterIP or laptop port-forward only.",
-    demoData: "Demo data — read-only fixture. Not live telemetry.",
-    n8nOfflineTitle: "n8n is offline",
-    n8nOfflineBody:
-      "Host unreachable. Continue with Architecture — no invented `/n8n` path.",
   },
 };
