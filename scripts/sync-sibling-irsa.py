@@ -71,19 +71,6 @@ def main() -> int:
             PARENT / "mcp-server/agent-spec.yaml",
             [(r"(iamRole:\s*).+", rf"\g<1>{data['mcp_service_irsa_arn']}")],
         ),
-        (
-            PARENT / "infrastructure/charts/rag-service/values.yaml",
-            [
-                (
-                    r"(eks\.amazonaws\.com/role-arn:\s*).+",
-                    rf"\g<1>{data['rag_service_irsa_arn']}",
-                ),
-                (
-                    r"(repository:\s*).+",
-                    rf"\g<1>{data['ecr_rag_service_repository_url']}",
-                ),
-            ],
-        ),
     ]
     for path, reps in jobs:
         if not path.exists():

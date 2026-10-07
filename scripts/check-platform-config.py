@@ -30,7 +30,6 @@ CHECKS: list[tuple[str, str, str]] = [
     ("rag-service", "agent-spec.yaml", "spec_model"),
     ("rag-service", "k8s/helm/values.yaml", "helm_both"),
     ("rag-service", ".env.example", "env_both"),
-    ("infrastructure", "charts/rag-service/values.yaml", "helm_both"),
     ("llm-cost", "k8s/helm/litellm/files/litellm_config.yaml", "litellm_model"),
 ]
 
