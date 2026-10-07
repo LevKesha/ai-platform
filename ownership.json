@@ -106,7 +106,9 @@
       {"path": "scripts/sync-sibling-irsa.py", "when": "any"},
       {"path": "claude-router/k8s/deployment.yaml", "when": "hunk"},
       {"path": "agents/support-runbook-copilot/k8s/deployment.yaml", "when": "hunk"},
-      {"path": "agents/support-runbook-copilot/agent-spec.yaml", "when": "hunk"}
+      {"path": "agents/support-runbook-copilot/agent-spec.yaml", "when": "hunk"},
+      {"path": "scripts/check-portal-secrets.py", "when": "any"},
+      {"path": ".github/workflows/portal-secrets.yml", "when": "any"}
     ]
   }
 }
