@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from platform_common.bedrock import claude_text, invoke_claude
 
-MODEL_ID = os.getenv("CLAUDE_MODEL_ID", "eu.anthropic.claude-sonnet-4-5-20250929-v1:0")
+MODEL_ID = os.getenv("CLAUDE_MODEL_ID", "eu.anthropic.claude-sonnet-5-5")
 AWS_REGION = os.getenv("AWS_REGION", "eu-central-1")
 
 app = FastAPI(title="support-runbook-copilot", version="0.1.0")

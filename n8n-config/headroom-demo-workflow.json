@@ -20,7 +20,7 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const lines = [];\nfor (let i = 0; i < 400; i++) {\n  const sec = String(i % 60).padStart(2, '0');\n  lines.push(`2026-09-19T12:00:${sec}Z ERROR failed connect db-${(i % 7) + 1}.internal:5432 timeout after 30s retry=${i} host=llm-cost-probe`);\n}\nconst content = lines.join('\\n');\nreturn [{\n  json: {\n    model: 'eu.anthropic.claude-sonnet-4-5-20250929-v1:0',\n    messages: [{\n      role: 'user',\n      content: [{\n        type: 'tool_result',\n        tool_use_id: 'toolu_probe_1',\n        content,\n      }],\n    }],\n    config: {\n      compress_user_messages: true,\n      target_ratio: 0.1,\n      protect_recent: 0,\n    },\n    profile: 'agent-90',\n  },\n}];"
+        "jsCode": "const lines = [];\nfor (let i = 0; i < 400; i++) {\n  const sec = String(i % 60).padStart(2, '0');\n  lines.push(`2026-09-19T12:00:${sec}Z ERROR failed connect db-${(i % 7) + 1}.internal:5432 timeout after 30s retry=${i} host=llm-cost-probe`);\n}\nconst content = lines.join('\\n');\nreturn [{\n  json: {\n    model: 'eu.anthropic.claude-sonnet-5-5',\n    messages: [{\n      role: 'user',\n      content: [{\n        type: 'tool_result',\n        tool_use_id: 'toolu_probe_1',\n        content,\n      }],\n    }],\n    config: {\n      compress_user_messages: true,\n      target_ratio: 0.1,\n      protect_recent: 0,\n    },\n    profile: 'agent-90',\n  },\n}];"
       },
       "id": "hd2",
       "name": "Build Probe Payload",

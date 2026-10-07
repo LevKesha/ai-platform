@@ -71,7 +71,7 @@ def registry_model_mix(config_path: str | Path | None = None) -> dict[str, str]:
     """Default and max slots from platform-config.yaml.
 
     invoke_claude still uses the caller-supplied model_id (CLAUDE_MODEL_ID,
-    the default slot). This does not select the Phase C max id.
+    the default slot). Max is slots.max, not a second hardcoded id.
     """
     from platform_common.registry import load_model_mix
 
