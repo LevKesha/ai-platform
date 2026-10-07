@@ -17,7 +17,7 @@ Response: `{"mode":"rag","route":"rag"}` (either field works for n8n IF node).
 
 | Variable | Default |
 |----------|---------|
-| `CLAUDE_MODEL_ID` | `eu.anthropic.claude-sonnet-4-5-20250929-v1:0` |
+| `CLAUDE_MODEL_ID` | `eu.anthropic.claude-sonnet-5-5` |
 | `AWS_REGION` | `eu-central-1` |
 
 Uses IRSA (`AgentApiIRSA-dev`) for Bedrock invoke. Trust policy must include `system:serviceaccount:dev:claude-router`.

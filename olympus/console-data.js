@@ -84,7 +84,7 @@ window.OLYMPUS_CONSOLE = {
   configuration: {
     ssotFile: "platform-config.yaml",
     ssotRepo: "LevKesha/ai-platform",
-    modelId: "eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    modelId: "eu.anthropic.claude-sonnet-5-5",
     notes: [
       "Bedrock model ID is owned by platform-config.yaml.",
       "/agent stays unwired from LiteLLM.",

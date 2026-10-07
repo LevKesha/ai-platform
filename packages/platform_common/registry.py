@@ -8,9 +8,6 @@ from __future__ import annotations
 from pathlib import Path
 
 SLOT_FIELDS = ("litellm_model_name", "bedrock_id", "anthropic_api_id")
-# Active values must not be the Phase C targets. The comment in
-# platform-config.yaml names eu.anthropic.claude-opus-4-8 for that later flip.
-_PHASE_C_MARKERS = ("opus-4-8", "opus-5", "claude-sonnet-5", "claude-opus-5")
 
 
 def find_platform_config(start: Path | None = None) -> Path:
@@ -53,15 +50,8 @@ def _parse_simple(text: str) -> dict:
     return root
 
 
-def _phase_c_marker(value: str) -> str | None:
-    for marker in _PHASE_C_MARKERS:
-        if marker in value:
-            return marker
-    return None
-
-
 def load_model_mix(config_path: str | Path | None = None) -> dict[str, str]:
-    """Return the live default/max mix. Does not select a Phase C id."""
+    """Return default and max slots from platform-config.yaml."""
     path = Path(config_path) if config_path else find_platform_config()
     parsed = _parse_simple(path.read_text(encoding="utf-8"))
     llm = parsed["llm"]
@@ -71,10 +61,6 @@ def load_model_mix(config_path: str | Path | None = None) -> dict[str, str]:
         slot = slots[name]
         for field in SLOT_FIELDS:
             mix[f"{name}_{field}"] = str(slot[field])
-    for value in mix.values():
-        marker = _phase_c_marker(value)
-        if marker:
-            raise ValueError(f"Phase C id is not live ({marker} in {value})")
     if mix["model_id"] != mix["default_bedrock_id"]:
         raise ValueError("llm.model_id must alias slots.default.bedrock_id")
     if mix["default_litellm_model_name"] == mix["max_litellm_model_name"]:

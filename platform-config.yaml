@@ -5,12 +5,8 @@
 # Do not invent a second model ID in app code or charts.
 #
 # llm.model_id is the alias of llm.slots.default.bedrock_id (live invoke).
-# llm.slots.max is a distinct LiteLLM name so a later change can retarget max
-# without colliding with the default model_name. Both slots still invoke the
-# current default Bedrock id.
-#
-# Phase C (not applied): flip slots.default toward Sonnet 5.5 and set
-# slots.max.bedrock_id to eu.anthropic.claude-opus-4-8 (not opus 5-5).
+# llm.slots.max is LiteLLM name platform-slot-max. Its bedrock_id is Opus 4.8,
+# not Opus 5.5. Embeddings stay amazon.titan-embed-text-v2:0.
 #
 # Infra IDs (IRSA, ACM, subnets, ECR URLs): see platform-infra.dev.json
 # (exported from LevKesha/infrastructure terraform outputs — that repo is SSOT).
@@ -29,19 +25,19 @@ llm:
   provider: bedrock
   # Env var name used by all Bedrock text services
   env_var: CLAUDE_MODEL_ID
-  model_id: eu.anthropic.claude-sonnet-4-5-20250929-v1:0
+  model_id: eu.anthropic.claude-sonnet-5-5
   # Env var name used by rag-service embeddings
   embedding_env_var: EMBEDDING_MODEL_ID
   embedding_model_id: amazon.titan-embed-text-v2:0
   slots:
     default:
-      litellm_model_name: eu.anthropic.claude-sonnet-4-5-20250929-v1:0
-      bedrock_id: eu.anthropic.claude-sonnet-4-5-20250929-v1:0
-      anthropic_api_id: claude-sonnet-4-5-20250929
+      litellm_model_name: eu.anthropic.claude-sonnet-5-5
+      bedrock_id: eu.anthropic.claude-sonnet-5-5
+      anthropic_api_id: claude-sonnet-5-5
     max:
       litellm_model_name: platform-slot-max
-      bedrock_id: eu.anthropic.claude-sonnet-4-5-20250929-v1:0
-      anthropic_api_id: claude-sonnet-4-5-20250929
+      bedrock_id: eu.anthropic.claude-opus-4-8
+      anthropic_api_id: claude-opus-4-8
 
 # Deprecated IDs — must not appear as active defaults in helm / agent-spec / .env.example
 deprecated_model_ids:
@@ -50,3 +46,4 @@ deprecated_model_ids:
   - eu.anthropic.claude-sonnet-4-20250514-v1:0
   - anthropic.claude-sonnet-4-20250514-v1:0
   - anthropic.claude-haiku-20240307-v1:0
+  - eu.anthropic.claude-sonnet-4-5-20250929-v1:0
