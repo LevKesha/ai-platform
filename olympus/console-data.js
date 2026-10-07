@@ -54,6 +54,12 @@ window.OLYMPUS_CONSOLE = {
     ssotFile: "platform-config.yaml",
     ssotRepo: "LevKesha/ai-platform",
     modelId: "eu.anthropic.claude-sonnet-5-5",
+    modelLabel: "Sonnet 5.5",
+    maxModelId: "eu.anthropic.claude-opus-4-8",
+    maxModelLabel: "Opus 4.8",
+    maxSlot: "platform-slot-max",
+    slotNote:
+      "Default is the live invoke ID. Max is LiteLLM name platform-slot-max.",
     notes: [
       "Bedrock model ID is owned by platform-config.yaml.",
       "/agent stays unwired from LiteLLM.",
