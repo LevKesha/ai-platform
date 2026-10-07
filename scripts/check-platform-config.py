@@ -15,6 +15,9 @@ except ImportError:
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "platform-config.yaml"
 PARENT = ROOT.parent
+sys.path.insert(0, str(ROOT / "packages"))
+
+from platform_common.registry import load_model_mix  # noqa: E402
 
 # Paths relative to each sibling repo (or ai-platform itself)
 CHECKS: list[tuple[str, str, str]] = [
@@ -32,6 +35,27 @@ CHECKS: list[tuple[str, str, str]] = [
     ("rag-service", ".env.example", "env_both"),
     ("llm-cost", "k8s/helm/litellm/files/litellm_config.yaml", "litellm_model"),
 ]
+
+# HEADROOM_PROBE_MODEL must stay on the default slot until Phase C.
+PROBE_CHECKS: list[tuple[str, str, str]] = [
+    ("llm-cost", "k8s/helm/headroom-savings/values.yaml", "helm"),
+    ("llm-cost", "savings/app.py", "getenv"),
+    ("llm-cost", "scripts/develop_headroom_traffic.py", "getenv"),
+    ("llm-cost", "scripts/probe_compress.py", "getenv"),
+    ("agent-api", "scripts/develop_cv_jobs_headroom_traffic.py", "getenv"),
+]
+
+# Anthropic API short ids (not Bedrock). Default slot only.
+SHORT_ID_CHECKS: list[tuple[str, str, str]] = [
+    ("agent-api", "llm/providers/anthropic.py", r'model_id:\s*str\s*=\s*"([^"]+)"'),
+    ("agent-api", "llm/providers/factory.py", r'anthropic_model_id:\s*str\s*=\s*"([^"]+)"'),
+    ("agent-api", "orchestrator/config/settings.py", r'anthropic_model_id:\s*str\s*=\s*"([^"]+)"'),
+]
+
+OLYMPUS_MODEL_ID_FILES = (
+    "olympus/console-data.js",
+    "olympus/public-data.js",
+)
 
 
 def load_ssot() -> dict:
@@ -77,10 +101,32 @@ def find_embedding(text: str, env_var: str) -> str | None:
 
 def find_default_getenv(text: str, env_var: str) -> str | None:
     m = re.search(
-        rf'getenv\(\s*["\']{re.escape(env_var)}["\']\s*,\s*["\']([^"\']+)["\']',
+        rf'(?:getenv|environ\.get)\(\s*["\']{re.escape(env_var)}["\']\s*,\s*["\']([^"\']+)["\']',
         text,
     )
     return m.group(1) if m else None
+
+
+def litellm_rows(text: str) -> list[tuple[str, str]]:
+    rows: list[tuple[str, str]] = []
+    name: str | None = None
+    for line in text.splitlines():
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        m = re.search(r"\bmodel_name:\s*([^\s#]+)", s)
+        if m:
+            name = m.group(1)
+            continue
+        m = re.search(r"\bmodel:\s*([^\s#]+)", s)
+        if m and name:
+            rows.append((name, m.group(1)))
+            name = None
+    return rows
+
+
+def repo_path(repo: str, rel: str) -> Path:
+    return (ROOT if repo == "ai-platform" else PARENT / repo) / rel
 
 
 def main() -> int:
@@ -91,13 +137,34 @@ def main() -> int:
     embed_var = llm["embedding_env_var"]
     errors: list[str] = []
 
+    try:
+        mix = load_model_mix(CONFIG)
+    except (OSError, KeyError, ValueError) as exc:
+        print(f"SSOT drift detected:\n  - registry mix: {exc}")
+        return 1
+
+    slots = llm.get("slots") or {}
+    for name in ("default", "max"):
+        slot = slots.get(name) or {}
+        for field in ("litellm_model_name", "bedrock_id", "anthropic_api_id"):
+            if mix.get(f"{name}_{field}") != slot.get(field):
+                errors.append(
+                    f"registry loader {name}.{field} want={slot.get(field)!r} got={mix.get(f'{name}_{field}')!r}"
+                )
+    if mix["model_id"] != want_claude:
+        errors.append(f"registry loader model_id want={want_claude!r} got={mix['model_id']!r}")
+    if want_claude != (slots.get("default") or {}).get("bedrock_id"):
+        errors.append("llm.model_id must alias slots.default.bedrock_id")
+
+    want_short = mix["default_anthropic_api_id"]
+
     # Forbidden: stale tree under ai-platform
     stale = ROOT / "rag-service"
     if stale.exists():
         errors.append(f"stale tree must be removed: {stale}")
 
     for repo, rel, kind in CHECKS:
-        path = (ROOT if repo == "ai-platform" else PARENT / repo) / rel
+        path = repo_path(repo, rel)
         if not path.exists():
             errors.append(f"missing: {path}")
             continue
@@ -110,10 +177,19 @@ def main() -> int:
             if got != want_claude:
                 errors.append(f"{path}: {claude_var}/model want={want_claude!r} got={got!r}")
         if kind == "litellm_model":
-            m = re.search(r"model_name:\s*([^\s#]+)", text)
-            got = m.group(1) if m else None
-            if got != want_claude:
-                errors.append(f"{path}: model_name want={want_claude!r} got={got!r}")
+            rows = litellm_rows(text)
+            want_rows = {
+                (
+                    mix["default_litellm_model_name"],
+                    f"bedrock/converse/{mix['default_bedrock_id']}",
+                ),
+                (
+                    mix["max_litellm_model_name"],
+                    f"bedrock/converse/{mix['max_bedrock_id']}",
+                ),
+            }
+            if set(rows) != want_rows:
+                errors.append(f"{path}: model_list want={sorted(want_rows)!r} got={rows!r}")
             continue
         if kind == "claude_default":
             got = find_default_getenv(text, claude_var)
@@ -123,6 +199,43 @@ def main() -> int:
             got_e = find_embedding(text, embed_var)
             if got_e != want_embed:
                 errors.append(f"{path}: {embed_var} want={want_embed!r} got={got_e!r}")
+
+    for repo, rel, kind in PROBE_CHECKS:
+        path = repo_path(repo, rel)
+        if not path.exists():
+            errors.append(f"missing: {path}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        got = find_model(text, "HEADROOM_PROBE_MODEL") if kind == "helm" else find_default_getenv(text, "HEADROOM_PROBE_MODEL")
+        if got != want_claude:
+            errors.append(f"{path}: HEADROOM_PROBE_MODEL want={want_claude!r} got={got!r}")
+
+    for repo, rel, pattern in SHORT_ID_CHECKS:
+        path = repo_path(repo, rel)
+        if not path.exists():
+            errors.append(f"missing: {path}")
+            continue
+        text = path.read_text(encoding="utf-8")
+        found = re.findall(pattern, text)
+        if found != [want_short]:
+            errors.append(f"{path}: anthropic short id want={want_short!r} got={found!r}")
+
+    for rel in OLYMPUS_MODEL_ID_FILES:
+        path = ROOT / rel
+        if not path.exists():
+            errors.append(f"missing: {path}")
+            continue
+        found = re.findall(r'modelId:\s*"([^"]+)"', path.read_text(encoding="utf-8"))
+        if found != [want_claude]:
+            errors.append(f"{path}: modelId want={want_claude!r} got={found!r}")
+
+    cursor_html = ROOT / "olympus" / "cursor" / "index.html"
+    if not cursor_html.exists():
+        errors.append(f"missing: {cursor_html}")
+    else:
+        ids = re.findall(r"eu\.anthropic\.[A-Za-z0-9._:-]+", cursor_html.read_text(encoding="utf-8"))
+        if ids != [want_claude]:
+            errors.append(f"{cursor_html}: bedrock ids want={[want_claude]!r} got={ids!r}")
 
     if errors:
         print("SSOT drift detected:")

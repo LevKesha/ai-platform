@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+from pathlib import Path
 from typing import Any
 
 import boto3
@@ -64,3 +65,14 @@ def invoke_claude(
 def claude_text(result: dict[str, Any]) -> str:
     """Extract first text block from an Anthropic Messages response."""
     return result["content"][0]["text"].strip()
+
+
+def registry_model_mix(config_path: str | Path | None = None) -> dict[str, str]:
+    """Default and max slots from platform-config.yaml.
+
+    invoke_claude still uses the caller-supplied model_id (CLAUDE_MODEL_ID,
+    the default slot). This does not select the Phase C max id.
+    """
+    from platform_common.registry import load_model_mix
+
+    return load_model_mix(config_path)
