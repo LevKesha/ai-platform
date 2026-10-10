@@ -78,6 +78,7 @@ window.OLYMPUS_CONSOLE = {
     parkedBranch: "main",
     productionCluster: false,
   },
+  edgePaths: ["/cv-jobs", "/v1/demo", "/headroom", "/v1/hr", "/litellm", "/litellm/ui"],
   spend: {
     surfaces: [
       {
@@ -90,7 +91,7 @@ window.OLYMPUS_CONSOLE = {
       },
       {
         name: "Headroom savings Admin",
-        access: "Cognito at olympus.levkesha.com/headroom → ClusterIP :8790 → :8787",
+        access: "Cognito at olympus.levkesha.com/headroom → ClusterIP :8790 → :8787 (/headroom + /v1/hr)",
       },
       {
         name: "Headroom sidecar",

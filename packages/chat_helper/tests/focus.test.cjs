@@ -148,6 +148,7 @@ if (text.indexOf("live look") !== -1 || text.indexOf("walkthrough") !== -1) {
 
 function chatFetch(status) {
   return function (url) {
+    if (url !== policy.api_path) fail("request path was " + url + " not " + policy.api_path);
     return Promise.resolve({
       url: url,
       status: status,

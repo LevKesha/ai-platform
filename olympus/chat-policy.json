@@ -2,6 +2,7 @@
   "turn_limit": 10,
   "live_answers": 5,
   "cap_micro": 3000000,
+  "api_path": "/chat",
   "chat_ttl_hours": 24,
   "unanswered_ttl_days": 30,
   "privacy": "Chats expire after 24 hours. Questions I can't answer expire after 30 days, and are kept as text only so Lev can see what people ask.",
