@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Olympus — Asleep</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-console">
+  <a class="skip-link" href="#gated-panel">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">Olympus</a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Overview</a>
+        <a href="proof.html">Proof</a>
+        <a href="architecture.html">Architecture</a>
+        <a href="cursor/index.html">Cursor</a>
+        <a href="evidence.html">Evidence</a>
+        <a href="console.html" aria-current="page">Console</a>
+      </nav>
+    </div>
+  </header>
+  <main id="gated-panel" class="gated-wrap">
+    <h1 id="gated-title">Console</h1>
+    <section class="gated-panel" aria-labelledby="gated-title">
+      <p class="sleep-pill"><span class="sleep-dot"></span>Asleep</p>
+      <p class="gated-copy">This part is asleep right now. Request a look and Lev will open it up.</p>
+      <button type="button" class="btn btn-primary sleep-cta" id="gated-look">Request a look</button>
+    </section>
+  </main>
+  <script src="sleep.js"></script>
+</body>
+</html>

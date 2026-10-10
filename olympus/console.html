@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="page-console">
-  <a class="skip-link" href="#console-panel">Skip to content</a>
+  <a class="skip-link" href="#sleep-portal">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
       <a class="brand" href="index.html">Olympus</a>
@@ -21,6 +21,16 @@
       </nav>
     </div>
   </header>
+
+  <section class="sleep-portal" id="sleep-portal" aria-labelledby="sleep-title" data-endpoint="/wake" data-demo="/cv-jobs/">
+    <h1 id="sleep-title">Console</h1>
+    <p class="sleep-sub">The real platform, asleep between visits. Request a look to see it running.</p>
+    <div class="sleep-card">
+      <div class="sleep-poster" id="sleep-poster"></div>
+      <div class="sleep-panel" id="sleep-panel"></div>
+    </div>
+    <p id="sleep-live" class="visually-hidden" aria-live="polite"></p>
+  </section>
 
   <section class="console-s1" aria-labelledby="console-s1-heading">
     <p class="console-s1-intro" id="console-s1-heading">Infrastructure at the center. Ops around it. Surfaces you open on the edge.</p>
@@ -173,6 +183,7 @@
     </div>
   </div>
 
+  <script src="sleep.js"></script>
   <script src="console-data.js"></script>
   <script src="console.js"></script>
 </body>
