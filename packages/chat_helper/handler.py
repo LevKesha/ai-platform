@@ -208,8 +208,8 @@ def handle(event: dict, deps: Deps) -> dict:
         backend = deps.theseus
         live = True
     system = system_prompt(lines)
-    model_kind = backend.kind
-    worst = worst_case_micro(question, history, system, model_kind)
+    slot = "default" if live else "helper"
+    worst = worst_case_micro(question, history, system, slot)
     month = f"SPEND#{now.strftime('%Y-%m')}"
     try:
         hold = deps.ledger.reserve(month, idem, worst)
@@ -264,7 +264,7 @@ def handle(event: dict, deps: Deps) -> dict:
     show_switch = used_live and completed == live_answers - 1
     body = answer_body(policy, text, label, show_switch)
     usage = getattr(result, "usage", None) or {"input_tokens": 0, "output_tokens": 0}
-    actual = actual_micro(usage, "sonnet" if used_live else "haiku")
+    actual = actual_micro(usage, "default" if used_live else "helper")
     deps.ledger.settle(month, idem, actual, body)
     deps.ledger.bump(chat_id, now)
     return _finish(200, body, "answer")
@@ -273,8 +273,7 @@ def handle(event: dict, deps: Deps) -> dict:
 class BedrockModel:
     """Converse adapter. Tests inject a stub and never construct this."""
 
-    def __init__(self, kind: str, model_id: str) -> None:
-        self.kind = kind
+    def __init__(self, model_id: str) -> None:
         self.model_id = model_id
 
     def converse(self, **kwargs: Any) -> Any:
@@ -315,12 +314,12 @@ def deps_from_env(env: dict | None = None) -> Deps:
         corpus = load_lines()
     theseus = None
     if source.get("THESEUS_HANDOFF") == "1":
-        theseus = BedrockModel("sonnet", live_model_id())
+        theseus = BedrockModel(live_model_id())
     return Deps(
         policy=policy,
         corpus=corpus,
         ledger=ledger_from_env(dict(source), policy),
-        haiku=BedrockModel("haiku", helper_model_id()),
+        haiku=BedrockModel(helper_model_id()),
         theseus=theseus,
         bedrock_enabled=source.get("BEDROCK_ENABLED") == "1",
         now=lambda: datetime.now(timezone.utc),

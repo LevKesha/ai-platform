@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import io
 import json
+import re
 import subprocess
 import sys
 import threading
@@ -110,6 +111,23 @@ def test_policy_is_the_only_copy_of_the_limits() -> None:
         text = path.read_text(encoding="utf-8")
         for needle in needles:
             assert needle not in text, path
+
+
+def test_chat_api_path_lives_only_in_the_policy() -> None:
+    policy = load_policy()
+    api = policy["api_path"]
+    assert isinstance(api, str) and api.startswith("/")
+    source = (ROOT / "olympus" / "chat.js").read_text(encoding="utf-8")
+    assert api not in source
+    assert "api_path" in source
+
+
+def test_console_edge_paths_include_headroom_api() -> None:
+    text = (ROOT / "olympus" / "console-data.js").read_text(encoding="utf-8")
+    match = re.search(r"edgePaths:\s*\[(.*?)\]", text, re.DOTALL)
+    assert match, "console-data.js has no edgePaths"
+    paths = re.findall(r'"([^"]+)"', match.group(1))
+    assert "/v1/hr" in paths
 
 
 def test_handler_reads_helper_slot_without_a_literal() -> None:
@@ -306,7 +324,7 @@ def test_settle_books_usage_not_the_reserve(monkeypatch) -> None:
     payload = _json(handle(_event(_ask(), idem="usage"), _deps(model, ledger=ledger)))
     assert payload["kind"] == "answer"
     booked = ledger.months["SPEND#2026-10"]["holds"]["usage"]["actual"]
-    expected = actual_micro({"input_tokens": 4, "output_tokens": 4}, "haiku")
+    expected = actual_micro({"input_tokens": 4, "output_tokens": 4}, "helper")
     assert booked == expected
     assert booked == ledger.months["SPEND#2026-10"]["settled"]
     assert booked > 1

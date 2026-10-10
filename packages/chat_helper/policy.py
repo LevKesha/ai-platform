@@ -8,6 +8,7 @@ REQUIRED = (
     "turn_limit",
     "live_answers",
     "cap_micro",
+    "api_path",
     "chat_ttl_hours",
     "unanswered_ttl_days",
     "privacy",

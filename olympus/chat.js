@@ -212,9 +212,18 @@
       if (name === "limit") showClosed();
     }
 
+    function chatApiPath() {
+      const path = policy.api_path;
+      if (typeof path !== "string" || path.charAt(0) !== "/") {
+        throw new Error("chat policy api_path is required");
+      }
+      return path;
+    }
+
     function isChatApi(url) {
       const path = String(url).split("?")[0];
-      return path === "/chat" || path.indexOf("/chat/") === 0;
+      const api = chatApiPath();
+      return path === api || path.indexOf(api + "/") === 0;
     }
 
     function ask(question) {
@@ -227,7 +236,7 @@
         question: question,
         history: options.history || [],
       };
-      const chatPath = "/chat";
+      const chatPath = chatApiPath();
       return buildRequest(payload)
         .then(function (request) {
           return (options.fetchImpl || fetch)(chatPath, {
