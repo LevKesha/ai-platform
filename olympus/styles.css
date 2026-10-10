@@ -1353,7 +1353,6 @@ body.page-overview {
   font-size: 0.8rem;
 }
 
-.page-cursor main,
 .page-work main {
   max-width: 90rem;
 }
@@ -1847,5 +1846,156 @@ body.sleep-shot #private-modal {
   .sleep-dot.is-live,
   .sleep-spin {
     animation: none;
+  }
+}
+
+/* /cursor — column contract: the diagram image width is the content column; height is auto. */
+
+.page-cursor .run-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #111;
+  padding: 1.2rem;
+}
+
+.page-cursor h1 {
+  margin: 0 0 0.3rem;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.page-cursor .intro {
+  max-width: 46rem;
+  margin: 0.35rem 0 1rem;
+  color: #c4c4c4;
+  font-size: 15px;
+}
+
+.page-cursor .subline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.page-cursor .subline + .subline {
+  margin-bottom: 0.6rem;
+}
+
+.page-cursor .cursor-diagram {
+  margin: 0.6rem 0 0;
+}
+
+.page-cursor .cursor-diagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  background: #0b0b0b;
+}
+
+.page-cursor .proof-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page-cursor .proof-chips > li {
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-panel);
+  color: var(--text);
+  font-size: 13.5px;
+}
+
+.page-cursor .proof-chips p {
+  margin: 0;
+}
+
+.page-cursor .proof-chips p + p,
+.page-cursor .trail p + p {
+  margin-top: 0.15rem;
+}
+
+.page-cursor .trail {
+  margin-top: 0.55rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--border);
+  color: #a3a3a3;
+  font-size: 12.5px;
+}
+
+.page-cursor .trail strong {
+  color: #c4c4c4;
+  font-weight: 600;
+}
+
+.page-cursor .proof-chips a {
+  color: var(--accent);
+}
+
+.page-cursor .prin {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.page-cursor .prin li {
+  margin: 0;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.page-cursor .diagram-source {
+  margin: 0.7rem 0 0;
+  color: #a3a3a3;
+  font-size: 12.5px;
+}
+
+.page-cursor .btnrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.page-cursor .btnrow .btn {
+  border-radius: 999px;
+}
+
+.page-cursor .btnrow .btn-primary {
+  padding: 0.7rem 1.3rem;
+  border: 0;
+  font-weight: 700;
+}
+
+.page-cursor .btnrow .btn:not(.btn-primary) {
+  padding: 0.55rem 1rem;
+  font-size: 14px;
+}
+
+.page-overview .run-work {
+  margin: 0.85rem 0 0;
+  font-size: 0.95rem;
+}
+
+.page-overview .run-work a {
+  color: #0f766e;
+  font-weight: 600;
+}
+
+@media (max-width: 800px) {
+  .page-cursor .proof-chips {
+    grid-template-columns: 1fr;
   }
 }
