@@ -237,36 +237,79 @@ def test_two_callers_cannot_both_reserve_the_cap() -> None:
     assert ledger.months["SPEND#2026-10"]["settled"] + reserved <= cap
 
 
-def test_timeout_then_retry_then_replay() -> None:
-    class Flaky(Stub):
-        def __init__(self) -> None:
-            super().__init__("haiku")
-            self.calls_n = 0
-
+def test_timeout_then_retry_does_not_call_the_model_again() -> None:
+    class Once(Stub):
         def converse(self, **kwargs):
             self.calls.append(kwargs)
-            self.calls_n += 1
-            if self.calls_n == 1:
-                raise ModelTimeout()
-            return super().converse(**kwargs)
+            raise ModelTimeout()
 
-    policy = load_policy()
-    ledger = MemoryLedger(policy)
-    model = Flaky()
+    ledger = MemoryLedger(load_policy())
+    model = Once("haiku")
     deps = _deps(model, ledger=ledger)
     first = _json(handle(_event(_ask(), idem="same"), deps))
     assert first["kind"] == "retry"
+    assert first["input_enabled"] is True
     hold = ledger.months["SPEND#2026-10"]["holds"]["same"]
     assert hold["status"] == "reserved"
     assert ledger.months["SPEND#2026-10"]["settled"] == 0
     second = _json(handle(_event(_ask(), idem="same"), deps))
-    assert second["kind"] == "answer"
-    assert model.calls_n == 2
-    settled = ledger.months["SPEND#2026-10"]["settled"]
-    third = _json(handle(_event(_ask(), idem="same"), deps))
-    assert third == second
-    assert model.calls_n == 2
-    assert ledger.months["SPEND#2026-10"]["settled"] == settled
+    assert second["kind"] == "retry"
+    assert len(model.calls) == 1
+    assert ledger.months["SPEND#2026-10"]["settled"] == 0
+    assert ledger.months["SPEND#2026-10"]["holds"]["same"]["status"] == "reserved"
+
+
+def test_same_key_in_flight_calls_the_model_once() -> None:
+    started = threading.Event()
+    release = threading.Event()
+
+    class Blocking(Stub):
+        def converse(self, **kwargs):
+            if self.calls:
+                return super().converse(**kwargs)
+            started.set()
+            assert release.wait(timeout=5)
+            return super().converse(**kwargs)
+
+    ledger = MemoryLedger(load_policy())
+    model = Blocking("haiku")
+    deps = _deps(model, ledger=ledger)
+    results: dict[str, dict] = {}
+
+    def lead() -> None:
+        results["lead"] = _json(handle(_event(_ask(), idem="same"), deps))
+
+    def follow() -> None:
+        assert started.wait(timeout=5)
+        results["follow"] = _json(handle(_event(_ask(), idem="same"), deps))
+        release.set()
+
+    threads = [threading.Thread(target=lead), threading.Thread(target=follow)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert results["follow"]["kind"] == "retry"
+    assert results["lead"]["kind"] == "answer"
+    assert len(model.calls) == 1
+    replay = _json(handle(_event(_ask(), idem="same"), deps))
+    assert replay == results["lead"]
+    assert len(model.calls) == 1
+
+
+def test_settle_books_usage_not_the_reserve(monkeypatch) -> None:
+    from chat_helper.pricing import actual_micro
+
+    monkeypatch.setattr("chat_helper.handler.worst_case_micro", lambda *args, **kwargs: 1)
+    ledger = MemoryLedger(load_policy())
+    model = Stub("haiku")
+    payload = _json(handle(_event(_ask(), idem="usage"), _deps(model, ledger=ledger)))
+    assert payload["kind"] == "answer"
+    booked = ledger.months["SPEND#2026-10"]["holds"]["usage"]["actual"]
+    expected = actual_micro({"input_tokens": 4, "output_tokens": 4}, "haiku")
+    assert booked == expected
+    assert booked == ledger.months["SPEND#2026-10"]["settled"]
+    assert booked > 1
 
 
 def test_sixth_answer_is_haiku_when_theseus_is_on() -> None:
@@ -392,6 +435,117 @@ def test_focus_moves_to_the_request_link() -> None:
         text=True,
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def _aws_region() -> str:
+    from platform_common.registry import _parse_simple, find_platform_config
+
+    config = find_platform_config(ROOT / "packages" / "platform_common" / "registry.py")
+    parsed = _parse_simple(config.read_text(encoding="utf-8"))
+    region = parsed["aws"]["region"]
+    if not region:
+        raise AssertionError("aws.region missing from platform-config.yaml")
+    return str(region)
+
+
+def _moto_ledger():
+    import boto3
+    from chat_helper.ledger import TTL_ATTRIBUTE, NativeDynamo, TableLedger
+    from moto import mock_aws
+
+    region = _aws_region()
+    context = mock_aws()
+    context.start()
+    boto3.client("dynamodb", region_name=region).create_table(
+        TableName="chat",
+        BillingMode="PAY_PER_REQUEST",
+        AttributeDefinitions=[{"AttributeName": "pk", "AttributeType": "S"}],
+        KeySchema=[{"AttributeName": "pk", "KeyType": "HASH"}],
+    )
+    client = NativeDynamo(boto3.client("dynamodb", region_name=region))
+    return context, client, TableLedger("chat", client, load_policy()), TTL_ATTRIBUTE
+
+
+def test_ttl_is_set_from_the_policy(monkeypatch) -> None:
+    region = _aws_region()
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
+    monkeypatch.setenv("AWS_SESSION_TOKEN", "testing")
+    monkeypatch.setenv("AWS_DEFAULT_REGION", region)
+    policy = load_policy()
+    context, client, ledger, ttl_name = _moto_ledger()
+    try:
+        ledger.write_chat("c", 2, NOW)
+        ledger.write_unanswered("What is Lev's salary?", NOW)
+        chat = client.get_item(TableName="chat", Key={"pk": "CHAT#c"})["Item"]
+        unanswered = client.scan(TableName="chat")["Items"]
+        unanswered = [item for item in unanswered if str(item["pk"]).startswith("UNANSWERED#")]
+        assert len(unanswered) == 1
+        chat_ttl = int((NOW + timedelta(hours=int(policy["chat_ttl_hours"]))).timestamp())
+        gap_ttl = int((NOW + timedelta(days=int(policy["unanswered_ttl_days"]))).timestamp())
+        assert ttl_name in chat
+        assert int(chat[ttl_name]) == chat_ttl
+        assert int(unanswered[0][ttl_name]) == gap_ttl
+        assert chat_ttl != gap_ttl
+    finally:
+        context.stop()
+
+
+def test_chat_state_survives_a_cold_start(monkeypatch) -> None:
+    region = _aws_region()
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
+    monkeypatch.setenv("AWS_SESSION_TOKEN", "testing")
+    monkeypatch.setenv("AWS_DEFAULT_REGION", region)
+    from chat_helper.ledger import TableLedger
+
+    context, client, ledger, _ttl_name = _moto_ledger()
+    try:
+        policy = load_policy()
+        theseus = Stub("sonnet")
+        haiku = Stub("haiku")
+        deps = _deps(haiku, theseus=theseus, ledger=ledger)
+        live = int(policy["live_answers"])
+        for index in range(live):
+            assert _json(handle(_event(_ask(), idem=f"live{index}"), deps))["label"] == policy["label_live"]
+        assert ledger.write_unanswered("What is Lev's salary?", NOW)["text"] == "What is Lev's salary?"
+        cold = TableLedger("chat", client, policy)
+        assert cold.read_turns("c1", NOW) == live
+        assert cold.chat_closed("c1", NOW) is False
+        assert cold.read_unanswered(NOW) == ["What is Lev's salary?"]
+        next_theseus = Stub("sonnet")
+        next_haiku = Stub("haiku")
+        follow = _deps(next_haiku, theseus=next_theseus, ledger=cold)
+        payload = _json(handle(_event(_ask(), idem="after"), follow))
+        assert payload["label"] == policy["label_cv"]
+        assert next_theseus.calls == []
+        assert len(next_haiku.calls) == 1
+        assert cold.read_turns("c1", NOW) == live + 1
+    finally:
+        context.stop()
+
+
+def test_spend_cap_still_holds_on_the_table(monkeypatch) -> None:
+    region = _aws_region()
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
+    monkeypatch.setenv("AWS_SESSION_TOKEN", "testing")
+    monkeypatch.setenv("AWS_DEFAULT_REGION", region)
+    context, client, ledger, _ttl_name = _moto_ledger()
+    try:
+        policy = load_policy()
+        cap = int(policy["cap_micro"])
+        assert ledger.reserve("SPEND#2026-10", "a", cap).ok
+        assert ledger.reserve("SPEND#2026-10", "b", 1).ok is False
+        settled = ledger.settle("SPEND#2026-10", "a", cap, {"kind": "answer", "text": "ok"})
+        assert settled.settled
+        replay = ledger.reserve("SPEND#2026-10", "a", cap)
+        assert replay.replay and replay.settled
+        item = client.get_item(TableName="chat", Key={"pk": "SPEND#2026-10"})["Item"]
+        assert int(item["settled"]) == cap
+        assert "203.0.113.10" not in json.dumps(item, default=str)
+    finally:
+        context.stop()
 
 
 def test_privacy_contrast() -> None:

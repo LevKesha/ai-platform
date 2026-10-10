@@ -145,3 +145,41 @@ if (!panel.log.children.some(function (node) { return node.attrs.class === "chat
 if (text.indexOf("live look") !== -1 || text.indexOf("walkthrough") !== -1) {
   fail("panel answered with the hero geo note");
 }
+
+function chatFetch(status) {
+  return function (url) {
+    return Promise.resolve({
+      url: url,
+      status: status,
+      json: function () {
+        throw new Error("not json");
+      },
+    });
+  };
+}
+
+function askAndCheck(status, expectClosed) {
+  const doc = document();
+  const widget = createWidget(doc, {
+    policy: policy,
+    fetchImpl: chatFetch(status),
+  });
+  return widget.ask(policy.suggested[0]).then(function () {
+    const closed = widget.log.textContent.indexOf(policy.closed) !== -1;
+    if (closed !== expectClosed) fail("status " + status + " closed=" + closed);
+    if (widget.input.disabled !== expectClosed) fail("status " + status + " input disabled mismatch");
+    if (widget.send.disabled !== expectClosed) fail("status " + status + " send disabled mismatch");
+    if (expectClosed && doc.activeElement !== widget.link()) {
+      fail("403 did not focus the request link");
+    }
+    if (widget.log.textContent.indexOf(String(status)) !== -1) {
+      fail("status number leaked into the panel");
+    }
+  });
+}
+
+askAndCheck(500, false).then(function () {
+  return askAndCheck(403, true);
+}).catch(function (error) {
+  fail(error && error.message ? error.message : "waf test failed");
+});

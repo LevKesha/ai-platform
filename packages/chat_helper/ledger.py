@@ -1,16 +1,28 @@
 """Month spend, chat turn counts, and unanswered text.
 
 The conditional update is apply_reserve / apply_settle. A retry with the same
-key does not reserve again and does not release twice. TTL fields are cleanup
-only. Reads apply the chat and unanswered windows from the chat policy.
+key does not reserve again and does not release twice. The TTL attribute is
+cleanup only. Reads apply the chat and unanswered windows from the chat policy.
+
+Chat turns (also the live-answer counter) and unanswered text are rows in
+CHAT_TABLE when that env var is set. The month spend row is unchanged.
 """
 from __future__ import annotations
 
 import copy
 import threading
+import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable
+
+# DynamoDB TTL attribute. Must be the table's ttl.attribute_name.
+# In-repo records already use this name. LevKesha/infrastructure#27 was not
+# readable from this environment (private repo), so a different infra name
+# would be a mismatch.
+TTL_ATTRIBUTE = "ttl"
+CHAT_PREFIX = "CHAT#"
+UNANSWERED_PREFIX = "UNANSWERED#"
 
 
 
@@ -57,7 +69,7 @@ def apply_settle(item: dict, idem: str, actual: int, response: dict) -> dict | N
     if hold is None or hold["status"] != "reserved":
         return None
     updated = copy.deepcopy(item)
-    booked = min(int(actual), int(hold["amount"]))
+    booked = int(actual)
     updated["settled"] = int(updated["settled"]) + booked
     updated["holds"][idem] = {
         "amount": hold["amount"],
@@ -133,7 +145,7 @@ class MemoryLedger:
                 "created": now,
                 "turns": 0,
                 "closed": False,
-                "ttl": int((now + self.chat_ttl).timestamp()),
+                TTL_ATTRIBUTE: int((now + self.chat_ttl).timestamp()),
             }
             self.chats[chat_id] = item
         item["turns"] = turns
@@ -151,7 +163,7 @@ class MemoryLedger:
         record = {
             "text": text,
             "created": now.isoformat(),
-            "ttl": int((now + self.unanswered_ttl).timestamp()),
+            TTL_ATTRIBUTE: int((now + self.unanswered_ttl).timestamp()),
         }
         self.unanswered.append(record)
         return record
@@ -174,102 +186,172 @@ class TableLedger:
         self.cap = int(policy["cap_micro"])
         self.chat_ttl = timedelta(hours=int(policy["chat_ttl_hours"]))
         self.unanswered_ttl = timedelta(days=int(policy["unanswered_ttl_days"]))
-        self.chats: dict[str, dict] = {}
-        self.unanswered: list[dict] = []
+        self._chat_lock = threading.Lock()
+
+    def _load_month(self, month: str) -> dict | None:
+        item = self._get(month)
+        if not item:
+            return None
+        item.pop("pk", None)
+        return item
+
+    def _view(self, item: dict | None) -> dict | None:
+        if item is None:
+            return None
+        return {"settled": int(item.get("settled") or 0), "holds": item.get("holds") or {}}
+
+    def _commit_month(self, month: str, current: dict | None, updated: dict) -> None:
+        """Persist apply_reserve / apply_settle. The version condition is the race."""
+        reserved = sum(
+            int(hold["amount"]) for hold in updated["holds"].values() if hold["status"] == "reserved"
+        )
+        seen = 0 if current is None else int(current.get("ver") or 0)
+        values: dict[str, Any] = {
+            ":settled": int(updated["settled"]),
+            ":reserved": reserved,
+            ":holds": updated["holds"],
+            ":next": seen + 1,
+        }
+        if current is None:
+            condition = "attribute_not_exists(#ver)"
+        else:
+            condition = "#ver = :seen"
+            values[":seen"] = seen
+        self.client.update_item(
+            TableName=self.table,
+            Key={"pk": month},
+            ConditionExpression=condition,
+            UpdateExpression="SET settled = :settled, reserved = :reserved, #holds = :holds, #ver = :next",
+            ExpressionAttributeNames={"#holds": "holds", "#ver": "ver"},
+            ExpressionAttributeValues=values,
+        )
 
     def reserve(self, month: str, idem: str, amount: int) -> Reservation:
-        try:
-            self.client.update_item(
-                TableName=self.table,
-                Key={"pk": month},
-                ConditionExpression=(
-                    "attribute_not_exists(#holds.#idem) AND "
-                    "if_not_exists(settled, :zero) + if_not_exists(reserved, :zero) + :amt <= :cap"
-                ),
-                UpdateExpression=(
-                    "SET settled = if_not_exists(settled, :zero), "
-                    "reserved = if_not_exists(reserved, :zero) + :amt, "
-                    "#holds.#idem = :hold"
-                ),
-                ExpressionAttributeNames={"#holds": "holds", "#idem": idem},
-                ExpressionAttributeValues={
-                    ":amt": amount,
-                    ":zero": 0,
-                    ":cap": self.cap,
-                    ":hold": {"amount": amount, "status": "reserved"},
-                },
-            )
-        except ConditionalCheckFailed:
-            item = self.client.get_item(TableName=self.table, Key={"pk": month}).get("Item") or {}
-            hold = (item.get("holds") or {}).get(idem)
-            if hold:
+        for _ in range(8):
+            current = self._load_month(month)
+            existing = ((current or _blank())["holds"]).get(idem) if current else None
+            if existing:
                 return Reservation(
                     True,
                     replay=True,
-                    settled=hold.get("status") == "settled",
-                    response=hold.get("response"),
+                    settled=existing.get("status") == "settled",
+                    response=existing.get("response"),
                 )
-            return Reservation(False)
-        except LedgerError:
-            raise
-        return Reservation(True)
+            updated = apply_reserve(self._view(current), idem, amount, self.cap)
+            if updated is None:
+                return Reservation(False)
+            try:
+                self._commit_month(month, current, updated)
+            except ConditionalCheckFailed:
+                continue
+            return Reservation(True)
+        raise LedgerError("unavailable")
 
     def settle(self, month: str, idem: str, actual: int, response: dict) -> Reservation:
-        try:
-            self.client.update_item(
-                TableName=self.table,
-                Key={"pk": month},
-                ConditionExpression="#holds.#idem.#status = :reserved",
-                UpdateExpression=(
-                    "SET settled = settled + :actual, "
-                    "reserved = reserved - #holds.#idem.#amount, "
-                    "#holds.#idem.#status = :settled, "
-                    "#holds.#idem.#actual = :actual, "
-                    "#holds.#idem.#response = :response"
-                ),
-                ExpressionAttributeNames={
-                    "#holds": "holds",
-                    "#idem": idem,
-                    "#status": "status",
-                    "#amount": "amount",
-                    "#actual": "actual",
-                    "#response": "response",
-                },
-                ExpressionAttributeValues={
-                    ":reserved": "reserved",
-                    ":settled": "settled",
-                    ":actual": actual,
-                    ":response": response,
-                },
-            )
-        except ConditionalCheckFailed:
-            item = self.client.get_item(TableName=self.table, Key={"pk": month}).get("Item") or {}
-            hold = (item.get("holds") or {}).get(idem) or {}
-            if hold.get("status") == "settled":
-                return Reservation(True, replay=True, settled=True, response=hold.get("response"))
-            raise LedgerError("settle condition failed") from None
-        return Reservation(True, settled=True, response=response)
+        for _ in range(8):
+            current = self._load_month(month)
+            view = self._view(current)
+            existing = (view or _blank())["holds"].get(idem) if view else None
+            if existing and existing.get("status") == "settled":
+                return Reservation(True, replay=True, settled=True, response=existing.get("response"))
+            if view is None or existing is None:
+                raise LedgerError("settle condition failed")
+            updated = apply_settle(view, idem, actual, response)
+            if updated is None:
+                raise LedgerError("settle condition failed")
+            try:
+                self._commit_month(month, current, updated)
+            except ConditionalCheckFailed:
+                continue
+            return Reservation(True, settled=True, response=response)
+        raise LedgerError("unavailable")
+
+    def _get(self, pk: str) -> dict | None:
+        found = self.client.get_item(TableName=self.table, Key={"pk": pk})
+        item = found.get("Item")
+        return item if item else None
+
+    def _put(self, item: dict) -> None:
+        self.client.put_item(TableName=self.table, Item=item)
+
+    def _scan_prefix(self, prefix: str) -> list[dict]:
+        items: list[dict] = []
+        kwargs: dict[str, Any] = {
+            "TableName": self.table,
+            "FilterExpression": "begins_with(pk, :prefix)",
+            "ExpressionAttributeValues": {":prefix": prefix},
+        }
+        while True:
+            found = self.client.scan(**kwargs)
+            items.extend(found.get("Items") or [])
+            last = found.get("LastEvaluatedKey")
+            if not last:
+                return items
+            kwargs["ExclusiveStartKey"] = last
+
+    def _open_chat(self, chat_id: str, now: datetime) -> dict | None:
+        item = self._get(CHAT_PREFIX + chat_id)
+        if item is None:
+            return None
+        created = datetime.fromisoformat(str(item["created"]))
+        if now - created >= self.chat_ttl:
+            return None
+        return item
 
     def read_turns(self, chat_id: str, now: datetime) -> int:
-        return MemoryLedger.read_turns(self, chat_id, now)  # type: ignore[arg-type]
+        item = self._open_chat(chat_id, now)
+        if item is None:
+            return 0
+        return int(item["turns"])
 
     def chat_closed(self, chat_id: str, now: datetime) -> bool:
-        return MemoryLedger.chat_closed(self, chat_id, now)  # type: ignore[arg-type]
+        item = self._open_chat(chat_id, now)
+        if item is None:
+            return False
+        return bool(item.get("closed"))
 
     def write_chat(self, chat_id: str, turns: int, now: datetime, closed: bool = False) -> None:
-        MemoryLedger.write_chat(self, chat_id, turns, now, closed)  # type: ignore[arg-type]
+        with self._chat_lock:
+            item = self._open_chat(chat_id, now)
+            if item is None:
+                item = {
+                    "pk": CHAT_PREFIX + chat_id,
+                    "created": now.isoformat(),
+                    "turns": 0,
+                    "closed": False,
+                    TTL_ATTRIBUTE: int((now + self.chat_ttl).timestamp()),
+                }
+            item["pk"] = CHAT_PREFIX + chat_id
+            item["turns"] = int(turns)
+            item["closed"] = bool(item.get("closed") or closed)
+            self._put(item)
 
     def bump(self, chat_id: str, now: datetime) -> int:
-        return MemoryLedger.bump(self, chat_id, now)  # type: ignore[arg-type]
+        turns = self.read_turns(chat_id, now) + 1
+        self.write_chat(chat_id, turns, now)
+        return turns
 
     def mark_closed(self, chat_id: str, now: datetime) -> None:
-        MemoryLedger.mark_closed(self, chat_id, now)  # type: ignore[arg-type]
+        self.write_chat(chat_id, self.read_turns(chat_id, now), now, closed=True)
 
     def write_unanswered(self, text: str, now: datetime) -> dict:
-        return MemoryLedger.write_unanswered(self, text, now)  # type: ignore[arg-type]
+        record = {
+            "pk": UNANSWERED_PREFIX + uuid.uuid4().hex,
+            "text": text,
+            "created": now.isoformat(),
+            TTL_ATTRIBUTE: int((now + self.unanswered_ttl).timestamp()),
+        }
+        self._put(record)
+        return {"text": text, "created": record["created"], TTL_ATTRIBUTE: record[TTL_ATTRIBUTE]}
 
     def read_unanswered(self, now: datetime) -> list[str]:
-        return MemoryLedger.read_unanswered(self, now)  # type: ignore[arg-type]
+        kept: list[tuple[str, str]] = []
+        for record in self._scan_prefix(UNANSWERED_PREFIX):
+            created = datetime.fromisoformat(str(record["created"]))
+            if now - created < self.unanswered_ttl:
+                kept.append((record["created"], record["text"]))
+        kept.sort(key=lambda pair: pair[0])
+        return [text for _created, text in kept]
 
 
 class FakeTable:
@@ -328,6 +410,84 @@ def dynamo_client_from_env(env: dict) -> Any:
     return boto3.client("dynamodb", region_name=region)
 
 
+class NativeDynamo:
+    """Low-level DynamoDB client with plain Python values.
+
+    TableLedger and FakeTable share those shapes. The TTL attribute is written
+    as an integer epoch so the table's TTL setting can delete the row.
+    """
+
+    def __init__(self, client: Any) -> None:
+        from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
+
+        self.client = client
+        self._ser = TypeSerializer()
+        self._de = TypeDeserializer()
+
+    def _values(self, values: dict) -> dict:
+        return {key: self._ser.serialize(self._number(value)) for key, value in values.items()}
+
+    def _number(self, value: Any) -> Any:
+        if isinstance(value, dict):
+            return {key: self._number(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [self._number(item) for item in value]
+        if isinstance(value, bool) or value is None or isinstance(value, str):
+            return value
+        if isinstance(value, int):
+            return value
+        # DynamoDB numbers come back as Decimal. Store them again as ints when whole.
+        try:
+            whole = int(value)
+        except (TypeError, ValueError):
+            return value
+        if whole == value:
+            return whole
+        return value
+
+    def _item(self, item: dict) -> dict:
+        return {key: self._number(self._de.deserialize(value)) for key, value in item.items()}
+
+    def put_item(self, **kwargs: Any) -> dict:
+        payload = dict(kwargs)
+        payload["Item"] = self._values(payload["Item"])
+        return self.client.put_item(**payload)
+
+    def get_item(self, **kwargs: Any) -> dict:
+        payload = dict(kwargs)
+        payload["Key"] = self._values(payload["Key"])
+        found = self.client.get_item(**payload)
+        if "Item" not in found:
+            return {}
+        return {"Item": self._item(found["Item"])}
+
+    def scan(self, **kwargs: Any) -> dict:
+        payload = dict(kwargs)
+        if "ExpressionAttributeValues" in payload:
+            payload["ExpressionAttributeValues"] = self._values(payload["ExpressionAttributeValues"])
+        if "ExclusiveStartKey" in payload:
+            payload["ExclusiveStartKey"] = self._values(payload["ExclusiveStartKey"])
+        found = self.client.scan(**payload)
+        out: dict[str, Any] = {"Items": [self._item(item) for item in found.get("Items", [])]}
+        if "LastEvaluatedKey" in found:
+            out["LastEvaluatedKey"] = self._item(found["LastEvaluatedKey"])
+        return out
+
+    def update_item(self, **kwargs: Any) -> dict:
+        from botocore.exceptions import ClientError
+
+        payload = dict(kwargs)
+        payload["Key"] = self._values(payload["Key"])
+        payload["ExpressionAttributeValues"] = self._values(payload["ExpressionAttributeValues"])
+        try:
+            return self.client.update_item(**payload)
+        except ClientError as exc:
+            code = exc.response.get("Error", {}).get("Code")
+            if code == "ConditionalCheckFailedException":
+                raise ConditionalCheckFailed from exc
+            raise
+
+
 def ledger_from_env(
     env: dict,
     policy: dict,
@@ -337,7 +497,7 @@ def ledger_from_env(
     if not table:
         return MemoryLedger(policy)
     factory = client_factory or dynamo_client_from_env
-    return TableLedger(table, factory(env), policy)
+    return TableLedger(table, NativeDynamo(factory(env)), policy)
 
 
 def utcnow() -> datetime:
