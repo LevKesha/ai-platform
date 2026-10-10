@@ -35,10 +35,12 @@ llm:
       litellm_model_name: eu.anthropic.claude-sonnet-5-5
       bedrock_id: eu.anthropic.claude-sonnet-5-5
       anthropic_api_id: claude-sonnet-5-5
+      label: "Sonnet 5.5"
     max:
       litellm_model_name: platform-slot-max
       bedrock_id: eu.anthropic.claude-opus-4-8
       anthropic_api_id: claude-opus-4-8
+      label: "Opus 4.8"
     helper:
       litellm_model_name: eu.anthropic.claude-haiku-4-5-20251001-v1:0
       bedrock_id: eu.anthropic.claude-haiku-4-5-20251001-v1:0

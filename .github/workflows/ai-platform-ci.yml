@@ -11,6 +11,10 @@ on:
       - "packages/**"
       - "platform-config.yaml"
       - "scripts/**"
+      - "agents/**"
+      - "n8n-config/**"
+      - "olympus/console-data.js"
+      - "olympus/public-data.js"
       - ".github/workflows/ai-platform-ci.yml"
   pull_request:
     branches: [dev, main]
@@ -22,6 +26,10 @@ on:
       - "packages/**"
       - "platform-config.yaml"
       - "scripts/**"
+      - "agents/**"
+      - "n8n-config/**"
+      - "olympus/console-data.js"
+      - "olympus/public-data.js"
       - ".github/workflows/ai-platform-ci.yml"
   workflow_dispatch:
 
@@ -40,7 +48,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip
-          pip install pytest ruff
+          pip install pytest ruff pyyaml
 
           for service in agent-api rag-service mcp-server claude-router; do
             if [[ -d "$service" ]]; then
@@ -60,5 +68,6 @@ jobs:
             fi
           done
 
-          echo "==> Platform registry"
+          echo "==> Platform config SSOT"
+          python3 scripts/check-platform-config.py
           pytest -q packages/tests/test_helper_slot.py
