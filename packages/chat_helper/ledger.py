@@ -319,10 +319,13 @@ class FakeTable:
 
 
 def dynamo_client_from_env(env: dict) -> Any:
-    """Production client. Tests never call this."""
+    """Production client. Region comes from the environment, with no default."""
+    region = env.get("AWS_REGION")
+    if not region:
+        raise LedgerError("AWS_REGION is unset")
     import boto3
 
-    return boto3.client("dynamodb", region_name=env.get("AWS_REGION", "eu-central-1"))
+    return boto3.client("dynamodb", region_name=region)
 
 
 def ledger_from_env(

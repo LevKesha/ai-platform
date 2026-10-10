@@ -18,451 +18,391 @@
       "id": "olympus-index.html-1",
       "source": "olympus/index.html",
       "section": "overview",
-      "text": "In Israel? Request a live look. Elsewhere? Book a walkthrough with Lev."
+      "text": "Certified Cloud Solutions Architect. Builds and operates hybrid environments across AWS, Azure, Oracle, VMware, Windows, and Linux."
     },
     {
       "id": "olympus-index.html-2",
       "source": "olympus/index.html",
       "section": "overview",
-      "text": "Certified Cloud Solutions Architect. Builds and operates hybrid environments across AWS, Azure, Oracle, VMware, Windows, and Linux."
+      "text": "Governance and access, hands on: Organizations, Control Tower, IAM Identity Center. The core too: VPC, EC2, S3, RDS, Lambda, Route 53, Load Balancers, Autoscaling Groups."
     },
     {
       "id": "olympus-index.html-3",
       "source": "olympus/index.html",
       "section": "overview",
-      "text": "Governance and access, hands on: Organizations, Control Tower, IAM Identity Center. The core too: VPC, EC2, S3, RDS, Lambda, Route 53, Load Balancers, Autoscaling Groups."
-    },
-    {
-      "id": "olympus-index.html-4",
-      "source": "olympus/index.html",
-      "section": "overview",
       "text": "Moves on-prem and legacy cloud onto modern AWS, and keeps it running. Incidents go from detection to the fix."
     },
     {
-      "id": "olympus-proof.html-5",
+      "id": "olympus-proof.html-4",
       "source": "olympus/proof.html",
       "section": "overview",
       "text": "AI-Driven Platform Engineer — infra, IAM, cost, delivery."
     },
     {
-      "id": "olympus-proof.html-6",
+      "id": "olympus-proof.html-5",
       "source": "olympus/proof.html",
       "section": "overview",
       "text": "Own global AWS platform reliability supporting 3,000+ users, 10+ sites, 1,500+ VMs (24/7 mission-critical production lines), and 60 AWS accounts in the organization."
     },
     {
-      "id": "olympus-proof.html-7",
+      "id": "olympus-proof.html-6",
       "source": "olympus/proof.html",
       "section": "overview",
       "text": "Re-architect and modernize services (on-prem -> AWS, legacy cloud -> modern AWS) with a focus on security, availability, operational excellence, and cost optimization (up to 70% of savings)."
     },
     {
-      "id": "olympus-proof.html-8",
+      "id": "olympus-proof.html-7",
       "source": "olympus/proof.html",
       "section": "overview",
       "text": "Cost optimization up to 70% of savings, where the waste was real."
     },
     {
-      "id": "olympus-proof.html-9",
+      "id": "olympus-proof.html-8",
       "source": "olympus/proof.html",
       "section": "overview",
       "text": "Design and implement AWS governance and access foundations: AWS Organizations, Control Tower, and IAM Identity Center (SSO)."
     },
     {
-      "id": "olympus-proof.html-10",
+      "id": "olympus-proof.html-9",
       "source": "olympus/proof.html",
       "section": "overview",
       "text": "Deploy and operate core AWS services hands-on: VPC, EC2, S3, RDS, Route 53, Lambda, ALB/NLB, and Auto Scaling Groups; support EKS."
     },
     {
-      "id": "olympus-proof.html-11",
+      "id": "olympus-proof.html-10",
       "source": "olympus/proof.html",
       "section": "overview",
       "text": "Standardize operations via automation integrated into CI/CD and release processes; improve stability with monitoring/alerting and incident response (detection -> RCA -> remediation)."
     },
     {
-      "id": "olympus-proof.html-12",
+      "id": "olympus-proof.html-11",
       "source": "olympus/proof.html",
       "section": "timeline",
       "text": "2023 — Present SolarEdge · Senior IT & Cloud Platform Engineer"
     },
     {
-      "id": "olympus-proof.html-13",
+      "id": "olympus-proof.html-12",
       "source": "olympus/proof.html",
       "section": "timeline",
       "text": "2020 — 2022 Post-Sale Engineer, Bynet. Virtualization and application visibility solution (UILA)."
     },
     {
-      "id": "olympus-proof.html-14",
+      "id": "olympus-proof.html-13",
       "source": "olympus/proof.html",
       "section": "timeline",
       "text": "2019 — 2020 Professional Services, Dorcom. Hybrid infrastructure: VMware, HPE, Aruba, Fortinet."
     },
     {
-      "id": "olympus-proof.html-15",
+      "id": "olympus-proof.html-14",
       "source": "olympus/proof.html",
       "section": "timeline",
       "text": "2018 — 2019 Hardware-Software Integrator, Infinidat. Storage integration."
     },
     {
-      "id": "olympus-proof.html-16",
+      "id": "olympus-proof.html-15",
       "source": "olympus/proof.html",
       "section": "timeline",
       "text": "2012 — 2017 Networking & System Administrator, IDF ICT. Systems and network administration."
     },
     {
-      "id": "olympus-proof.html-17",
+      "id": "olympus-proof.html-16",
       "source": "olympus/proof.html",
       "section": "skills",
       "text": "Cloud (AWS/Azure): AWS - Control Tower, IAM Identity Center/SSO, Organizations, VPC, EC2, Auto Scaling Groups, S3, RDS, Lambda, Route 53, ALB/NLB, SNS, DataSync, Transfer Family; Azure - Entra ID, SSO, Enterprise Apps"
     },
     {
-      "id": "olympus-proof.html-18",
+      "id": "olympus-proof.html-17",
       "source": "olympus/proof.html",
       "section": "skills",
       "text": "Virtualization: VMware (ESXi, vCenter/VCSA, NSX, vROps, vRLI)"
     },
     {
-      "id": "olympus-proof.html-19",
+      "id": "olympus-proof.html-18",
       "source": "olympus/proof.html",
       "section": "skills",
       "text": "Security/Endpoint/Platforms: CView, Cato, CrowdStrike, Silverfort, Zero Networks, BigFix, ScreenConnect"
     },
     {
-      "id": "olympus-proof.html-20",
+      "id": "olympus-proof.html-19",
       "source": "olympus/proof.html",
       "section": "skills",
       "text": "OS & Identity: Windows Server (AD/DNS/DHCP/CA), Linux (RHEL/CentOS/Ubuntu)"
     },
     {
-      "id": "olympus-proof.html-21",
+      "id": "olympus-proof.html-20",
       "source": "olympus/proof.html",
       "section": "certifications",
       "text": "B.A Economics & Computer Science, The Open University of Israel, in progress."
     },
     {
-      "id": "olympus-proof.html-22",
+      "id": "olympus-proof.html-21",
       "source": "olympus/proof.html",
       "section": "certifications",
       "text": "Qualified Technician in Software Engineering, Ort Hermellin College, 2012."
     },
     {
-      "id": "olympus-proof.html-23",
+      "id": "olympus-proof.html-22",
       "source": "olympus/proof.html",
       "section": "certifications",
       "text": "AWS Certified Solutions Architect – Professional (SAP-C02), 2026."
     },
     {
-      "id": "olympus-proof.html-24",
+      "id": "olympus-proof.html-23",
       "source": "olympus/proof.html",
       "section": "certifications",
       "text": "Oracle OCI Foundations, Oracle Academy, 2023."
     },
     {
-      "id": "olympus-proof.html-25",
+      "id": "olympus-proof.html-24",
       "source": "olympus/proof.html",
       "section": "certifications",
       "text": "IT Infrastructure Management (1021), MAMRAM, IDF, 2012."
     },
     {
-      "id": "olympus-proof.html-26",
+      "id": "olympus-proof.html-25",
       "source": "olympus/proof.html",
       "section": "certifications",
       "text": "Networking and Systems Administration, ICT Corps Training Base, IDF, 2012."
     },
     {
-      "id": "olympus-architecture.html-27",
+      "id": "olympus-architecture.html-26",
       "source": "olympus/architecture.html",
       "section": "overview",
       "text": "The public door is n8n. Sign-in covers CV and jobs, LiteLLM, and Headroom. Spend stays inside the cluster."
     },
     {
-      "id": "olympus-architecture.html-28",
+      "id": "olympus-architecture.html-27",
       "source": "olympus/architecture.html",
       "section": "overview",
       "text": "This is the middle of that picture, up close. The API, retrieval, and the tool connections run here, with n8n beside them."
     },
     {
-      "id": "olympus-architecture.html-29",
+      "id": "olympus-architecture.html-28",
       "source": "olympus/architecture.html",
       "section": "overview",
       "text": "The signed-in path. A CV comes in, jobs come back, and the picture is that sequence."
     },
     {
-      "id": "olympus-architecture.html-30",
+      "id": "olympus-architecture.html-29",
       "source": "olympus/architecture.html",
       "section": "overview",
       "text": "What the models cost, on its own loop. Not a savings claim."
     },
     {
-      "id": "olympus-architecture.html-31",
+      "id": "olympus-architecture.html-30",
       "source": "olympus/architecture.html",
       "section": "overview",
       "text": "Take the demo down without deleting it, then bring it back. The picture is that path."
     },
     {
-      "id": "olympus-evidence.html-32",
+      "id": "olympus-evidence.html-31",
       "source": "olympus/evidence.html",
       "section": "evidence",
       "text": "Verified 2026-09-13. Public GitHub link only for ai-platform. Skipped old public learning repos."
     },
     {
-      "id": "olympus-evidence.html-33",
+      "id": "olympus-evidence.html-32",
       "source": "olympus/evidence.html",
       "section": "evidence",
       "text": "Old public learning repos are not evidence: peakyblinders, moviescicd, APIs, azurepipeline, WorldOfGames."
     },
     {
-      "id": "olympus-cursor-index.html-34",
+      "id": "olympus-cursor-index.html-33",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "I run this portal like a small company of AI agents. They draft, review and build. I approve every step, and no code reaches the site until I've looked at it."
     },
     {
-      "id": "olympus-cursor-index.html-35",
+      "id": "olympus-cursor-index.html-34",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "A five-step security and config hardening: 19 PRs across 6 repos. Each step merged only after my GO."
     },
     {
-      "id": "olympus-cursor-index.html-36",
+      "id": "olympus-cursor-index.html-35",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "D: ai-platform #32, infrastructure #13 (private), llm-cost #9 (private)"
     },
     {
-      "id": "olympus-cursor-index.html-37",
+      "id": "olympus-cursor-index.html-36",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "E: ai-platform #33, #34, infrastructure #14, #15, #16 (private), cicd #4 (private)"
     },
     {
-      "id": "olympus-cursor-index.html-38",
+      "id": "olympus-cursor-index.html-37",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "A: ai-platform #35, infrastructure #17 (private), llm-cost #10 (private), agent-api #22 (private)"
     },
     {
-      "id": "olympus-cursor-index.html-39",
+      "id": "olympus-cursor-index.html-38",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "B: ai-platform #36, llm-cost #11 (private)"
     },
     {
-      "id": "olympus-cursor-index.html-40",
+      "id": "olympus-cursor-index.html-39",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "C: ai-platform #37, llm-cost #12 (private), agent-api #23 (private), rag-service #3 (private)"
     },
     {
-      "id": "olympus-cursor-index.html-41",
+      "id": "olympus-cursor-index.html-40",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "Rolled out one service at a time, each behind green tests and a health check. PRs in private repos."
     },
     {
-      "id": "olympus-cursor-index.html-42",
+      "id": "olympus-cursor-index.html-41",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "A secret scanner flagged a test file. We fixed the cause, so test data is now built at runtime and the code holds nothing that looks like a secret."
     },
     {
-      "id": "olympus-cursor-index.html-43",
+      "id": "olympus-cursor-index.html-42",
       "source": "olympus/cursor/index.html",
       "section": "overview",
       "text": "Diagram source: olympus-agent-company-cursor-v5.drawio · grouped inventory 7+16+8+10"
     },
     {
-      "id": "olympus-404.html-44",
+      "id": "olympus-404.html-43",
       "source": "olympus/404.html",
       "section": "overview",
       "text": "No matching page in this static tree. This site does not invent a fallback URL."
     },
     {
-      "id": "olympus-404.html-45",
+      "id": "olympus-404.html-44",
       "source": "olympus/404.html",
       "section": "overview",
       "text": "Use a relative link from this tree, or return to the overview."
     },
     {
-      "id": "olympus-public-data.js-46",
+      "id": "olympus-public-data.js-45",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Senior AI-driven cloud and platform engineering: AWS/EKS orchestration, Bedrock configuration as SSOT, Helm, Terraform, GitHub Actions, and controlled workflow automation. Not a traditional project gallery."
     },
     {
-      "id": "olympus-public-data.js-47",
+      "id": "olympus-public-data.js-46",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Operate the boundary between AI services, Kubernetes, IaC, delivery automation, and read-only interview evidence."
     },
     {
-      "id": "olympus-public-data.js-48",
+      "id": "olympus-public-data.js-47",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Own host. n8n 2.25 has no supported reverse-proxy path under Olympus. Login-gated; interview demo is screenshare."
     },
     {
-      "id": "olympus-public-data.js-49",
+      "id": "olympus-public-data.js-48",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "EKS orchestration of agent-api, rag-service, mcp-server, and n8n. Bedrock SSOT via platform-config.yaml. Only public platform repository."
     },
     {
-      "id": "olympus-public-data.js-50",
-      "source": "olympus/public-data.js",
-      "section": "platform",
-      "text": ", }, privateRepos: [ { name:"
-    },
-    {
-      "id": "olympus-public-data.js-51",
+      "id": "olympus-public-data.js-49",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Terraform (HCL), charts/, terraform-*.yml GHA, Bedrock budget TF."
     },
     {
-      "id": "olympus-public-data.js-52",
+      "id": "olympus-public-data.js-50",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Reusable GitHub Actions: ECR + Helm deploy SSOT."
     },
     {
-      "id": "olympus-public-data.js-53",
+      "id": "olympus-public-data.js-51",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "FastAPI Bedrock /agent gateway; Helm/EKS; local orchestrator Research→UX→Frontend→Engineering; GitHub-as-user via agent-api. LiteLLM hop only when LITELLM_BASE_URL is set. /agent stays unwired from LiteLLM."
     },
     {
-      "id": "olympus-public-data.js-54",
+      "id": "olympus-public-data.js-52",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Ingestion + semantic search + Claude on EKS; Helm. README empty."
     },
     {
-      "id": "olympus-public-data.js-55",
+      "id": "olympus-public-data.js-53",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "MCP tools/resources/prompts; Helm; IRSA."
     },
     {
-      "id": "olympus-public-data.js-56",
+      "id": "olympus-public-data.js-54",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "LiteLLM ClusterIP + Headroom sidecar + spend; Helm. Not public."
     },
     {
-      "id": "olympus-public-data.js-57",
+      "id": "olympus-public-data.js-55",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Older services. Helm charts live in infrastructure."
     },
     {
-      "id": "olympus-console-data.js-58",
+      "id": "olympus-console-data.js-56",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Workflows on their own host — open them, don’t rebuild them."
     },
     {
-      "id": "olympus-console-data.js-59",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": ", workflows: [ { name:"
-    },
-    {
-      "id": "olympus-console-data.js-60",
+      "id": "olympus-console-data.js-57",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "One webhook routes rag, agent, or auto into the cluster services."
     },
     {
-      "id": "olympus-console-data.js-61",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": ", }, ], }, litellm: { adminUrl:"
-    },
-    {
-      "id": "olympus-console-data.js-62",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": "kubectl -n llm-cost port-forward svc/litellm 4000:4000"
-    },
-    {
-      "id": "olympus-console-data.js-63",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": ", }, }, configuration: { ssotFile:"
-    },
-    {
-      "id": "olympus-console-data.js-64",
+      "id": "olympus-console-data.js-58",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Default is the live invoke ID. Max is LiteLLM name platform-slot-max."
     },
     {
-      "id": "olympus-console-data.js-65",
+      "id": "olympus-console-data.js-59",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Bedrock model ID is owned by platform-config.yaml."
     },
     {
-      "id": "olympus-console-data.js-66",
+      "id": "olympus-console-data.js-60",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "LiteLLM hop on agent-api only when LITELLM_BASE_URL is set."
     },
     {
-      "id": "olympus-console-data.js-67",
+      "id": "olympus-console-data.js-61",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Reusable GitHub Actions: ECR + Helm deploy SSOT (private cicd repo)."
     },
     {
-      "id": "olympus-console-data.js-68",
+      "id": "olympus-console-data.js-62",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "terraform-*.yml GitHub Actions live in infrastructure (private)."
     },
     {
-      "id": "olympus-console-data.js-69",
+      "id": "olympus-console-data.js-63",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "No trigger, rollback, or mutate controls in this console."
     },
     {
-      "id": "olympus-console-data.js-70",
+      "id": "olympus-console-data.js-64",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Terraform (HCL) and Helm charts in the private infrastructure repo."
     },
     {
-      "id": "olympus-console-data.js-71",
+      "id": "olympus-console-data.js-65",
       "source": "olympus/console-data.js",
       "section": "platform",
-      "text": ", productionCluster: false, }, spend: { surfaces: [ { name:"
-    },
-    {
-      "id": "olympus-console-data.js-72",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": "Cognito at olympus.levkesha.com/cv-jobs → agent-api :8000 (/cv-jobs + /v1/demo)"
-    },
-    {
-      "id": "olympus-console-data.js-73",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": "Cognito at olympus.levkesha.com/headroom → ClusterIP :8790 → :8787"
-    },
-    {
-      "id": "olympus-console-data.js-74",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": ", }, ], hops: [ { name:"
-    },
-    {
-      "id": "olympus-console-data.js-75",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": "}, ], }, empty: { privateRepo:"
+      "text": "Private repository. No public GitHub link. Evidence is described here; source is not linked."
     }
   ]
 }

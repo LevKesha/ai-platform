@@ -1,7 +1,8 @@
 const { createHash } = require("crypto");
 const { buildRequest } = require("../../../olympus/chat.js");
+const policy = require("../../../olympus/chat-policy.json");
 
-const payload = { question: "What does Lev run on AWS?", history: [] };
+const payload = { question: policy.suggested[0], history: [] };
 
 buildRequest(payload).then(function (request) {
   const want = createHash("sha256").update(request.body).digest("hex");

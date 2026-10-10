@@ -70,7 +70,7 @@
     panel.hidden = true;
     const head = el(doc, "div", { class: "chat-head" });
     head.appendChild(el(doc, "h2", { id: "chat-title" }, policy.bubble_name));
-    const closer = el(doc, "button", { class: "chat-close", type: "button", "aria-label": "Close chat" }, "Close");
+    const closer = el(doc, "button", { class: "chat-close", type: "button", "aria-label": "Close chat" }, "×");
     head.appendChild(closer);
     const log = el(doc, "div", { class: "chat-log", "aria-live": "polite", "aria-relevant": "additions" });
     const privacy = el(doc, "p", { class: "chat-privacy" }, policy.privacy);
@@ -85,8 +85,8 @@
     form.appendChild(send);
     panel.appendChild(head);
     panel.appendChild(log);
-    panel.appendChild(privacy);
     panel.appendChild(form);
+    panel.appendChild(privacy);
     doc.body.appendChild(bubble);
     doc.body.appendChild(panel);
 
@@ -94,31 +94,48 @@
 
     function open() {
       panel.hidden = false;
+      bubble.hidden = true;
       bubble.setAttribute("aria-expanded", "true");
       (requestLink || closer).focus();
     }
 
     function close() {
       panel.hidden = true;
+      bubble.hidden = false;
       bubble.setAttribute("aria-expanded", "false");
       bubble.focus();
     }
 
+    function addQuestion(text) {
+      if (!text) return;
+      log.appendChild(el(doc, "p", { class: "chat-question" }, text));
+    }
+
     function addNote(text, withLink) {
       const note = el(doc, "p", { class: "chat-note" });
-      note.appendChild(doc.createTextNode(text + " "));
+      note.appendChild(doc.createTextNode(text));
       if (withLink) {
+        note.appendChild(doc.createTextNode(" "));
         note.appendChild(el(doc, "a", { href: policy.link_href }, policy.link_text));
       }
       log.appendChild(note);
     }
 
+    function addDivider() {
+      const row = el(doc, "div", { class: "chat-switch", role: "note" });
+      row.appendChild(el(doc, "span", { class: "chat-switch-rule" }));
+      row.appendChild(el(doc, "span", { class: "chat-switch-text" }, policy.switch));
+      row.appendChild(el(doc, "span", { class: "chat-switch-rule" }));
+      log.appendChild(row);
+    }
+
     function addAnswer(text, label, withSwitch) {
       const block = el(doc, "div", { class: "chat-answer" });
+      const tagClass = label === policy.label_live ? "chat-label chat-label-live" : "chat-label";
+      block.appendChild(el(doc, "p", { class: tagClass }, label));
       block.appendChild(el(doc, "p", { class: "chat-answer-text" }, text));
-      block.appendChild(el(doc, "span", { class: "chat-label" }, label));
       log.appendChild(block);
-      if (withSwitch) log.appendChild(el(doc, "p", { class: "chat-switch" }, policy.switch));
+      if (withSwitch) addDivider();
     }
 
     function showIdle() {
@@ -148,30 +165,56 @@
     function showClosed() {
       input.disabled = true;
       send.disabled = true;
+      input.setAttribute("tabindex", "-1");
+      send.setAttribute("tabindex", "-1");
       const card = el(doc, "div", { class: "chat-closed", role: "status" });
       card.appendChild(el(doc, "p", {}, policy.closed));
       requestLink = el(doc, "a", { href: policy.link_href, id: "chat-request" }, policy.link_text);
       card.appendChild(requestLink);
       log.appendChild(card);
-      panel.hidden = false;
-      bubble.setAttribute("aria-expanded", "true");
-      requestLink.focus();
+      open();
     }
 
-    function paintFixture(name, corpusLine) {
+    function paintFixture(name) {
+      const certQ = policy.suggested[1];
+      const platformQ = policy.suggested[2];
+      const cert = options.certLine || "";
+      const live = options.liveLine || "";
       open();
       if (name === "idle") showIdle();
-      if (name === "typing") showTyping();
-      if (name === "answer") addAnswer(corpusLine, policy.label_cv, false);
-      if (name === "offtopic") addNote(policy.off_topic, true);
-      if (name === "gap") addNote(policy.not_in_cv, true);
-      if (name === "live") addAnswer(corpusLine, policy.label_live, false);
-      if (name === "switch") addAnswer(corpusLine, policy.label_live, true);
+      if (name === "typing") {
+        addQuestion(certQ);
+        showTyping();
+      }
+      if (name === "answer") {
+        addQuestion(certQ);
+        addAnswer(cert, policy.label_cv, false);
+      }
+      if (name === "offtopic") {
+        addQuestion("What is the weather in London?");
+        addNote(policy.off_topic, true);
+      }
+      if (name === "gap") {
+        addQuestion("What is Lev's salary?");
+        addNote(policy.not_in_cv, true);
+      }
+      if (name === "live") {
+        addQuestion(platformQ);
+        addAnswer(live, policy.label_live, false);
+      }
+      if (name === "switch") {
+        addQuestion(platformQ);
+        addAnswer(live, policy.label_live, false);
+        addDivider();
+        addQuestion(certQ);
+        addAnswer(cert, policy.label_cv, false);
+      }
       if (name === "limit") showClosed();
     }
 
     function ask(question) {
       if (input.disabled) return;
+      addQuestion(question);
       const dots = showTyping();
       const payload = {
         chatId: options.chatId || "browser",
@@ -222,13 +265,14 @@
     });
 
     const fixture = fixtureName(doc, options);
-    if (fixture) paintFixture(fixture, options.corpusLine || "");
+    if (fixture) paintFixture(fixture);
     return {
       bubble: bubble,
       panel: panel,
       closer: closer,
       log: log,
       input: input,
+      send: send,
       open: open,
       close: close,
       showClosed: showClosed,
@@ -247,15 +291,25 @@
       })
       .then(function (policy) {
         const name = fixtureName(doc, {});
+        function pick(corpus, section, needle) {
+          const found = corpus.lines.filter(function (item) {
+            return item.section === section && item.text.indexOf(needle) !== -1;
+          })[0];
+          return found ? found.text : "";
+        }
         if (name !== "answer" && name !== "live" && name !== "switch") {
-          return createWidget(doc, { policy: policy, corpusLine: "" });
+          return createWidget(doc, { policy: policy });
         }
         return fetch(corpusUrl)
           .then(function (response) {
             return response.json();
           })
           .then(function (corpus) {
-            return createWidget(doc, { policy: policy, corpusLine: corpus.lines[0].text });
+            return createWidget(doc, {
+              policy: policy,
+              certLine: pick(corpus, "certifications", "Solutions Architect"),
+              liveLine: pick(corpus, "platform", "EKS orchestration"),
+            });
           });
       });
   }

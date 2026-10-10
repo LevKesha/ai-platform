@@ -7,6 +7,8 @@ import json
 import subprocess
 import sys
 import threading
+
+import pytest
 from contextlib import redirect_stdout
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -33,7 +35,10 @@ from chat_helper.ledger import MemoryLedger  # noqa: E402
 from chat_helper.policy import load_policy  # noqa: E402
 
 NOW = datetime(2026, 10, 10, 12, 0, tzinfo=timezone.utc)
-AWS = "What does Lev run on AWS?"
+
+
+def _ask(index: int = 0) -> str:
+    return load_policy()["suggested"][index]
 
 
 class Stub:
@@ -85,20 +90,26 @@ def _json(response: dict) -> dict:
 
 def test_policy_is_the_only_copy_of_the_limits() -> None:
     policy = load_policy()
-    assert policy["turn_limit"] == 10
-    assert policy["live_answers"] == 5
-    assert policy["cap_micro"] == 3000000
-    assert policy["chat_ttl_hours"] == 24
-    assert policy["unanswered_ttl_days"] == 30
-    assert policy["privacy"].startswith("Chats expire after 24 hours.")
-    needles = [policy["privacy"], str(policy["cap_micro"])]
-    roots = [ROOT / "packages" / "chat_helper", ROOT / "olympus" / "chat.js"]
-    for root in roots:
-        paths = [root] if root.is_file() else list(root.glob("*.py"))
-        for path in paths:
-            text = path.read_text(encoding="utf-8")
-            for needle in needles:
-                assert needle not in text, path
+    for key in (
+        "turn_limit",
+        "live_answers",
+        "cap_micro",
+        "chat_ttl_hours",
+        "unanswered_ttl_days",
+        "privacy",
+        "suggested",
+    ):
+        assert key in policy
+    needles = [policy["privacy"], str(policy["cap_micro"]), *policy["suggested"]]
+    files = list((ROOT / "packages" / "chat_helper").glob("*.py"))
+    files.append(ROOT / "olympus" / "chat.js")
+    tests = ROOT / "packages" / "chat_helper" / "tests"
+    files.extend(tests.glob("*.py"))
+    files.extend(tests.glob("*.cjs"))
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        for needle in needles:
+            assert needle not in text, path
 
 
 def test_handler_reads_helper_slot_without_a_literal() -> None:
@@ -113,9 +124,9 @@ def test_handler_reads_helper_slot_without_a_literal() -> None:
 def test_hash_header_must_match_the_body() -> None:
     haiku = Stub("haiku")
     deps = _deps(haiku)
-    handle(_event(AWS, ok=True), deps)
+    handle(_event(_ask(), ok=True), deps)
     assert len(haiku.calls) == 1
-    handle(_event(AWS, idem="k2", ok=False), deps)
+    handle(_event(_ask(), idem="k2", ok=False), deps)
     assert len(haiku.calls) == 1
     proc = subprocess.run(
         ["node", str(ROOT / "packages" / "chat_helper" / "tests" / "hash.test.cjs")],
@@ -125,6 +136,35 @@ def test_hash_header_must_match_the_body() -> None:
         text=True,
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+def test_hero_region_note_is_not_in_the_corpus() -> None:
+    from chat_helper.corpus import build_lines
+
+    for rows in (build_lines(), load_lines()):
+        blob = "\n".join(line["text"] for line in rows).lower()
+        assert "live look" not in blob
+        assert "book a walkthrough" not in blob
+        assert ":8000" not in blob
+        assert "solutions architect" in blob
+
+
+def test_js_strings_do_not_resume_at_a_closing_quote() -> None:
+    from chat_helper.corpus import _js_strings, repo_root
+
+    source = (repo_root() / "olympus" / "public-data.js").read_text(encoding="utf-8")
+    line = source.splitlines()[27]
+    assert 'iacBranch: "dev (main parked)"' in line
+    rows = _js_strings(source)
+    assert any(row.startswith("EKS orchestration of agent-api") for row in rows)
+    assert not any("privateRepos" in row or row.startswith(",") for row in rows)
+
+
+def test_dynamo_client_fails_when_region_is_unset() -> None:
+    from chat_helper.ledger import LedgerError, dynamo_client_from_env
+
+    with pytest.raises(LedgerError, match="AWS_REGION"):
+        dynamo_client_from_env({})
 
 
 def test_question_set_has_no_facts_outside_the_corpus() -> None:
@@ -166,8 +206,8 @@ def test_counter_stops_at_the_cap(monkeypatch) -> None:
     ledger = MemoryLedger(policy)
     haiku = Stub("haiku")
     deps = _deps(haiku, ledger=ledger)
-    first = _json(handle(_event(AWS, idem="a"), deps))
-    second = _json(handle(_event(AWS, idem="b"), deps))
+    first = _json(handle(_event(_ask(), idem="a"), deps))
+    second = _json(handle(_event(_ask(), idem="b"), deps))
     assert first["kind"] == "answer"
     assert second["kind"] == "closed"
     assert len(haiku.calls) == 1
@@ -214,16 +254,16 @@ def test_timeout_then_retry_then_replay() -> None:
     ledger = MemoryLedger(policy)
     model = Flaky()
     deps = _deps(model, ledger=ledger)
-    first = _json(handle(_event(AWS, idem="same"), deps))
+    first = _json(handle(_event(_ask(), idem="same"), deps))
     assert first["kind"] == "retry"
     hold = ledger.months["SPEND#2026-10"]["holds"]["same"]
     assert hold["status"] == "reserved"
     assert ledger.months["SPEND#2026-10"]["settled"] == 0
-    second = _json(handle(_event(AWS, idem="same"), deps))
+    second = _json(handle(_event(_ask(), idem="same"), deps))
     assert second["kind"] == "answer"
     assert model.calls_n == 2
     settled = ledger.months["SPEND#2026-10"]["settled"]
-    third = _json(handle(_event(AWS, idem="same"), deps))
+    third = _json(handle(_event(_ask(), idem="same"), deps))
     assert third == second
     assert model.calls_n == 2
     assert ledger.months["SPEND#2026-10"]["settled"] == settled
@@ -237,7 +277,7 @@ def test_sixth_answer_is_haiku_when_theseus_is_on() -> None:
     live = int(policy["live_answers"])
     payloads = []
     for index in range(live + 1):
-        payloads.append(_json(handle(_event(AWS, idem=f"t{index}"), deps)))
+        payloads.append(_json(handle(_event(_ask(), idem=f"t{index}"), deps)))
     assert len(theseus.calls) == live
     assert len(haiku.calls) == 1
     assert payloads[live - 1]["label"] == policy["label_live"]
@@ -250,7 +290,7 @@ def test_sixth_answer_is_haiku_when_theseus_is_on() -> None:
 def test_live_failure_continues_on_haiku() -> None:
     theseus = Stub("sonnet", error=ModelTimeout())
     haiku = Stub("haiku")
-    payload = _json(handle(_event(AWS), _deps(haiku, theseus=theseus)))
+    payload = _json(handle(_event(_ask()), _deps(haiku, theseus=theseus)))
     assert len(theseus.calls) == 1
     assert len(haiku.calls) == 1
     assert payload["label"] == load_policy()["label_cv"]
@@ -259,7 +299,7 @@ def test_live_failure_continues_on_haiku() -> None:
 
 def test_denied_model_shows_the_closed_card() -> None:
     haiku = Stub("haiku", error=ModelDenied())
-    payload = _json(handle(_event(AWS), _deps(haiku)))
+    payload = _json(handle(_event(_ask()), _deps(haiku)))
     assert payload["kind"] == "closed"
     assert payload["text"] == load_policy()["closed"]
     assert payload["input_enabled"] is False
@@ -268,7 +308,7 @@ def test_denied_model_shows_the_closed_card() -> None:
 
 def test_disabled_model_skips_the_call() -> None:
     haiku = Stub("haiku")
-    payload = _json(handle(_event(AWS), _deps(haiku, enabled=False)))
+    payload = _json(handle(_event(_ask()), _deps(haiku, enabled=False)))
     assert payload["kind"] == "closed"
     assert haiku.calls == []
 
@@ -278,8 +318,8 @@ def test_turn_limit_closes_the_chat() -> None:
     haiku = Stub("haiku")
     deps = _deps(haiku)
     for index in range(int(policy["turn_limit"])):
-        assert _json(handle(_event(AWS, idem=f"n{index}"), deps))["kind"] == "answer"
-    closed = _json(handle(_event(AWS, idem="over"), deps))
+        assert _json(handle(_event(_ask(), idem=f"n{index}"), deps))["kind"] == "answer"
+    closed = _json(handle(_event(_ask(), idem="over"), deps))
     assert closed["kind"] == "closed"
     assert len(haiku.calls) == int(policy["turn_limit"])
 

@@ -90,8 +90,13 @@ class _MainText(HTMLParser):
         self.rows: list[tuple[str, str]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        classes = []
+        for key, value in attrs:
+            if key == "class" and value:
+                classes.extend(value.split())
         hidden = any(key == "aria-hidden" and value == "true" for key, value in attrs)
-        if tag in {"header", "nav", "script", "style"} or hidden:
+        # The hero region-note is a commerce CTA inside <main>, not a CV line.
+        if tag in {"header", "nav", "script", "style"} or hidden or "region-note" in classes:
             self.skip.append(tag)
         if tag == "main":
             self.in_main += 1
@@ -141,20 +146,63 @@ def _section(heading: str) -> str:
     return "overview"
 
 
+_BIND_PORT = re.compile(r":\d{2,5}\b")
+
+
 def _keep(text: str) -> bool:
     folded = text.lower()
-    return not any(word in folded for word in DROP_LINE)
+    if any(word in folded for word in DROP_LINE):
+        return False
+    # Edge bind paths (agent-api :8000 and the same class of port) are routes.
+    if _BIND_PORT.search(text):
+        return False
+    return True
 
 
 def _js_strings(text: str) -> list[str]:
-    found = re.findall(r'"((?:[^"\\]|\\.){40,})"', text)
-    rows = []
-    for raw in found:
-        line = " ".join(raw.replace("\\n", " ").split())
-        if line.startswith("http"):
+    """Read double-quoted literals from their opening quote.
+
+    A search that may start at any quote treats the closing quote of a short
+    literal as a new string. public-data.js line 28 (`iacBranch`) is that case:
+    the characters up to the next quote are JS source, not a sentence.
+    """
+    rows: list[str] = []
+    i = 0
+    n = len(text)
+    while i < n:
+        ch = text[i]
+        if ch == "/" and i + 1 < n and text[i + 1] == "/":
+            newline = text.find("\n", i + 2)
+            i = n if newline < 0 else newline + 1
             continue
-        if _keep(line):
+        if ch == "/" and i + 1 < n and text[i + 1] == "*":
+            end = text.find("*/", i + 2)
+            i = n if end < 0 else end + 2
+            continue
+        if ch in {'"', "'", "`"}:
+            quote = ch
+            i += 1
+            buf: list[str] = []
+            while i < n:
+                current = text[i]
+                if current == "\\":
+                    if i + 1 < n:
+                        buf.append(text[i + 1])
+                    i += 2
+                    continue
+                if current == quote:
+                    i += 1
+                    break
+                buf.append(current)
+                i += 1
+            if quote != '"':
+                continue
+            line = " ".join("".join(buf).split())
+            if len(line) < 40 or line.startswith("http") or not _keep(line):
+                continue
             rows.append(line)
+            continue
+        i += 1
     return rows
 
 
