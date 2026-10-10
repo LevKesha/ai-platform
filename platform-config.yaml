@@ -7,6 +7,8 @@
 # llm.model_id is the alias of llm.slots.default.bedrock_id (live invoke).
 # llm.slots.max is LiteLLM name platform-slot-max. Its bedrock_id is Opus 4.8,
 # not Opus 5.5. Embeddings stay amazon.titan-embed-text-v2:0.
+# llm.slots.helper is the Olympus chat slot. The Lambda calls Bedrock directly.
+# It is not a LiteLLM route and it is not the live invoke alias.
 #
 # Infra IDs (IRSA, ACM, subnets, ECR URLs): see platform-infra.dev.json
 # (exported from LevKesha/infrastructure terraform outputs — that repo is SSOT).
@@ -34,10 +36,17 @@ llm:
       litellm_model_name: eu.anthropic.claude-sonnet-5-5
       bedrock_id: eu.anthropic.claude-sonnet-5-5
       anthropic_api_id: claude-sonnet-5-5
+      label: "Sonnet 5.5"
     max:
       litellm_model_name: platform-slot-max
       bedrock_id: eu.anthropic.claude-opus-4-8
       anthropic_api_id: claude-opus-4-8
+      label: "Opus 4.8"
+    helper:
+      invoke: direct-bedrock
+      litellm_model_name: eu.anthropic.claude-haiku-4-5-20251001-v1:0
+      bedrock_id: eu.anthropic.claude-haiku-4-5-20251001-v1:0
+      anthropic_api_id: eu.anthropic.claude-haiku-4-5-20251001-v1:0
 
 # Deprecated IDs — must not appear as active defaults in helm / agent-spec / .env.example
 deprecated_model_ids:

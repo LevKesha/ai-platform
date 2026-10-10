@@ -8,6 +8,7 @@ from __future__ import annotations
 from pathlib import Path
 
 SLOT_FIELDS = ("litellm_model_name", "bedrock_id", "anthropic_api_id")
+SLOT_NAMES = ("default", "max", "helper")
 
 
 def find_platform_config(start: Path | None = None) -> Path:
@@ -51,18 +52,27 @@ def _parse_simple(text: str) -> dict:
 
 
 def load_model_mix(config_path: str | Path | None = None) -> dict[str, str]:
-    """Return default and max slots from platform-config.yaml."""
+    """Return default, max, and helper slots from platform-config.yaml."""
     path = Path(config_path) if config_path else find_platform_config()
     parsed = _parse_simple(path.read_text(encoding="utf-8"))
     llm = parsed["llm"]
     slots = llm["slots"]
     mix: dict[str, str] = {"model_id": str(llm["model_id"])}
-    for name in ("default", "max"):
-        slot = slots[name]
+    for name in SLOT_NAMES:
+        slot = slots.get(name) if isinstance(slots, dict) else None
+        if not isinstance(slot, dict):
+            raise ValueError(f"llm.slots.{name} is required")
         for field in SLOT_FIELDS:
+            if field not in slot or slot[field] in ("", None):
+                raise ValueError(f"llm.slots.{name}.{field} is required")
             mix[f"{name}_{field}"] = str(slot[field])
+        if name == "helper":
+            if slot.get("invoke") != "direct-bedrock":
+                raise ValueError("llm.slots.helper.invoke must be direct-bedrock")
+            mix["helper_invoke"] = "direct-bedrock"
     if mix["model_id"] != mix["default_bedrock_id"]:
         raise ValueError("llm.model_id must alias slots.default.bedrock_id")
-    if mix["default_litellm_model_name"] == mix["max_litellm_model_name"]:
+    names = [mix[f"{name}_litellm_model_name"] for name in SLOT_NAMES]
+    if len(set(names)) != len(names):
         raise ValueError("slots need distinct litellm_model_name values")
     return mix
