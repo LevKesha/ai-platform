@@ -89,7 +89,7 @@
 
   function renderAsleep() {
     panel.appendChild(pill("", "Asleep. Request a look."));
-    panel.appendChild(el("h2", null, "CVxJobs, live"));
+    panel.appendChild(el("h2", null, "The console, live"));
     var button = el("button", "btn btn-primary sleep-cta is-marked", "Request a look");
     button.type = "button";
     button.addEventListener("click", function () {
@@ -100,12 +100,12 @@
 
   function renderRequested() {
     panel.appendChild(pill("is-wait", "Request sent. Lev will reply by email."));
-    panel.appendChild(el("h2", null, "CVxJobs, live"));
+    panel.appendChild(el("h2", null, "The console, live"));
   }
 
   function renderWaking(approved) {
     panel.appendChild(pill("is-wait", "Waking up. This takes about 15 minutes. We'll email you when it's live."));
-    panel.appendChild(el("h2", null, "CVxJobs, live"));
+    panel.appendChild(el("h2", null, "The console, live"));
     if (approved) {
       var bar = el("div", "sleep-bar");
       bar.setAttribute("role", "progressbar");
@@ -121,7 +121,7 @@
       ["ok", "Cluster nodes"],
       ["run", "Gateway & auth"],
       ["wait", "LiteLLM"],
-      ["wait", "CVxJobs"]
+      ["wait", "Console"]
     ].forEach(function (step) {
       var item = el("li");
       if (step[0] === "ok") item.appendChild(el("span", "sleep-ok", "\u2713"));
@@ -138,7 +138,7 @@
 
   function renderLive() {
     panel.appendChild(pill("is-live", "Live now. Sleeps after an hour idle."));
-    panel.appendChild(el("h2", null, "CVxJobs, live"));
+    panel.appendChild(el("h2", null, "The console, live"));
     var open = el("a", "btn btn-primary sleep-cta", "Open live demo");
     open.href = demoHref;
     panel.appendChild(open);
