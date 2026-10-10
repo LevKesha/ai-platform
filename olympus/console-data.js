@@ -47,7 +47,6 @@ window.OLYMPUS_CONSOLE = {
     title: "LiteLLM Admin UI",
     screenshare: {
       command: "kubectl -n llm-cost port-forward svc/litellm 4000:4000",
-      localUrl: "http://127.0.0.1:4000/ui",
     },
   },
   configuration: {
