@@ -220,9 +220,6 @@
       "<p class=\"mono muted\">" +
       lt.screenshare.command +
       "</p>" +
-      "<p class=\"mono muted\">" +
-      lt.screenshare.localUrl +
-      "</p>" +
       "<h2>Secondary health probe</h2>" +
       "<p class=\"mono muted\">POST " +
       lt.webhookUrl +
