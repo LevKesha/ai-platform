@@ -59,3 +59,6 @@ jobs:
               echo "Skipping $service (directory not present)"
             fi
           done
+
+          echo "==> Platform registry"
+          pytest -q packages/tests/test_helper_slot.py
