@@ -20,9 +20,6 @@ sys.path.insert(0, str(ROOT / "packages"))
 
 from platform_common.registry import SLOT_NAMES, load_model_mix  # noqa: E402
 
-# Proven helper slot. Access gate: Converse in eu-central-1 returned OK.
-HELPER_BEDROCK_ID = "eu.anthropic.claude-haiku-4-5-20251001-v1:0"
-
 # Paths relative to each sibling repo (or ai-platform itself)
 CHECKS: list[tuple[str, str, str]] = [
     # (repo_dir, relative_file, pattern_kind)
@@ -289,13 +286,11 @@ def main() -> int:
         errors.append(f"registry loader model_id want={want_claude!r} got={mix['model_id']!r}")
     if want_claude != (slots.get("default") or {}).get("bedrock_id"):
         errors.append("llm.model_id must alias slots.default.bedrock_id")
-    if mix.get("helper_bedrock_id") != HELPER_BEDROCK_ID:
+    helper = slots.get("helper") or {}
+    if mix.get("helper_bedrock_id") != helper.get("bedrock_id"):
         errors.append(
-            f"llm.slots.helper.bedrock_id want={HELPER_BEDROCK_ID!r} got={mix.get('helper_bedrock_id')!r}"
-        )
-    if (slots.get("helper") or {}).get("bedrock_id") != HELPER_BEDROCK_ID:
-        errors.append(
-            f"platform-config helper bedrock_id want={HELPER_BEDROCK_ID!r} got={(slots.get('helper') or {}).get('bedrock_id')!r}"
+            "llm.slots.helper.bedrock_id "
+            f"want={helper.get('bedrock_id')!r} got={mix.get('helper_bedrock_id')!r}"
         )
 
     want_short = mix["default_anthropic_api_id"]

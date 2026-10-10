@@ -14,8 +14,6 @@ sys.path.insert(0, str(ROOT / "packages"))
 
 from platform_common.registry import load_model_mix  # noqa: E402
 
-HELPER_BEDROCK_ID = "eu.anthropic.claude-haiku-4-5-20251001-v1:0"
-
 
 def _checker():
     spec = importlib.util.spec_from_file_location(
@@ -28,15 +26,18 @@ def _checker():
     return module
 
 
-def test_helper_slot_is_proven_haiku() -> None:
+def test_helper_slot_is_read_from_the_config() -> None:
     mix = load_model_mix(ROOT / "platform-config.yaml")
-    assert mix["helper_bedrock_id"] == HELPER_BEDROCK_ID
-    assert mix["helper_litellm_model_name"] == HELPER_BEDROCK_ID
-    assert mix["helper_anthropic_api_id"] == HELPER_BEDROCK_ID
+    helper = mix["helper_bedrock_id"]
+    assert mix["helper_litellm_model_name"] == helper
+    assert mix["helper_anthropic_api_id"] == helper
     assert mix["model_id"] == mix["default_bedrock_id"]
-    assert mix["helper_bedrock_id"] != mix["default_bedrock_id"]
-    assert mix["helper_bedrock_id"] != mix["max_bedrock_id"]
+    assert helper != mix["default_bedrock_id"]
+    assert helper != mix["max_bedrock_id"]
     assert mix["helper_invoke"] == "direct-bedrock"
+    checker = (ROOT / "scripts" / "check-platform-config.py").read_text(encoding="utf-8")
+    assert helper not in checker
+    assert helper not in Path(__file__).read_text(encoding="utf-8")
 
 
 def test_litellm_rows_are_default_and_max_only() -> None:
