@@ -22,54 +22,50 @@
     </div>
   </header>
   <main id="main">
-    <div class="work-strip">
-      <a class="work-tile is-active" href="index.html" aria-current="page">
-        <strong>Cursor · /cursor</strong>
-        <span>Place A · Agentic eng OS</span>
-      </a>
-    </div>
-    <p class="cursor-sell">Agentic eng OS — Catalog → Plan → Execute → PR</p>
-    <p class="cursor-sub">Grok steers · Cursor codes · GitHub SSOT</p>
-    <figure class="raster-well">
-      <p class="arch-sub well-label">Diagram · cursor-page-v4</p>
-      <img src="../diagrams/cursor-page-v4.png" alt="Catalog, Plan, Execute, PR. Grouped skill tiers. MCP connectors as a separate band. CLI orchestrator. mock omitted on this diagram.">
-      <figcaption>SSOT: olympus-cursor-page-v4.drawio · Eng raster embed · grouped inventory 7+16+8+10 · mock omitted</figcaption>
-    </figure>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="../console.html">Open console</a>
-      <a class="btn" href="../architecture.html">See Architecture</a>
-    </div>
-    <p class="cursor-note">/cursor · Place A · no 41-name wall</p>
-
-    <h1 class="fold-title">How the platform gets built.</h1>
-    <p class="cursor-sub">Catalog first. Plan when it needs it. Execute. Ship the PR.</p>
-    <p class="personal-note">I don’t freestyle multi-surface work. Catalog first, then plan, then execute — Cloud Agents get the same brief. Skills help; GitHub stays SSOT for IDs. Grok Bot orchestrates; I take Cursor-shaped work, push back on bad briefs, and ship PRs back. Challenge welcome is load-bearing.</p>
-
-    <section class="fold" aria-labelledby="inv-title">
-      <details>
-        <summary id="inv-title">Full skill inventory — grouped, helpers ≠ ID SSOT</summary>
-        <p>Helpers ≠ ID SSOT. 41 dirs + CATALOG.md + SSOT.md, grouped 7+16+8+10.</p>
-        <h2>Olympus / session (7)</h2>
-        <p><code>olympus-edge</code> · <code>cv-jobs-poc</code> · <code>save-and-exit</code> · <code>restore-and-enter</code> · <code>root-cause-first</code> · <code>ssot-enforcer</code> · <code>daily-summary</code></p>
-        <h2>AWS (16)</h2>
-        <p><code>aws-acm</code> · <code>aws-alb</code> · <code>aws-asg</code> · <code>aws-dns-delegation</code> · <code>aws-ec2</code> · <code>aws-eks</code> · <code>aws-finops</code> · <code>aws-general</code> · <code>aws-iam-least-privilege</code> · <code>aws-nlb</code> · <code>aws-rds</code> · <code>aws-route53</code> · <code>aws-s3</code> · <code>aws-tagging-standards</code> · <code>aws-vpc-patterns</code> · <code>aws-waf</code></p>
-        <h2>Helm · n8n (8)</h2>
-        <p><code>helm-charts</code> · <code>helm-deploy</code> · <code>helm-general</code> · <code>n8n-api</code> · <code>n8n-claude-router</code> · <code>n8n-deploy</code> · <code>n8n-general</code> · <code>n8n-workflows</code></p>
-        <h2>Agents · lang · peers (10)</h2>
-        <p><code>agent-creator</code> · <code>ai-platform-agents</code> · <code>frontend-engineer</code> · <code>ui-ux-engineer</code> · <code>skill-creator</code> · <code>github</code> · <code>terraform</code> · <code>python</code> · <code>powershell</code> · <code>recover-pdf</code></p>
-      </details>
-      <details>
-        <summary>CLI / models — inventory keeps mock</summary>
-        <p>Invoke: <code>python -m orchestrator</code> · subcommand <code>run</code> · state <code>agent-api/.orchestrator</code></p>
-        <p>Factory providers (all real): <code>mock</code> · <code>bedrock</code> · <code>anthropic</code>/<code>claude</code> · <code>openai</code>/<code>gpt</code> · <code>perplexity</code></p>
-        <p>In-cluster agent-api (separate path): Bedrock <code>eu.anthropic.claude-sonnet-5-5</code> + in-cluster MCP — ≠ CLI orchestrator ≠ LiteLLM Admin spend.</p>
-        <p>Max: <code>platform-slot-max</code> → <code>eu.anthropic.claude-opus-4-8</code> (Opus 4.8).</p>
-      </details>
-      <details>
-        <summary>MCP / connectors — separate band, not the 41</summary>
-        <p>Tezka 41 ≠ Eng-box MCP list ≠ GitHub-only CLI connectors. Label separately.</p>
-        <p>Eng-box examples used in Olympus work: GitHub · Origin · ChatPRD · Figma · Notion · Aws-mcp · Awsknowledge · Awsiac · Awspricing · Canva (Finance needsAuth — not usable).</p>
-      </details>
+    <section class="run-card" aria-labelledby="run-title">
+      <h1 id="run-title">How I run the work</h1>
+      <p class="intro">I run this portal like a small company of AI agents. They draft, review and build. I approve every step, and no code reaches the site until I've looked at it.</p>
+      <p class="subline">One human, one orchestrator, six seats.</p>
+      <p class="subline">Nothing merges without my GO.</p>
+      <figure class="cursor-diagram">
+        <img
+          src="../diagrams/olympus-agent-company-cursor-v5.png"
+          width="1880"
+          height="2040"
+          alt="Lev sets the direction. Grok Bot runs the team beside the team connectors. Six seats: Product, Design, Content, Platform, Eng highlighted, Security dashed. Two-row flow: Catalog, Plan, Plan approved, Execute, then PR, Preview, Lev GO to merge, Ship. Grouped skill inventory 7, 16, 8, and 10. CLI orchestrator providers: bedrock, anthropic, openai, perplexity.">
+      </figure>
+      <p class="under-flow">Code ships by PR, behind my GO. Fixes made live during an incident get written back into Terraform afterward.</p>
+      <ul class="proof-chips">
+        <li>
+          <p>A five-step security and config hardening: 19 PRs across 6 repos. Each step merged only after my GO.</p>
+          <div class="trail">
+            <p><strong>Full trail</strong></p>
+            <p>D: ai-platform <a rel="noopener noreferrer" target="_blank" href="https://github.com/LevKesha/ai-platform/pull/32">#32</a>, infrastructure #13 (private), llm-cost #9 (private)</p>
+            <p>E: ai-platform <a rel="noopener noreferrer" target="_blank" href="https://github.com/LevKesha/ai-platform/pull/33">#33</a>, <a rel="noopener noreferrer" target="_blank" href="https://github.com/LevKesha/ai-platform/pull/34">#34</a>, infrastructure #14, #15, #16 (private), cicd #4 (private)</p>
+            <p>A: ai-platform <a rel="noopener noreferrer" target="_blank" href="https://github.com/LevKesha/ai-platform/pull/35">#35</a>, infrastructure #17 (private), llm-cost #10 (private), agent-api #22 (private)</p>
+            <p>B: ai-platform <a rel="noopener noreferrer" target="_blank" href="https://github.com/LevKesha/ai-platform/pull/36">#36</a>, llm-cost #11 (private)</p>
+            <p>C: ai-platform <a rel="noopener noreferrer" target="_blank" href="https://github.com/LevKesha/ai-platform/pull/37">#37</a>, llm-cost #12 (private), agent-api #23 (private), rag-service #3 (private)</p>
+          </div>
+        </li>
+        <li>
+          <p>Rolled out one service at a time, each behind green tests and a health check. PRs in private repos.</p>
+          <p class="private-refs">agent-api #24, rag-service #4, mcp-server #3</p>
+        </li>
+        <li>
+          <p>A secret scanner flagged a test file. We fixed the cause, so test data is now built at runtime and the code holds nothing that looks like a secret.</p>
+          <p><a rel="noopener noreferrer" target="_blank" href="https://github.com/LevKesha/ai-platform/commit/a957d4e583a4d1e044b7530e6bd7d485477a78a5">ai-platform a957d4e →</a></p>
+        </li>
+      </ul>
+      <ul class="prin">
+        <li>GitHub is the source of truth.</li>
+        <li>Find the root cause before fixing.</li>
+        <li>Review screenshots, not just diffs.</li>
+      </ul>
+      <p class="diagram-source">Diagram source: olympus-agent-company-cursor-v5.drawio · grouped inventory 7+16+8+10</p>
+      <div class="btnrow">
+        <a class="btn btn-primary" href="../console.html">Open console</a>
+        <a class="btn" href="../architecture.html">See Architecture</a>
+      </div>
     </section>
   </main>
 </body>
