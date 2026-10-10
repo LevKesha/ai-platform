@@ -120,6 +120,20 @@ def find_default_getenv(text: str, env_var: str) -> str | None:
     return m.group(1) if m else None
 
 
+def litellm_want_rows(mix: dict[str, str]) -> set[tuple[str, str]]:
+    """LiteLLM routes default and max only. Helper is direct Bedrock, not a row."""
+    return {
+        (
+            mix["default_litellm_model_name"],
+            f"bedrock/converse/{mix['default_bedrock_id']}",
+        ),
+        (
+            mix["max_litellm_model_name"],
+            f"bedrock/converse/{mix['max_bedrock_id']}",
+        ),
+    }
+
+
 def litellm_rows(text: str) -> list[tuple[str, str]]:
     rows: list[tuple[str, str]] = []
     name: str | None = None
@@ -163,6 +177,8 @@ def slot_requirement_errors(slots: object) -> list[str]:
                 errors.append(f"llm.slots.{name}.{field} is required")
         if name in {"default", "max"} and not slot.get("label"):
             errors.append(f"llm.slots.{name}.label is required")
+        if name == "helper" and slot.get("invoke") != "direct-bedrock":
+            errors.append("llm.slots.helper.invoke must be direct-bedrock")
     return errors
 
 
@@ -308,16 +324,7 @@ def main() -> int:
                 errors.append(f"{path}: {claude_var}/model want={want_claude!r} got={got!r}")
         if kind == "litellm_model":
             rows = litellm_rows(text)
-            want_rows = {
-                (
-                    mix["default_litellm_model_name"],
-                    f"bedrock/converse/{mix['default_bedrock_id']}",
-                ),
-                (
-                    mix["max_litellm_model_name"],
-                    f"bedrock/converse/{mix['max_bedrock_id']}",
-                ),
-            }
+            want_rows = litellm_want_rows(mix)
             if set(rows) != want_rows:
                 errors.append(f"{path}: model_list want={sorted(want_rows)!r} got={rows!r}")
             continue

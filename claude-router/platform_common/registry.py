@@ -66,6 +66,10 @@ def load_model_mix(config_path: str | Path | None = None) -> dict[str, str]:
             if field not in slot or slot[field] in ("", None):
                 raise ValueError(f"llm.slots.{name}.{field} is required")
             mix[f"{name}_{field}"] = str(slot[field])
+        if name == "helper":
+            if slot.get("invoke") != "direct-bedrock":
+                raise ValueError("llm.slots.helper.invoke must be direct-bedrock")
+            mix["helper_invoke"] = "direct-bedrock"
     if mix["model_id"] != mix["default_bedrock_id"]:
         raise ValueError("llm.model_id must alias slots.default.bedrock_id")
     names = [mix[f"{name}_litellm_model_name"] for name in SLOT_NAMES]

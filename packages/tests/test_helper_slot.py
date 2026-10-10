@@ -36,6 +36,17 @@ def test_helper_slot_is_proven_haiku() -> None:
     assert mix["model_id"] == mix["default_bedrock_id"]
     assert mix["helper_bedrock_id"] != mix["default_bedrock_id"]
     assert mix["helper_bedrock_id"] != mix["max_bedrock_id"]
+    assert mix["helper_invoke"] == "direct-bedrock"
+
+
+def test_litellm_rows_are_default_and_max_only() -> None:
+    checker = _checker()
+    mix = load_model_mix(ROOT / "platform-config.yaml")
+    rows = checker.litellm_want_rows(mix)
+    assert len(rows) == 2
+    blob = " ".join(name + " " + model for name, model in rows)
+    assert mix["helper_bedrock_id"] not in blob
+    assert mix["helper_invoke"] == "direct-bedrock"
 
 
 def test_helper_slot_is_required(tmp_path: Path) -> None:
