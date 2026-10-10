@@ -212,8 +212,13 @@
       if (name === "limit") showClosed();
     }
 
+    function isChatApi(url) {
+      const path = String(url).split("?")[0];
+      return path === "/chat" || path.indexOf("/chat/") === 0;
+    }
+
     function ask(question) {
-      if (input.disabled) return;
+      if (input.disabled) return Promise.resolve();
       addQuestion(question);
       const dots = showTyping();
       const payload = {
@@ -222,18 +227,25 @@
         question: question,
         history: options.history || [],
       };
-      buildRequest(payload)
+      const chatPath = "/chat";
+      return buildRequest(payload)
         .then(function (request) {
-          return (options.fetchImpl || fetch)("/chat", {
+          return (options.fetchImpl || fetch)(chatPath, {
             method: "POST",
             headers: request.headers,
             body: request.body,
           });
         })
         .then(function (response) {
+          if (isChatApi(chatPath) && response.status === 403) {
+            dots.remove();
+            showClosed();
+            return null;
+          }
           return response.json();
         })
         .then(function (payload) {
+          if (!payload) return;
           dots.remove();
           if (payload.kind === "closed") showClosed();
           else if (payload.kind === "off_topic" || payload.kind === "not_in_cv") addNote(payload.text, true);
@@ -276,6 +288,7 @@
       open: open,
       close: close,
       showClosed: showClosed,
+      ask: ask,
       link: function () {
         return requestLink;
       },

@@ -394,6 +394,117 @@ def test_focus_moves_to_the_request_link() -> None:
     assert proc.returncode == 0, proc.stdout + proc.stderr
 
 
+def _aws_region() -> str:
+    from platform_common.registry import _parse_simple, find_platform_config
+
+    config = find_platform_config(ROOT / "packages" / "platform_common" / "registry.py")
+    parsed = _parse_simple(config.read_text(encoding="utf-8"))
+    region = parsed["aws"]["region"]
+    if not region:
+        raise AssertionError("aws.region missing from platform-config.yaml")
+    return str(region)
+
+
+def _moto_ledger():
+    import boto3
+    from chat_helper.ledger import TTL_ATTRIBUTE, NativeDynamo, TableLedger
+    from moto import mock_aws
+
+    region = _aws_region()
+    context = mock_aws()
+    context.start()
+    boto3.client("dynamodb", region_name=region).create_table(
+        TableName="chat",
+        BillingMode="PAY_PER_REQUEST",
+        AttributeDefinitions=[{"AttributeName": "pk", "AttributeType": "S"}],
+        KeySchema=[{"AttributeName": "pk", "KeyType": "HASH"}],
+    )
+    client = NativeDynamo(boto3.client("dynamodb", region_name=region))
+    return context, client, TableLedger("chat", client, load_policy()), TTL_ATTRIBUTE
+
+
+def test_ttl_is_set_from_the_policy(monkeypatch) -> None:
+    region = _aws_region()
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
+    monkeypatch.setenv("AWS_SESSION_TOKEN", "testing")
+    monkeypatch.setenv("AWS_DEFAULT_REGION", region)
+    policy = load_policy()
+    context, client, ledger, ttl_name = _moto_ledger()
+    try:
+        ledger.write_chat("c", 2, NOW)
+        ledger.write_unanswered("What is Lev's salary?", NOW)
+        chat = client.get_item(TableName="chat", Key={"pk": "CHAT#c"})["Item"]
+        unanswered = client.scan(TableName="chat")["Items"]
+        unanswered = [item for item in unanswered if str(item["pk"]).startswith("UNANSWERED#")]
+        assert len(unanswered) == 1
+        chat_ttl = int((NOW + timedelta(hours=int(policy["chat_ttl_hours"]))).timestamp())
+        gap_ttl = int((NOW + timedelta(days=int(policy["unanswered_ttl_days"]))).timestamp())
+        assert ttl_name in chat
+        assert int(chat[ttl_name]) == chat_ttl
+        assert int(unanswered[0][ttl_name]) == gap_ttl
+        assert chat_ttl != gap_ttl
+    finally:
+        context.stop()
+
+
+def test_chat_state_survives_a_cold_start(monkeypatch) -> None:
+    region = _aws_region()
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
+    monkeypatch.setenv("AWS_SESSION_TOKEN", "testing")
+    monkeypatch.setenv("AWS_DEFAULT_REGION", region)
+    from chat_helper.ledger import TableLedger
+
+    context, client, ledger, _ttl_name = _moto_ledger()
+    try:
+        policy = load_policy()
+        theseus = Stub("sonnet")
+        haiku = Stub("haiku")
+        deps = _deps(haiku, theseus=theseus, ledger=ledger)
+        live = int(policy["live_answers"])
+        for index in range(live):
+            assert _json(handle(_event(_ask(), idem=f"live{index}"), deps))["label"] == policy["label_live"]
+        assert ledger.write_unanswered("What is Lev's salary?", NOW)["text"] == "What is Lev's salary?"
+        cold = TableLedger("chat", client, policy)
+        assert cold.read_turns("c1", NOW) == live
+        assert cold.chat_closed("c1", NOW) is False
+        assert cold.read_unanswered(NOW) == ["What is Lev's salary?"]
+        next_theseus = Stub("sonnet")
+        next_haiku = Stub("haiku")
+        follow = _deps(next_haiku, theseus=next_theseus, ledger=cold)
+        payload = _json(handle(_event(_ask(), idem="after"), follow))
+        assert payload["label"] == policy["label_cv"]
+        assert next_theseus.calls == []
+        assert len(next_haiku.calls) == 1
+        assert cold.read_turns("c1", NOW) == live + 1
+    finally:
+        context.stop()
+
+
+def test_spend_cap_still_holds_on_the_table(monkeypatch) -> None:
+    region = _aws_region()
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
+    monkeypatch.setenv("AWS_SESSION_TOKEN", "testing")
+    monkeypatch.setenv("AWS_DEFAULT_REGION", region)
+    context, client, ledger, _ttl_name = _moto_ledger()
+    try:
+        policy = load_policy()
+        cap = int(policy["cap_micro"])
+        assert ledger.reserve("SPEND#2026-10", "a", cap).ok
+        assert ledger.reserve("SPEND#2026-10", "b", 1).ok is False
+        settled = ledger.settle("SPEND#2026-10", "a", cap, {"kind": "answer", "text": "ok"})
+        assert settled.settled
+        replay = ledger.reserve("SPEND#2026-10", "a", cap)
+        assert replay.replay and replay.settled
+        item = client.get_item(TableName="chat", Key={"pk": "SPEND#2026-10"})["Item"]
+        assert int(item["settled"]) == cap
+        assert "203.0.113.10" not in json.dumps(item, default=str)
+    finally:
+        context.stop()
+
+
 def test_privacy_contrast() -> None:
     css = (ROOT / "olympus" / "styles.css").read_text(encoding="utf-8")
     assert ".chat-privacy" in css
