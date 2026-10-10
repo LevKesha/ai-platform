@@ -1,0 +1,24 @@
+{
+  "turn_limit": 10,
+  "live_answers": 5,
+  "cap_micro": 3000000,
+  "chat_ttl_hours": 24,
+  "unanswered_ttl_days": 30,
+  "privacy": "Chats expire after 24 hours. Questions I can't answer expire after 30 days, and are kept as text only so Lev can see what people ask.",
+  "opener": "Hi. Ask me about Lev's work, skills or certifications. I answer from his CV and this site.",
+  "suggested": [
+    "What does Lev run on AWS?",
+    "Which certifications does he hold?",
+    "What's the AI platform on this site?"
+  ],
+  "label_cv": "From Lev's CV",
+  "label_live": "Answered by the live platform",
+  "off_topic": "I can only answer questions about Lev's work. For anything else, ask Lev directly.",
+  "not_in_cv": "That isn't in Lev's CV or on this site, so I won't guess. Ask him directly.",
+  "closed": "This chat has reached its limit. Lev's happy to pick it up himself.",
+  "link_text": "Request a conversation",
+  "link_href": "/",
+  "switch": "That's all the live answers for this chat. The rest come from Lev's CV.",
+  "placeholder": "Ask about Lev's work",
+  "bubble_name": "Chat about Lev's work"
+}

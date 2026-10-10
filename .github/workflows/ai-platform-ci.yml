@@ -71,4 +71,4 @@ jobs:
           echo "==> Platform config SSOT"
           python3 scripts/check-platform-config.py
           python3 scripts/sync-platform-common.py --check
-          pytest -q packages/tests/test_helper_slot.py
+          pytest -q packages/tests/test_helper_slot.py packages/chat_helper/tests
