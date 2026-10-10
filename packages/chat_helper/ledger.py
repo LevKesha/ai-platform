@@ -69,7 +69,7 @@ def apply_settle(item: dict, idem: str, actual: int, response: dict) -> dict | N
     if hold is None or hold["status"] != "reserved":
         return None
     updated = copy.deepcopy(item)
-    booked = min(int(actual), int(hold["amount"]))
+    booked = int(actual)
     updated["settled"] = int(updated["settled"]) + booked
     updated["holds"][idem] = {
         "amount": hold["amount"],

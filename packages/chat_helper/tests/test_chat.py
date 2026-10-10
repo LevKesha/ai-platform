@@ -237,36 +237,79 @@ def test_two_callers_cannot_both_reserve_the_cap() -> None:
     assert ledger.months["SPEND#2026-10"]["settled"] + reserved <= cap
 
 
-def test_timeout_then_retry_then_replay() -> None:
-    class Flaky(Stub):
-        def __init__(self) -> None:
-            super().__init__("haiku")
-            self.calls_n = 0
-
+def test_timeout_then_retry_does_not_call_the_model_again() -> None:
+    class Once(Stub):
         def converse(self, **kwargs):
             self.calls.append(kwargs)
-            self.calls_n += 1
-            if self.calls_n == 1:
-                raise ModelTimeout()
-            return super().converse(**kwargs)
+            raise ModelTimeout()
 
-    policy = load_policy()
-    ledger = MemoryLedger(policy)
-    model = Flaky()
+    ledger = MemoryLedger(load_policy())
+    model = Once("haiku")
     deps = _deps(model, ledger=ledger)
     first = _json(handle(_event(_ask(), idem="same"), deps))
     assert first["kind"] == "retry"
+    assert first["input_enabled"] is True
     hold = ledger.months["SPEND#2026-10"]["holds"]["same"]
     assert hold["status"] == "reserved"
     assert ledger.months["SPEND#2026-10"]["settled"] == 0
     second = _json(handle(_event(_ask(), idem="same"), deps))
-    assert second["kind"] == "answer"
-    assert model.calls_n == 2
-    settled = ledger.months["SPEND#2026-10"]["settled"]
-    third = _json(handle(_event(_ask(), idem="same"), deps))
-    assert third == second
-    assert model.calls_n == 2
-    assert ledger.months["SPEND#2026-10"]["settled"] == settled
+    assert second["kind"] == "retry"
+    assert len(model.calls) == 1
+    assert ledger.months["SPEND#2026-10"]["settled"] == 0
+    assert ledger.months["SPEND#2026-10"]["holds"]["same"]["status"] == "reserved"
+
+
+def test_same_key_in_flight_calls_the_model_once() -> None:
+    started = threading.Event()
+    release = threading.Event()
+
+    class Blocking(Stub):
+        def converse(self, **kwargs):
+            if self.calls:
+                return super().converse(**kwargs)
+            started.set()
+            assert release.wait(timeout=5)
+            return super().converse(**kwargs)
+
+    ledger = MemoryLedger(load_policy())
+    model = Blocking("haiku")
+    deps = _deps(model, ledger=ledger)
+    results: dict[str, dict] = {}
+
+    def lead() -> None:
+        results["lead"] = _json(handle(_event(_ask(), idem="same"), deps))
+
+    def follow() -> None:
+        assert started.wait(timeout=5)
+        results["follow"] = _json(handle(_event(_ask(), idem="same"), deps))
+        release.set()
+
+    threads = [threading.Thread(target=lead), threading.Thread(target=follow)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert results["follow"]["kind"] == "retry"
+    assert results["lead"]["kind"] == "answer"
+    assert len(model.calls) == 1
+    replay = _json(handle(_event(_ask(), idem="same"), deps))
+    assert replay == results["lead"]
+    assert len(model.calls) == 1
+
+
+def test_settle_books_usage_not_the_reserve(monkeypatch) -> None:
+    from chat_helper.pricing import actual_micro
+
+    monkeypatch.setattr("chat_helper.handler.worst_case_micro", lambda *args, **kwargs: 1)
+    ledger = MemoryLedger(load_policy())
+    model = Stub("haiku")
+    payload = _json(handle(_event(_ask(), idem="usage"), _deps(model, ledger=ledger)))
+    assert payload["kind"] == "answer"
+    booked = ledger.months["SPEND#2026-10"]["holds"]["usage"]["actual"]
+    expected = actual_micro({"input_tokens": 4, "output_tokens": 4}, "haiku")
+    assert booked == expected
+    assert booked == ledger.months["SPEND#2026-10"]["settled"]
+    assert booked > 1
 
 
 def test_sixth_answer_is_haiku_when_theseus_is_on() -> None:

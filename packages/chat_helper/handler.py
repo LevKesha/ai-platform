@@ -220,6 +220,8 @@ def handle(event: dict, deps: Deps) -> dict:
         return _finish(200, closed_body(policy), "closed")
     if hold.settled and hold.response:
         return _finish(200, hold.response, "answer")
+    if hold.replay:
+        return _finish(200, {"kind": "retry", "input_enabled": True}, "retry")
 
     model_id = deps.live_model_id if live else deps.helper_model_id
     try:
@@ -262,7 +264,7 @@ def handle(event: dict, deps: Deps) -> dict:
     show_switch = used_live and completed == live_answers - 1
     body = answer_body(policy, text, label, show_switch)
     usage = getattr(result, "usage", None) or {"input_tokens": 0, "output_tokens": 0}
-    actual = min(actual_micro(usage, "sonnet" if used_live else "haiku"), worst)
+    actual = actual_micro(usage, "sonnet" if used_live else "haiku")
     deps.ledger.settle(month, idem, actual, body)
     deps.ledger.bump(chat_id, now)
     return _finish(200, body, "answer")
