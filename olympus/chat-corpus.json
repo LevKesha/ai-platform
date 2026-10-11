@@ -197,203 +197,251 @@
     {
       "id": "olympus-evidence.html-31",
       "source": "olympus/evidence.html",
-      "section": "evidence",
-      "text": "Verified 2026-09-13. Public GitHub link only for ai-platform. Skipped old public learning repos."
+      "section": "overview",
+      "text": "Seven repos, from the infrastructure up. One is public, so you can read the code yourself."
     },
     {
       "id": "olympus-evidence.html-32",
       "source": "olympus/evidence.html",
-      "section": "evidence",
-      "text": "Old public learning repos are not evidence: peakyblinders, moviescicd, APIs, azurepipeline, WorldOfGames."
+      "section": "overview",
+      "text": "The platform's map: what runs on EKS, and the one config file for which AI models it uses."
     },
     {
-      "id": "olympus-cursor-index.html-33",
-      "source": "olympus/cursor/index.html",
+      "id": "olympus-evidence.html-33",
+      "source": "olympus/evidence.html",
       "section": "overview",
-      "text": "I run this portal like a small company of AI agents. They draft, review and build. I approve every step, and no code reaches the site until I've looked at it."
+      "text": "Score a CV against the jobs you paste, then tailor it for the one you want. A full product, built and run on this platform."
     },
     {
-      "id": "olympus-cursor-index.html-34",
-      "source": "olympus/cursor/index.html",
+      "id": "olympus-evidence.html-34",
+      "source": "olympus/evidence.html",
       "section": "overview",
-      "text": "A five-step security and config hardening: 19 PRs across 6 repos. Each step merged only after my GO."
+      "text": "Private by design. Walkthrough on request."
     },
     {
-      "id": "olympus-cursor-index.html-35",
-      "source": "olympus/cursor/index.html",
+      "id": "olympus-evidence.html-35",
+      "source": "olympus/evidence.html",
       "section": "overview",
-      "text": "D: ai-platform #32, infrastructure #13 (private), llm-cost #9 (private)"
+      "text": "Reusable GitHub Actions that build images into ECR and deploy them with Helm."
     },
     {
-      "id": "olympus-cursor-index.html-36",
-      "source": "olympus/cursor/index.html",
+      "id": "olympus-evidence.html-36",
+      "source": "olympus/evidence.html",
       "section": "overview",
-      "text": "E: ai-platform #33, #34, infrastructure #14, #15, #16 (private), cicd #4 (private)"
+      "text": "An agent service in FastAPI on Bedrock, deployed to EKS with Helm."
     },
     {
-      "id": "olympus-cursor-index.html-37",
-      "source": "olympus/cursor/index.html",
+      "id": "olympus-evidence.html-37",
+      "source": "olympus/evidence.html",
       "section": "overview",
-      "text": "A: ai-platform #35, infrastructure #17 (private), llm-cost #10 (private), agent-api #22 (private)"
+      "text": "Takes in documents, searches them by meaning, and answers with Claude, on EKS."
     },
     {
-      "id": "olympus-cursor-index.html-38",
-      "source": "olympus/cursor/index.html",
+      "id": "olympus-evidence.html-38",
+      "source": "olympus/evidence.html",
       "section": "overview",
-      "text": "B: ai-platform #36, llm-cost #11 (private)"
+      "text": "Gives AI agents tools, resources and prompts over MCP, with its own narrowly scoped AWS role."
     },
     {
-      "id": "olympus-cursor-index.html-39",
-      "source": "olympus/cursor/index.html",
+      "id": "olympus-evidence.html-39",
+      "source": "olympus/evidence.html",
       "section": "overview",
-      "text": "C: ai-platform #37, llm-cost #12 (private), agent-api #23 (private), rag-service #3 (private)"
+      "text": "LiteLLM routes model calls inside the cluster, Headroom runs beside it, and spend is tracked in one place."
     },
     {
-      "id": "olympus-cursor-index.html-40",
-      "source": "olympus/cursor/index.html",
+      "id": "olympus-evidence.html-40",
+      "source": "olympus/evidence.html",
       "section": "overview",
-      "text": "Rolled out one service at a time, each behind green tests and a health check. PRs in private repos."
+      "text": "n8n workflows on their own host. Live demo, by walkthrough."
     },
     {
       "id": "olympus-cursor-index.html-41",
       "source": "olympus/cursor/index.html",
       "section": "overview",
-      "text": "A secret scanner flagged a test file. We fixed the cause, so test data is now built at runtime and the code holds nothing that looks like a secret."
+      "text": "I run this portal like a small company of AI agents. They draft, review and build. I approve every step, and no code reaches the site until I've looked at it."
     },
     {
       "id": "olympus-cursor-index.html-42",
       "source": "olympus/cursor/index.html",
       "section": "overview",
+      "text": "A five-step security and config hardening: 19 PRs across 6 repos. Each step merged only after my GO."
+    },
+    {
+      "id": "olympus-cursor-index.html-43",
+      "source": "olympus/cursor/index.html",
+      "section": "overview",
+      "text": "D: ai-platform #32, infrastructure #13 (private), llm-cost #9 (private)"
+    },
+    {
+      "id": "olympus-cursor-index.html-44",
+      "source": "olympus/cursor/index.html",
+      "section": "overview",
+      "text": "E: ai-platform #33, #34, infrastructure #14, #15, #16 (private), cicd #4 (private)"
+    },
+    {
+      "id": "olympus-cursor-index.html-45",
+      "source": "olympus/cursor/index.html",
+      "section": "overview",
+      "text": "A: ai-platform #35, infrastructure #17 (private), llm-cost #10 (private), agent-api #22 (private)"
+    },
+    {
+      "id": "olympus-cursor-index.html-46",
+      "source": "olympus/cursor/index.html",
+      "section": "overview",
+      "text": "B: ai-platform #36, llm-cost #11 (private)"
+    },
+    {
+      "id": "olympus-cursor-index.html-47",
+      "source": "olympus/cursor/index.html",
+      "section": "overview",
+      "text": "C: ai-platform #37, llm-cost #12 (private), agent-api #23 (private), rag-service #3 (private)"
+    },
+    {
+      "id": "olympus-cursor-index.html-48",
+      "source": "olympus/cursor/index.html",
+      "section": "overview",
+      "text": "Rolled out one service at a time, each behind green tests and a health check. PRs in private repos."
+    },
+    {
+      "id": "olympus-cursor-index.html-49",
+      "source": "olympus/cursor/index.html",
+      "section": "overview",
+      "text": "A secret scanner flagged a test file. We fixed the cause, so test data is now built at runtime and the code holds nothing that looks like a secret."
+    },
+    {
+      "id": "olympus-cursor-index.html-50",
+      "source": "olympus/cursor/index.html",
+      "section": "overview",
       "text": "Diagram source: olympus-agent-company-cursor-v5.drawio · grouped inventory 7+16+8+10"
     },
     {
-      "id": "olympus-console.html-43",
+      "id": "olympus-console.html-51",
       "source": "olympus/console.html",
       "section": "overview",
       "text": "The plain meaning of every label on the map."
     },
     {
-      "id": "olympus-404.html-44",
+      "id": "olympus-404.html-52",
       "source": "olympus/404.html",
       "section": "overview",
       "text": "No matching page in this static tree. This site does not invent a fallback URL."
     },
     {
-      "id": "olympus-404.html-45",
+      "id": "olympus-404.html-53",
       "source": "olympus/404.html",
       "section": "overview",
       "text": "Use a relative link from this tree, or return to the overview."
     },
     {
-      "id": "olympus-public-data.js-46",
+      "id": "olympus-public-data.js-54",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Senior AI-driven cloud and platform engineering: AWS/EKS orchestration, Bedrock configuration as SSOT, Helm, Terraform, GitHub Actions, and controlled workflow automation. Not a traditional project gallery."
     },
     {
-      "id": "olympus-public-data.js-47",
+      "id": "olympus-public-data.js-55",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Operate the boundary between AI services, Kubernetes, IaC, delivery automation, and read-only interview evidence."
     },
     {
-      "id": "olympus-public-data.js-48",
+      "id": "olympus-public-data.js-56",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Own host. n8n 2.25 has no supported reverse-proxy path under Olympus. Login-gated; interview demo is screenshare."
     },
     {
-      "id": "olympus-public-data.js-49",
+      "id": "olympus-public-data.js-57",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "EKS orchestration of agent-api, rag-service, mcp-server, and n8n. Bedrock SSOT via platform-config.yaml. Only public platform repository."
     },
     {
-      "id": "olympus-public-data.js-50",
+      "id": "olympus-public-data.js-58",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Terraform (HCL), charts/, terraform-*.yml GHA, Bedrock budget TF."
     },
     {
-      "id": "olympus-public-data.js-51",
+      "id": "olympus-public-data.js-59",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Reusable GitHub Actions: ECR + Helm deploy SSOT."
     },
     {
-      "id": "olympus-public-data.js-52",
+      "id": "olympus-public-data.js-60",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "FastAPI Bedrock /agent gateway; Helm/EKS; local orchestrator Research→UX→Frontend→Engineering; GitHub-as-user via agent-api. LiteLLM hop only when LITELLM_BASE_URL is set. /agent stays unwired from LiteLLM."
     },
     {
-      "id": "olympus-public-data.js-53",
+      "id": "olympus-public-data.js-61",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Ingestion + semantic search + Claude on EKS; Helm. README empty."
     },
     {
-      "id": "olympus-public-data.js-54",
+      "id": "olympus-public-data.js-62",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "MCP tools/resources/prompts; Helm; IRSA."
     },
     {
-      "id": "olympus-public-data.js-55",
+      "id": "olympus-public-data.js-63",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "LiteLLM ClusterIP + Headroom sidecar + spend; Helm. Not public."
     },
     {
-      "id": "olympus-public-data.js-56",
+      "id": "olympus-public-data.js-64",
       "source": "olympus/public-data.js",
       "section": "platform",
       "text": "Older services. Helm charts live in infrastructure."
     },
     {
-      "id": "olympus-console-data.js-57",
+      "id": "olympus-console-data.js-65",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Score a CV against the jobs you paste, then tailor it for the one you want."
     },
     {
-      "id": "olympus-console-data.js-58",
+      "id": "olympus-console-data.js-66",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Every model call goes through one gateway, gets trimmed, and gets counted."
     },
     {
-      "id": "olympus-console-data.js-59",
+      "id": "olympus-console-data.js-67",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "the gateway every model call goes through. It counts the spend."
     },
     {
-      "id": "olympus-console-data.js-60",
+      "id": "olympus-console-data.js-68",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "the sidecar beside LiteLLM. It compresses prompts."
     },
     {
-      "id": "olympus-console-data.js-61",
+      "id": "olympus-console-data.js-69",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "The automations that tie the platform together."
     },
     {
-      "id": "olympus-console-data.js-62",
+      "id": "olympus-console-data.js-70",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "One request in, the right service answers"
     },
     {
-      "id": "olympus-console-data.js-63",
+      "id": "olympus-console-data.js-71",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "A quick health check on the model gateway"
     },
     {
-      "id": "olympus-console-data.js-64",
+      "id": "olympus-console-data.js-72",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Private repository. No public GitHub link. Evidence is described here; source is not linked."
