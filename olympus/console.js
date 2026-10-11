@@ -57,9 +57,6 @@
       '<p class="panel-tag">' +
       badges +
       "</p>" +
-      '<ul class="panel-lines"><li>' +
-      escapeHtml(cj.line) +
-      "</li></ul>" +
       '<p><a class="btn" href="' +
       escapeHtml(cj.ctaHref) +
       '">' +

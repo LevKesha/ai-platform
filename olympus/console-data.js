@@ -8,9 +8,8 @@ window.OLYMPUS_CONSOLE = {
   ],
   cvjobs: {
     title: "CV×Jobs",
-    subline: "Give it a CV, get the jobs that fit.",
+    subline: "Score a CV against the jobs you paste, then tailor it for the one you want.",
     badges: ["Behind sign-in", "Not LinkedIn auto-apply"],
-    line: "Match a CV to the right jobs, then tailor it for the one you want.",
     cta: "Request a walkthrough",
     ctaHref: "/",
   },
