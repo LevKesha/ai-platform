@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Olympus — Evidence</title>
+  <title>Olympus · Evidence</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="page-evidence">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="header-inner">
@@ -21,97 +21,72 @@
       </nav>
     </div>
   </header>
-  <main id="main">
-    <h1>Evidence inventory</h1>
-    <p class="lede">Verified 2026-09-13. Public GitHub link only for ai-platform. Skipped old public learning repos.</p>
+  <main id="main" class="ev">
+    <section class="ev-hero" aria-labelledby="ev-title">
+      <div class="ev-hero-copy">
+        <p class="ev-eyebrow">Evidence</p>
+        <h1 id="ev-title">Built, run, and open to check.</h1>
+        <p class="ev-sub">Seven repos, from the infrastructure up. One is public, so you can read the code yourself.</p>
+        <ul class="ev-stats" aria-label="Verified counts">
+          <li><strong>7</strong><span>repos</span></li>
+          <li><strong>1</strong><span>public</span></li>
+        </ul>
+      </div>
+      <article class="ev-card ev-hero-card" aria-labelledby="ai-platform">
+        <p class="ev-kicker"><span aria-hidden="true">●</span> Public · start here</p>
+        <h2 id="ai-platform" class="mono">ai-platform</h2>
+        <p class="ev-hero-line">The platform's map: what runs on EKS, and the one config file for which AI models it uses.</p>
+        <div class="ev-actions">
+          <a class="btn btn-primary" href="https://github.com/LevKesha/ai-platform" target="_blank" rel="noopener noreferrer">Open the code on GitHub <span aria-hidden="true">↗</span><span class="visually-hidden">(opens in new tab)</span></a>
+          <a class="btn" href="architecture.html">See the architecture</a>
+        </div>
+      </article>
+    </section>
 
-    <div class="table-wrap">
-      <table>
-        <caption class="visually-hidden">Repository inventory with visibility and evidence</caption>
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Visibility</th>
-            <th scope="col">Evidence</th>
-            <th scope="col">Link</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row"><span class="mono">ai-platform</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">▣</span> Verified public</span></td>
-            <td>EKS orchestration of agent-api, rag-service, mcp-server, n8n; Bedrock SSOT <span class="mono">platform-config.yaml</span>.</td>
-            <td>
-              <a href="https://github.com/LevKesha/ai-platform" rel="noopener noreferrer" target="_blank">
-                GitHub
-                <span aria-hidden="true">↗</span>
-                <span class="visually-hidden">View ai-platform repository on GitHub (opens in new tab)</span>
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row"><span class="mono">infrastructure</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
-            <td>Terraform · Helm · GHA</td>
-            <td>No public link</td>
-          </tr>
-          <tr>
-            <th scope="row"><span class="mono">cicd</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
-            <td>Reusable GitHub Actions: ECR + Helm.</td>
-            <td>No public link</td>
-          </tr>
-          <tr>
-            <th scope="row"><span class="mono">agent-api</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
-            <td>FastAPI Bedrock /agent; Helm/EKS; GitHub-as-user via agent-api. /agent unwired from LiteLLM.</td>
-            <td>No public link</td>
-          </tr>
-          <tr>
-            <th scope="row"><span class="mono">rag-service</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
-            <td>Ingestion + semantic search + Claude on EKS; Helm. README empty.</td>
-            <td>No public link</td>
-          </tr>
-          <tr>
-            <th scope="row"><span class="mono">mcp-server</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
-            <td>MCP tools/resources/prompts; Helm; IRSA.</td>
-            <td>No public link</td>
-          </tr>
-          <tr>
-            <th scope="row"><span class="mono">llm-cost</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
-            <td>LiteLLM ClusterIP + Headroom sidecar + spend; Helm. Not public.</td>
-            <td>No public link</td>
-          </tr>
-          <tr>
-            <th scope="row"><span class="mono">microservices</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">■</span> Private</span></td>
-            <td>Older services. Helm charts live in infrastructure.</td>
-            <td>No public link</td>
-          </tr>
-          <tr>
-            <th scope="row"><span class="mono">n8n</span></th>
-            <td><span class="badge"><span class="badge-icon" aria-hidden="true">↗</span> Public edge</span></td>
-            <td>Lives in ai-platform. Own host (n8n path-under-proxy limit). Login; screenshare demo.</td>
-            <td>
-              <a href="https://n8n.levkesha.com" rel="noopener noreferrer" target="_blank">
-                n8n.levkesha.com
-                <span aria-hidden="true">↗</span>
-                <span class="visually-hidden">(opens in new tab)</span>
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <section class="ev-group ev-product" aria-labelledby="g-product">
+      <h2 id="g-product" class="ev-group-title">The product on top</h2>
+      <article class="ev-card ev-product-card" aria-labelledby="cvjobs">
+        <p class="ev-tag">Built in agent-api</p>
+        <h3 id="cvjobs">CV×Jobs</h3>
+        <p class="ev-product-line">Give it a CV and it finds the jobs that fit. A full product, built and run on this platform.</p>
+        <div class="ev-actions"><a class="btn" href="/">Request a walkthrough</a></div>
+      </article>
+    </section>
+
+    <p class="ev-private"><span aria-hidden="true">🔒&#xFE0E;</span> Private by design. Walkthrough on request.</p>
+
+    <section class="ev-group" aria-labelledby="g-foundation">
+      <h2 id="g-foundation" class="ev-group-title">The ground it runs on</h2>
+      <div class="ev-grid">
+        <article class="ev-card"><h3 class="mono"><span class="lock" aria-label="Private">🔒&#xFE0E;</span>infrastructure</h3><p>Terraform, Helm and GitHub Actions.</p></article>
+        <article class="ev-card"><h3 class="mono"><span class="lock" aria-label="Private">🔒&#xFE0E;</span>cicd</h3><p>Reusable GitHub Actions that build images into ECR and deploy them with Helm.</p></article>
+      </div>
+    </section>
+
+    <section class="ev-group" aria-labelledby="g-ai">
+      <h2 id="g-ai" class="ev-group-title">The AI services</h2>
+      <div class="ev-grid">
+        <article class="ev-card"><h3 class="mono"><span class="lock" aria-label="Private">🔒&#xFE0E;</span>agent-api</h3><p>An agent service in FastAPI on Bedrock, deployed to EKS with Helm.</p></article>
+        <article class="ev-card"><h3 class="mono"><span class="lock" aria-label="Private">🔒&#xFE0E;</span>rag-service</h3><p>Takes in documents, searches them by meaning, and answers with Claude, on EKS.</p></article>
+        <article class="ev-card"><h3 class="mono"><span class="lock" aria-label="Private">🔒&#xFE0E;</span>mcp-server</h3><p>Gives AI agents tools, resources and prompts over MCP, with its own narrowly scoped AWS role.</p></article>
+      </div>
+    </section>
+
+    <div class="ev-split">
+      <section class="ev-group" aria-labelledby="g-cost">
+        <h2 id="g-cost" class="ev-group-title">Keeping AI spend in check</h2>
+        <article class="ev-card ev-card-hl"><h3 class="mono"><span class="lock" aria-label="Private">🔒&#xFE0E;</span>llm-cost</h3><p>LiteLLM routes model calls inside the cluster, Headroom runs beside it, and spend is tracked in one place.</p></article>
+      </section>
+      <section class="ev-group" aria-labelledby="g-demo">
+        <h2 id="g-demo" class="ev-group-title">See it running</h2>
+        <!-- placeholder link until the request form exists -->
+        <a class="ev-card ev-card-link" href="/"><h3 class="mono">n8n</h3><p class="ev-demo-line">n8n workflows on their own host. Live demo, by walkthrough.</p><p class="ev-cta">Request a walkthrough <span aria-hidden="true">→</span></p></a>
+      </section>
     </div>
 
-    <section aria-labelledby="skip-title">
-      <h2 id="skip-title">Skipped</h2>
-      <p class="muted">Old public learning repos are not evidence: peakyblinders, moviescicd, APIs, azurepipeline, WorldOfGames.</p>
-    </section>
+    <footer class="ev-foot">
+      <p class="ev-verified"><span aria-hidden="true">✓</span> Verified 2026-10-11</p>
+    </footer>
   </main>
-  <script src="chat.js"></script>
 </body>
 </html>
