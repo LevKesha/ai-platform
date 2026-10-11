@@ -156,6 +156,12 @@ def test_hash_header_must_match_the_body() -> None:
     assert proc.returncode == 0, proc.stdout + proc.stderr
 
 
+def test_committed_corpus_matches_a_fresh_build() -> None:
+    from chat_helper.corpus import build_lines
+
+    assert load_lines() == build_lines()
+
+
 def test_hero_region_note_is_not_in_the_corpus() -> None:
     from chat_helper.corpus import build_lines
 

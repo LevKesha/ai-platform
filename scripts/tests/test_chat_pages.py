@@ -154,6 +154,20 @@ def test_policy_without_enabled_fails(tmp_path: Path) -> None:
         mod.stamp_tree(root, VERSION)
 
 
+def test_locked_cvjobs_line_is_in_the_published_copy() -> None:
+    locked = json.loads((ROOT / "olympus" / "locked-copy.json").read_text(encoding="utf-8"))
+    line = locked["cvjobs_line"]
+    assert isinstance(line, str) and line
+    for rel in (
+        "olympus/console-data.js",
+        "olympus/evidence.html",
+        "olympus/architecture.html",
+        "olympus/chat-corpus.json",
+    ):
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        assert line in text, rel
+
+
 def test_corpus_extractor_does_not_read_chat_policy() -> None:
     text = (ROOT / "packages" / "chat_helper" / "corpus.py").read_text(encoding="utf-8")
     assert "chat-policy.json" not in text
