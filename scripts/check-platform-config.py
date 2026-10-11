@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail if sibling repos drift from platform-config.yaml LLM SSOT."""
+"""Fail if sibling repos drift from platform-config.yaml LLM and edge SSOT."""
 from __future__ import annotations
 
 import re
@@ -38,6 +38,10 @@ CHECKS: list[tuple[str, str, str]] = [
     ("rag-service", "k8s/helm/values.yaml", "helm_both"),
     ("rag-service", ".env.example", "env_both"),
     ("llm-cost", "k8s/helm/litellm/files/litellm_config.yaml", "litellm_model"),
+    ("llm-cost", "README.md", "readme_claude"),
+    ("agent-api", "k8s/helm/templates/ingress.yaml", "alb_idle"),
+    ("llm-cost", "k8s/helm/litellm/templates/ingress.yaml", "alb_idle"),
+    ("llm-cost", "k8s/helm/headroom-savings/templates/ingress.yaml", "alb_idle"),
 ]
 
 # HEADROOM_PROBE_MODEL must stay on the default slot until Phase C.
@@ -238,6 +242,24 @@ def readme_default(text: str, env_var: str) -> str | None:
     return match.group(1) if match else None
 
 
+def olympus_admin_timeouts(doc: dict) -> tuple[object, object]:
+    edge = doc.get("edge")
+    admin = edge.get("olympus_admin") if isinstance(edge, dict) else None
+    if not isinstance(admin, dict):
+        return None, None
+    return admin.get("cf_origin_read_timeout"), admin.get("alb_idle_timeout")
+
+
+def idle_timeout_seconds(text: str) -> list[str]:
+    found: list[str] = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        found.extend(re.findall(r"idle_timeout\.timeout_seconds=(\d+)", stripped))
+    return found
+
+
 def js_string_field(text: str, field: str) -> list[str]:
     """Quoted JS field. Boundary so maxModelId is not read as modelId."""
     return re.findall(
@@ -291,6 +313,16 @@ def main() -> int:
             f"want={helper.get('bedrock_id')!r} got={mix.get('helper_bedrock_id')!r}"
         )
 
+    want_cf, want_idle = olympus_admin_timeouts(doc)
+    if not isinstance(want_cf, int):
+        errors.append(
+            f"edge.olympus_admin.cf_origin_read_timeout must be an int, got={want_cf!r}"
+        )
+    if not isinstance(want_idle, int):
+        errors.append(
+            f"edge.olympus_admin.alb_idle_timeout must be an int, got={want_idle!r}"
+        )
+
     want_short = mix["default_anthropic_api_id"]
 
     # Forbidden: stale tree under ai-platform
@@ -315,6 +347,13 @@ def main() -> int:
                 got = m.group(1) if m else None
             if got != want_claude:
                 errors.append(f"{path}: {claude_var}/model want={want_claude!r} got={got!r}")
+        if kind == "alb_idle":
+            got = idle_timeout_seconds(text)
+            if not isinstance(want_idle, int) or got != [str(want_idle)]:
+                errors.append(
+                    f"{path}: idle_timeout.timeout_seconds want={want_idle!r} got={got!r}"
+                )
+            continue
         if kind == "litellm_model":
             rows = litellm_rows(text)
             want_rows = litellm_want_rows(mix)

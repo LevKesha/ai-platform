@@ -69,6 +69,31 @@ def test_deprecated_id_only_allowed_in_denylist() -> None:
     assert checker.deprecated_hits(sample, deprecated) == [deprecated[0]]
 
 
+def test_edge_timeouts_stay_out_of_the_model_mix() -> None:
+    from platform_common.registry import _parse_simple
+
+    checker = _checker()
+    text = (ROOT / "platform-config.yaml").read_text(encoding="utf-8")
+    parsed = _parse_simple(text)
+    doc = checker.load_doc()
+    mix = load_model_mix(ROOT / "platform-config.yaml")
+    assert parsed["aws"]["region"] == doc["aws"]["region"]
+    assert parsed["llm"]["model_id"] == mix["model_id"]
+    assert "edge" not in mix
+    assert parsed["edge"]["olympus_admin"]["cf_origin_read_timeout"] == "120"
+    assert parsed["edge"]["olympus_admin"]["alb_idle_timeout"] == "180"
+    want_cf, want_idle = checker.olympus_admin_timeouts(doc)
+    assert (want_cf, want_idle) == (120, 180)
+    covered = {(repo, rel, kind) for repo, rel, kind in checker.CHECKS}
+    assert ("llm-cost", "README.md", "readme_claude") in covered
+    assert ("agent-api", "k8s/helm/templates/ingress.yaml", "alb_idle") in covered
+    assert ("llm-cost", "k8s/helm/litellm/templates/ingress.yaml", "alb_idle") in covered
+    assert ("llm-cost", "k8s/helm/headroom-savings/templates/ingress.yaml", "alb_idle") in covered
+    sample = "load-balancer-attributes: idle_timeout.timeout_seconds=180"
+    assert checker.idle_timeout_seconds(sample) == ["180"]
+    assert checker.idle_timeout_seconds("# idle_timeout.timeout_seconds=120\n") == []
+
+
 def test_checker_passes_and_ignores_cursor_page() -> None:
     proc = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "check-platform-config.py")],
