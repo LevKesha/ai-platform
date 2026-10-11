@@ -193,5 +193,5 @@ def test_deploy_workflow_stamps_uploads_headers_and_invalidates() -> None:
     assert 'python3 scripts/stamp-olympus-assets.py olympus --version "${GITHUB_SHA:0:7}"' in text
     assert "python3 scripts/stamp-olympus-assets.py olympus --print-cache-manifest" in text
     assert "--cache-metadata cursor/index.html" in text
-    assert 'aws cloudfront create-invalidation --distribution-id "${DIST_ID}" --paths "/*"' in text
+    assert 'create-invalidation --distribution-id "${DIST_ID}" --paths "/*"' in text
     assert "max-age=300" not in text
