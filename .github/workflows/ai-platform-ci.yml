@@ -13,9 +13,8 @@ on:
       - "scripts/**"
       - "agents/**"
       - "n8n-config/**"
-      - "olympus/console-data.js"
-      - "olympus/public-data.js"
-      - "olympus/chat*"
+      - "olympus/**"
+      - ".github/workflows/deploy-olympus.yml"
       - ".github/workflows/ai-platform-ci.yml"
   pull_request:
     branches: [dev, main]
@@ -29,9 +28,8 @@ on:
       - "scripts/**"
       - "agents/**"
       - "n8n-config/**"
-      - "olympus/console-data.js"
-      - "olympus/public-data.js"
-      - "olympus/chat*"
+      - "olympus/**"
+      - ".github/workflows/deploy-olympus.yml"
       - ".github/workflows/ai-platform-ci.yml"
   workflow_dispatch:
 
@@ -73,7 +71,7 @@ jobs:
           echo "==> Platform config SSOT"
           python3 scripts/check-platform-config.py
           python3 scripts/sync-platform-common.py --check
-          pytest -q packages/tests/test_helper_slot.py packages/chat_helper/tests
+          pytest -q packages/tests/test_helper_slot.py packages/chat_helper/tests scripts/tests
           echo "==> Chat panel node tests"
           for test in packages/chat_helper/tests/*.cjs; do
             node "$test"
