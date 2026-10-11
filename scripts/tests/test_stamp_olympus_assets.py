@@ -61,7 +61,7 @@ def test_fixture_html_stamps_local_assets_and_keeps_external_urls(tmp_path: Path
     assert 'src="../diagrams/hero.png?v=abc1234"' in text
     assert 'src="https://cdn.example.com/hero.png"' in text
     assert 'src="mark.svg?v=abc1234#icon"' in text
-    assert mod.unstamped_asset_refs(tmp_path) == []
+    assert mod.asset_refs_not_at_version(tmp_path, VERSION) == []
     assert mod.stamp_tree(tmp_path, VERSION) == 0
 
 
@@ -104,7 +104,35 @@ def test_css_url_and_json_fetches_are_stamped(tmp_path: Path) -> None:
     assert "new URL('chat-corpus.json?v=abc1234', script.src)" in js_text
     assert '"not a fetch"' in js_text
     assert '"https://cdn.example.com/chat-policy.json"' in js_text
-    assert mod.unstamped_asset_refs(tmp_path) == []
+    assert mod.asset_refs_not_at_version(tmp_path, VERSION) == []
+
+
+def test_js_template_replaces_frozen_asset_token() -> None:
+    mod = load()
+    text = "\n".join(
+        [
+            "const src = `diagrams/x.svg?v=old`;",
+            "const fig = '<img src=\"diagrams/cv-jobs-flow.svg?v=20261004-center\" alt=\"\">';",
+            "const cls = event.target.closest(\".js-private\");",
+            "const remote = `https://cdn.example.com/app.js`;",
+            "const nested = `pre ${'chat.js'} post`;",
+        ]
+    )
+    stamped = mod.stamp_js(text, VERSION)
+    assert "const src = `diagrams/x.svg?v=abc1234`;" in stamped
+    assert 'src="diagrams/cv-jobs-flow.svg?v=abc1234"' in stamped
+    assert 'closest(".js-private")' in stamped
+    assert "`https://cdn.example.com/app.js`" in stamped
+    assert "`pre ${'chat.js?v=abc1234'} post`" in stamped
+
+
+def test_guard_rejects_a_frozen_token_until_stamped(tmp_path: Path) -> None:
+    mod = load()
+    script = tmp_path / "console.js"
+    script.write_text("const src = `diagrams/x.svg?v=old`;\n", encoding="utf-8")
+    assert mod.asset_refs_not_at_version(tmp_path, VERSION) == ["console.js: diagrams/x.svg?v=old"]
+    mod.stamp_tree(tmp_path, VERSION)
+    assert mod.asset_refs_not_at_version(tmp_path, VERSION) == []
 
 
 def test_existing_json_query_keeps_other_params() -> None:
@@ -134,9 +162,7 @@ def test_stamped_olympus_copy_has_no_bare_local_assets(tmp_path: Path) -> None:
     dest = tmp_path / "olympus"
     shutil.copytree(ROOT / "olympus", dest)
     mod.stamp_tree(dest, VERSION)
-    assert mod.unstamped_asset_refs(dest) == []
-    versions = {mod.query_version(url) for _rel, url in mod._walk_refs(dest)}
-    assert versions == {VERSION}
+    assert mod.asset_refs_not_at_version(dest, VERSION) == []
     cursor = (dest / "cursor" / "index.html").read_text(encoding="utf-8")
     assert 'href="../styles.css?v=abc1234"' in cursor
     assert 'src="../chat.js?v=abc1234"' in cursor

@@ -21,7 +21,7 @@ JSON_CACHE = "no-cache"
 OTHER_CACHE = "no-cache"
 ASSET_CACHE = "public, max-age=31536000, immutable"
 
-JSON_FETCHES = frozenset({"chat-policy.json", "chat-corpus.json"})
+ASSET_SUFFIXES = (".css", ".js", ".png", ".svg", ".json")
 VERSION_RE = re.compile(r"[0-9a-f]{7,40}")
 
 ATTR_RE = re.compile(
@@ -32,7 +32,18 @@ CSS_URL_RE = re.compile(
     r"""url\(\s*(?:(?P<q>["'])(?P<quoted>[^"']*)(?P=q)|(?P<bare>[^"')\s]+))\s*\)""",
     re.IGNORECASE,
 )
-QUOTED_RE = re.compile(r"""(?P<q>["'])(?P<url>[^"'\\\s]*)(?P=q)""")
+# Local asset path inside a JS string. The character after the suffix must not
+# continue the token, so ".js-private" is a class name and stays untouched.
+ASSET_REF_RE = re.compile(
+    r"(?<![A-Za-z0-9_@~+./-])"
+    r"(?P<url>(?:\.\./|\./|/)?"
+    r"(?:[A-Za-z0-9_@~+-]+/)*"
+    r"[A-Za-z0-9_@~+-]+\.(?:css|js|png|svg|json)"
+    r"(?:\?[^\"'`\s<>)\\]*)?"
+    r"(?:#[^\"'`\s<>)\\]*)?)"
+    r"(?![A-Za-z0-9_@~+.-])",
+    re.IGNORECASE,
+)
 
 
 def cache_metadata(rel: str) -> tuple[str, str]:
@@ -40,10 +51,11 @@ def cache_metadata(rel: str) -> tuple[str, str]:
 
     HTML is revalidated every load so the new ?v= is visible.
     styles.css, every .js, and png/svg are stamped, so they can be immutable.
-    Other CSS (auth/hosted-ui.css) is not stamped, so it stays no-cache.
-    JSON is no-cache even when the fetch URL is stamped: chat.js resolves
-    new URL("chat-policy.json", script.src) by dropping the script query, and
-    a cache that ignores query strings must still not keep a stale corpus.
+    Other CSS (auth/hosted-ui.css) is not referenced as a stamped page asset,
+    so it stays no-cache.
+    JSON is no-cache even when its fetch URL is stamped. new URL(name, script.src)
+    drops the script query, and a cache that ignores query strings must still
+    not keep a stale corpus.
     """
     path = rel.replace("\\", "/").lstrip("/")
     if path == "README.md":
@@ -105,33 +117,14 @@ def _path(url: str) -> str:
     return urlsplit(text).path
 
 
-def _basename(url: str) -> str:
-    path = _path(url)
-    return path.rsplit("/", 1)[-1]
-
-
-def is_html_asset(url: str) -> bool:
+def is_local_asset(url: str) -> bool:
+    """One rule for HTML href/src, CSS url(), and JS string literals."""
     if not url or is_external(url):
         return False
     path = _path(url)
     if not path or path.endswith("/"):
         return False
-    if _basename(url) == "styles.css":
-        return True
-    return path.endswith((".js", ".png", ".svg"))
-
-
-def is_css_asset(url: str) -> bool:
-    if not url or is_external(url):
-        return False
-    path = _path(url)
-    return path.endswith((".png", ".svg"))
-
-
-def is_json_fetch(url: str) -> bool:
-    if not url or is_external(url):
-        return False
-    return _basename(url) in JSON_FETCHES
+    return path.lower().endswith(ASSET_SUFFIXES)
 
 
 def query_version(url: str) -> str | None:
@@ -151,10 +144,94 @@ def with_version(url: str, version: str) -> str:
     return _restore_amp(rebuilt, amp)
 
 
+def _stamp_urls(text: str, version: str, urls: list[tuple[int, int, str]]) -> str:
+    updated = text
+    for start, end, url in reversed(urls):
+        updated = updated[:start] + with_version(url, version) + updated[end:]
+    return updated
+
+
+def _asset_spans(segment: str) -> list[tuple[int, int, str]]:
+    found: list[tuple[int, int, str]] = []
+    for match in ASSET_REF_RE.finditer(segment):
+        url = match.group("url")
+        if is_local_asset(url):
+            found.append((match.start("url"), match.end("url"), url))
+    return found
+
+
+def _skip_quoted(text: str, i: int, quote: str) -> int:
+    n = len(text)
+    i += 1
+    while i < n:
+        if text[i] == "\\":
+            i += 2
+            continue
+        if text[i] == quote:
+            return i + 1
+        i += 1
+    return n
+
+
+def _js_static_spans(text: str) -> list[tuple[int, int]]:
+    """Contents of ', ", and ` strings. Template ${} is scanned as code."""
+    spans: list[tuple[int, int]] = []
+
+    def scan(i: int, limit: int, in_expr: bool, depth: int) -> int:
+        n = len(text)
+        while i < limit and i < n:
+            ch = text[i]
+            if ch == "/" and i + 1 < n and text[i + 1] == "/":
+                newline = text.find("\n", i)
+                i = n if newline < 0 else newline + 1
+                continue
+            if ch == "/" and i + 1 < n and text[i + 1] == "*":
+                close = text.find("*/", i + 2)
+                i = n if close < 0 else close + 2
+                continue
+            if ch in "'\"":
+                end = _skip_quoted(text, i, ch)
+                content_end = end - 1 if end > i and text[end - 1 : end] == ch else end
+                spans.append((i + 1, content_end))
+                i = end
+                continue
+            if ch == "`":
+                i += 1
+                seg = i
+                while i < n:
+                    if text[i] == "\\":
+                        i += 2
+                        continue
+                    if text[i] == "`":
+                        spans.append((seg, i))
+                        i += 1
+                        break
+                    if text[i] == "$" and i + 1 < n and text[i + 1] == "{":
+                        spans.append((seg, i))
+                        i = scan(i + 2, n, True, 1)
+                        seg = i
+                        continue
+                    i += 1
+                else:
+                    spans.append((seg, n))
+                continue
+            if in_expr and ch == "{":
+                depth += 1
+            elif in_expr and ch == "}":
+                depth -= 1
+                if depth == 0:
+                    return i + 1
+            i += 1
+        return i
+
+    scan(0, len(text), False, 0)
+    return spans
+
+
 def stamp_html(text: str, version: str) -> str:
     def repl(match: re.Match[str]) -> str:
         url = match.group("url")
-        if not is_html_asset(url):
+        if not is_local_asset(url):
             return match.group(0)
         return f"{match.group('prefix')}{match.group('q')}{with_version(url, version)}{match.group('q')}"
 
@@ -164,7 +241,7 @@ def stamp_html(text: str, version: str) -> str:
 def stamp_css(text: str, version: str) -> str:
     def repl(match: re.Match[str]) -> str:
         url = match.group("quoted") if match.group("q") else match.group("bare")
-        if not is_css_asset(url):
+        if not is_local_asset(url):
             return match.group(0)
         quote = match.group("q") or ""
         return f"url({quote}{with_version(url, version)}{quote})"
@@ -173,13 +250,12 @@ def stamp_css(text: str, version: str) -> str:
 
 
 def stamp_js(text: str, version: str) -> str:
-    def repl(match: re.Match[str]) -> str:
-        url = match.group("url")
-        if not is_json_fetch(url):
-            return match.group(0)
-        return f"{match.group('q')}{with_version(url, version)}{match.group('q')}"
-
-    return QUOTED_RE.sub(repl, text)
+    updated = text
+    for start, end in reversed(_js_static_spans(text)):
+        segment = text[start:end]
+        spans = [(start + a, start + b, url) for a, b, url in _asset_spans(segment)]
+        updated = _stamp_urls(updated, version, spans)
+    return updated
 
 
 def _stamp_file(path: Path, version: str) -> bool:
@@ -213,17 +289,16 @@ def _refs_in_text(kind: str, text: str) -> list[str]:
     if kind == "html":
         for match in ATTR_RE.finditer(text):
             url = match.group("url")
-            if is_html_asset(url):
+            if is_local_asset(url):
                 found.append(url)
     elif kind == "css":
         for match in CSS_URL_RE.finditer(text):
             url = match.group("quoted") if match.group("q") else match.group("bare")
-            if is_css_asset(url):
+            if is_local_asset(url):
                 found.append(url)
     elif kind == "js":
-        for match in QUOTED_RE.finditer(text):
-            url = match.group("url")
-            if is_json_fetch(url):
+        for start, end in _js_static_spans(text):
+            for _a, _b, url in _asset_spans(text[start:end]):
                 found.append(url)
     return found
 
@@ -242,14 +317,16 @@ def _walk_refs(root: Path) -> list[tuple[str, str]]:
     return rows
 
 
-def unstamped_asset_refs(root: Path) -> list[str]:
-    """Local stamp targets that have no non-empty ?v=."""
-    missing: list[str] = []
+def asset_refs_not_at_version(root: Path, version: str) -> list[str]:
+    """Asset refs whose ?v= is missing or is not this commit sha.
+
+    A frozen token such as ?v=old still fails. Run this on the stamped tree.
+    """
+    wrong: list[str] = []
     for rel, url in _walk_refs(root):
-        version = query_version(url)
-        if not version:
-            missing.append(f"{rel}: {url}")
-    return missing
+        if query_version(url) != version:
+            wrong.append(f"{rel}: {url}")
+    return wrong
 
 
 def hand_versioned_refs(root: Path) -> list[str]:
