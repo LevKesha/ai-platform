@@ -69,6 +69,15 @@
   }
 
   function renderAsleep() {
+    var figure = el("figure", "panel-diagram");
+    var img = document.createElement("img");
+    img.src = "diagrams/soft-down.svg";
+    img.alt = "Soft-down: asleep with site and sign-in up; on request Lev approves, databases start, services scale up, live in about 15 min; after 1h idle it goes back to sleep.";
+    img.width = 1014;
+    img.height = 203;
+    img.loading = "lazy";
+    figure.appendChild(img);
+    panel.appendChild(figure);
     panel.appendChild(pill("", "Asleep. Request a look."));
     var button = el("button", "btn btn-primary sleep-cta is-marked", "Request a look");
     button.type = "button";

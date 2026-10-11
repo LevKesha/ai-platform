@@ -1663,6 +1663,16 @@ body.page-overview {
   display: none;
 }
 
+.sleep-panel .panel-diagram {
+  margin: 0 0 1rem;
+}
+
+.sleep-panel .panel-diagram img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
 .page-console .sleep-card {
   grid-template-columns: minmax(0, 1fr);
 }
