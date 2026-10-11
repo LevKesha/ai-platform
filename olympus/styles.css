@@ -718,7 +718,7 @@ tbody tr:last-child td {
   display: block;
   width: 100%;
   height: auto;
-  min-width: 64rem;
+  min-width: 0;
 }
 
 .hub-fallback {
@@ -731,6 +731,12 @@ tbody tr:last-child td {
   margin: 0 0 0.75rem;
   color: var(--text);
   font-size: 1rem;
+}
+
+.hub-glossary .console-subline {
+  margin: -0.4rem 0 0.9rem;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .hub-glossary dl {
@@ -788,6 +794,64 @@ tbody tr:last-child td {
   color: var(--text);
   border-color: var(--accent);
   background: var(--bg-panel);
+}
+
+.console-nav button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.console-panel .panel-tag {
+  margin: 0 0 0.9rem;
+}
+
+.console-panel .panel-diagram {
+  margin: 0 0 1rem;
+}
+
+.console-panel .panel-diagram img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.console-panel .panel-lines {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.console-panel .panel-lines li {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.console-panel .panel-lines strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.console-panel .flow-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.6rem;
+  margin: 0.9rem 0 1rem;
+}
+
+.console-panel .flow-cards .card h3 {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.console-panel .flow-cards .card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
 }
 
 .page-console .console-panel {
@@ -1595,6 +1659,24 @@ body.page-overview {
   border-radius: 14px;
 }
 
+.page-console .sleep-poster {
+  display: none;
+}
+
+.sleep-panel .panel-diagram {
+  margin: 0 0 1rem;
+}
+
+.sleep-panel .panel-diagram img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.page-console .sleep-card {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .sleep-poster {
   position: relative;
   aspect-ratio: 16 / 10;
@@ -2188,6 +2270,28 @@ body.sleep-shot #private-modal {
   .chat-dots i {
     animation: none;
     opacity: 0.85;
+  }
+}
+
+body.page-console:has(.console-shell) .chat-bubble {
+  left: 0.75rem;
+  right: auto;
+  bottom: 1.25rem;
+  max-width: 12.5rem;
+  box-sizing: border-box;
+  white-space: nowrap;
+  transition: opacity 150ms ease;
+}
+
+body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.page-console:has(.console-shell) .chat-bubble {
+    transition: none;
   }
 }
 
