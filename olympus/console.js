@@ -57,7 +57,7 @@
       '<p class="panel-tag">' +
       badges +
       "</p>" +
-      '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg?v=20261004-center" alt="CV×Jobs flow: Master CV, jobs you paste, fit report, tailored CV, export; optional model call and role focus." width="1016" height="444" loading="lazy"></figure>' +
+      '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg" alt="CV×Jobs flow: Master CV, jobs you paste, fit report, tailored CV, export; optional model call and role focus." width="1016" height="444" loading="lazy"></figure>' +
       '<p><a class="btn" href="' +
       escapeHtml(cj.ctaHref) +
       '">' +
@@ -90,7 +90,7 @@
       '<p class="panel-tag"><span class="badge">' +
       escapeHtml(s.badge) +
       "</span></p>" +
-      '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg?v=20261004-center" alt="Spend loop: CV×Jobs and n8n calls go through the LiteLLM gateway, Headroom trims big prompts, spend logs go to one spend view." width="1016" height="444" loading="lazy"></figure>' +
+      '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend loop: CV×Jobs and n8n calls go through the LiteLLM gateway, Headroom trims big prompts, spend logs go to one spend view." width="1016" height="444" loading="lazy"></figure>' +
       '<ul class="panel-lines">' +
       lines +
       "</ul></section>"
