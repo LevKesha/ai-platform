@@ -2347,6 +2347,25 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
   .ev-hero { grid-template-columns: 1fr; gap: 1.75rem; }
   .ev-hero-card { padding: 1.5rem; }
 }
+
+@media (max-width: 480px) {
+  .page-evidence .ev {
+    padding-top: 1.25rem;
+    padding-bottom: 5.5rem;
+  }
+  .page-evidence .ev-stats {
+    margin-top: 1rem;
+  }
+  .page-evidence .ev-hero {
+    gap: 1rem;
+  }
+  .page-evidence .ev-hero-line {
+    margin: 0.75rem 0 1rem !important;
+  }
+  .page-evidence .ev-hero-card {
+    padding-top: 1.15rem;
+  }
+}
 /* Brightness pass */
 .ev .ev-hero h1, .ev .ev-card h3, .ev .ev-hero-card h2, .ev .ev-group-title, .ev .ev-hero-line { color: #f5f5f5; opacity: 1; }
 .ev .ev-sub, .ev .ev-card p, .ev .ev-private { color: #e8e8e8; opacity: 1; }

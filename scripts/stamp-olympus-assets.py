@@ -4,6 +4,9 @@
 Source files stay unversioned. Deploy runs this on the checkout, then uploads
 with the Cache-Control map from cache_metadata(). External URLs are unchanged.
 
+Chat mounts from olympus/chat-policy.json `pages`. Stamp inserts one chat.js
+script on those pages before it versions asset URLs. Pages omit the tag.
+
   python3 scripts/stamp-olympus-assets.py olympus --version "$SHORT_SHA"
   python3 scripts/stamp-olympus-assets.py olympus --print-cache-manifest
   python3 scripts/stamp-olympus-assets.py --cache-metadata cursor/index.html
@@ -11,6 +14,7 @@ with the Cache-Control map from cache_metadata(). External URLs are unchanged.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -276,7 +280,86 @@ def _stamp_file(path: Path, version: str) -> bool:
     return True
 
 
+CHAT_SCRIPT_RE = re.compile(
+    r"""<script\s+src\s*=\s*(?P<q>["'])"""
+    r"""(?P<src>(?:\./|\.\./)*chat\.js(?:\?[^"']*)?)"""
+    r"""(?P=q)\s*>\s*</script>""",
+    re.IGNORECASE,
+)
+
+
+def chat_page_list(root: Path) -> list[str] | None:
+    """Pages that mount chat, from chat-policy.json. None when this tree has no policy.
+
+    A tree with a policy and no `pages` list is a broken Olympus checkout.
+    A fixture directory with no policy file is not one of those checkouts.
+    """
+    policy_path = root / "chat-policy.json"
+    if not policy_path.is_file():
+        return None
+    data = json.loads(policy_path.read_text(encoding="utf-8"))
+    if "pages" not in data:
+        raise SystemExit("chat-policy.json is missing pages")
+    pages = data["pages"]
+    if not isinstance(pages, list) or not pages:
+        raise SystemExit("chat-policy.json pages must be a non-empty list")
+    seen: set[str] = set()
+    for rel in pages:
+        path = Path(rel)
+        if (
+            not isinstance(rel, str)
+            or rel != path.as_posix()
+            or rel.startswith("/")
+            or ".." in path.parts
+            or not rel.endswith(".html")
+        ):
+            raise SystemExit(f"chat page is not a relative html path: {rel}")
+        if rel in seen:
+            raise SystemExit(f"duplicate chat page: {rel}")
+        seen.add(rel)
+    return pages
+
+
+def chat_script_srcs(root: Path) -> dict[str, list[str]]:
+    """chat.js script srcs found in each html file."""
+    found: dict[str, list[str]] = {}
+    for path in sorted(p for p in root.rglob("*.html") if p.is_file()):
+        rel = path.relative_to(root).as_posix()
+        srcs = [match.group("src") for match in CHAT_SCRIPT_RE.finditer(path.read_text(encoding="utf-8"))]
+        if srcs:
+            found[rel] = srcs
+    return found
+
+
+def _chat_src(rel: str) -> str:
+    return f"{'../' * rel.count('/')}chat.js"
+
+
+def inject_chat_scripts(root: Path) -> int:
+    """Insert the chat script on policy pages that do not already have one."""
+    pages = chat_page_list(root)
+    if pages is None:
+        return 0
+    changed = 0
+    for rel in pages:
+        path = root / rel
+        if not path.is_file():
+            raise SystemExit(f"chat page missing: {rel}")
+        text = path.read_text(encoding="utf-8")
+        if CHAT_SCRIPT_RE.search(text):
+            continue
+        src = _chat_src(rel)
+        snippet = f'  <script src="{src}"></script>\n'
+        head, sep, tail = text.rpartition("</body>")
+        if not sep:
+            raise SystemExit(f"{rel} has no </body> for the chat script")
+        path.write_text(head + snippet + sep + tail, encoding="utf-8")
+        changed += 1
+    return changed
+
+
 def stamp_tree(root: Path, version: str) -> int:
+    inject_chat_scripts(root)
     changed = 0
     for path in sorted(p for p in root.rglob("*") if p.is_file()):
         if _stamp_file(path, version):
