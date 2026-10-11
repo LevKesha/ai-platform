@@ -85,13 +85,36 @@ def test_edge_timeouts_stay_out_of_the_model_mix() -> None:
     want_cf, want_idle = checker.olympus_admin_timeouts(doc)
     assert (want_cf, want_idle) == (120, 180)
     covered = {(repo, rel, kind) for repo, rel, kind in checker.CHECKS}
-    assert ("llm-cost", "README.md", "readme_claude") in covered
+    assert ("llm-cost", "README.md", "readme_ssot_model") in covered
     assert ("agent-api", "k8s/helm/templates/ingress.yaml", "alb_idle") in covered
     assert ("llm-cost", "k8s/helm/litellm/templates/ingress.yaml", "alb_idle") in covered
     assert ("llm-cost", "k8s/helm/headroom-savings/templates/ingress.yaml", "alb_idle") in covered
     sample = "load-balancer-attributes: idle_timeout.timeout_seconds=180"
     assert checker.idle_timeout_seconds(sample) == ["180"]
     assert checker.idle_timeout_seconds("# idle_timeout.timeout_seconds=120\n") == []
+
+
+def test_readme_ssot_model_reads_the_backticked_line() -> None:
+    checker = _checker()
+    want = load_model_mix(ROOT / "platform-config.yaml")["model_id"]
+    text = f"SSOT text model (from platform-config.yaml):\n`{want}`\n"
+    assert checker.readme_ssot_model(text) == want
+    table = f"| `CLAUDE_MODEL_ID` | `{want}` |"
+    assert checker.readme_default(table, "CLAUDE_MODEL_ID") == want
+    assert checker.readme_ssot_model(table) is None
+    assert checker.readme_default(text, "CLAUDE_MODEL_ID") is None
+    covered = {(repo, rel, kind) for repo, rel, kind in checker.CHECKS}
+    assert ("ai-platform", "claude-router/README.md", "readme_claude") in covered
+    assert ("llm-cost", "README.md", "readme_ssot_model") in covered
+
+
+def test_readme_ssot_model_fails_on_a_wrong_id() -> None:
+    checker = _checker()
+    want = load_model_mix(ROOT / "platform-config.yaml")["model_id"]
+    text = "SSOT text model (from platform-config.yaml):\n`not-the-slot`\n"
+    got = checker.readme_ssot_model(text)
+    assert got == "not-the-slot"
+    assert got != want
 
 
 def test_checker_passes_and_ignores_cursor_page() -> None:

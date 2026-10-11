@@ -38,7 +38,7 @@ CHECKS: list[tuple[str, str, str]] = [
     ("rag-service", "k8s/helm/values.yaml", "helm_both"),
     ("rag-service", ".env.example", "env_both"),
     ("llm-cost", "k8s/helm/litellm/files/litellm_config.yaml", "litellm_model"),
-    ("llm-cost", "README.md", "readme_claude"),
+    ("llm-cost", "README.md", "readme_ssot_model"),
     ("agent-api", "k8s/helm/templates/ingress.yaml", "alb_idle"),
     ("llm-cost", "k8s/helm/litellm/templates/ingress.yaml", "alb_idle"),
     ("llm-cost", "k8s/helm/headroom-savings/templates/ingress.yaml", "alb_idle"),
@@ -242,6 +242,17 @@ def readme_default(text: str, env_var: str) -> str | None:
     return match.group(1) if match else None
 
 
+def readme_ssot_model(text: str) -> str | None:
+    """Backticked model id on the line after an 'SSOT text model' label."""
+    lines = text.splitlines()
+    for index, line in enumerate(lines[:-1]):
+        if "SSOT text model" not in line:
+            continue
+        match = re.fullmatch(r"`([^`]+)`", lines[index + 1].strip())
+        return match.group(1) if match else None
+    return None
+
+
 def olympus_admin_timeouts(doc: dict) -> tuple[object, object]:
     edge = doc.get("edge")
     admin = edge.get("olympus_admin") if isinstance(edge, dict) else None
@@ -368,6 +379,10 @@ def main() -> int:
             got = readme_default(text, claude_var)
             if got != want_claude:
                 errors.append(f"{path}: {claude_var} want={want_claude!r} got={got!r}")
+        if kind == "readme_ssot_model":
+            got = readme_ssot_model(text)
+            if got != want_claude:
+                errors.append(f"{path}: SSOT text model want={want_claude!r} got={got!r}")
         if kind == "quoted_model":
             found_models = quoted_models(text)
             if found_models != [want_claude]:
