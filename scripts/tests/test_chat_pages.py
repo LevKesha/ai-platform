@@ -1,0 +1,97 @@
+"""Chat wiring follows chat-policy.json pages and nothing else."""
+from __future__ import annotations
+
+import importlib.util
+import json
+import shutil
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+VERSION = "abc1234"
+
+
+def load():
+    path = ROOT / "scripts" / "stamp-olympus-assets.py"
+    spec = importlib.util.spec_from_file_location("stamp_olympus_assets", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec is not None and spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_source_html_does_not_hand_wire_chat() -> None:
+    mod = load()
+    olympus = ROOT / "olympus"
+    pages = mod.chat_page_list(olympus)
+    assert pages is not None
+    assert "evidence.html" in pages
+    assert mod.chat_script_srcs(olympus) == {}
+    for rel in pages:
+        text = (olympus / rel).read_text(encoding="utf-8")
+        href = f"{'../' * rel.count('/')}styles.css"
+        assert f'href="{href}"' in text
+    console = (olympus / "console.html").read_text(encoding="utf-8")
+    assert "IntersectionObserver" in console
+    assert 'querySelector(".chat-bubble")' in console
+    css = (olympus / "styles.css").read_text(encoding="utf-8")
+    assert "body.page-console:has(.console-shell) .chat-bubble" in css
+
+
+def test_stamp_wires_only_policy_pages(tmp_path: Path) -> None:
+    mod = load()
+    dest = tmp_path / "olympus"
+    shutil.copytree(ROOT / "olympus", dest)
+    assert mod.stamp_tree(dest, VERSION) > 0
+    assert mod.stamp_tree(dest, VERSION) == 0
+    pages = mod.chat_page_list(dest)
+    srcs = mod.chat_script_srcs(dest)
+    assert pages is not None
+    assert set(srcs) == set(pages)
+    for rel, found in srcs.items():
+        expect = f"{'../' * rel.count('/')}chat.js?v={VERSION}"
+        assert found == [expect]
+    evidence = (dest / "evidence.html").read_text(encoding="utf-8")
+    assert '<script src="chat.js?v=abc1234"></script>' in evidence
+    console = (dest / "console.html").read_text(encoding="utf-8")
+    assert console.index("IntersectionObserver") < console.index("chat.js?v=abc1234")
+    assert mod.asset_refs_not_at_version(dest, VERSION) == []
+    assert mod.hand_versioned_refs(ROOT / "olympus") == []
+
+
+def test_a_page_outside_the_list_is_not_a_chat_page(tmp_path: Path) -> None:
+    mod = load()
+    root = tmp_path / "site"
+    root.mkdir()
+    (root / "chat-policy.json").write_text(json.dumps({"pages": ["keep.html"]}), encoding="utf-8")
+    (root / "keep.html").write_text("<html><body><p>keep</p></body></html>", encoding="utf-8")
+    (root / "skip.html").write_text(
+        '<html><body><script src="chat.js"></script></body></html>',
+        encoding="utf-8",
+    )
+    mod.stamp_tree(root, VERSION)
+    srcs = mod.chat_script_srcs(root)
+    assert set(srcs) != set(mod.chat_page_list(root))
+    assert srcs["skip.html"] == ["chat.js?v=abc1234"]
+    assert srcs["keep.html"] == ["chat.js?v=abc1234"]
+
+
+def test_policy_without_pages_fails(tmp_path: Path) -> None:
+    mod = load()
+    root = tmp_path / "site"
+    root.mkdir()
+    (root / "chat-policy.json").write_text("{}", encoding="utf-8")
+    (root / "index.html").write_text("<html><body></body></html>", encoding="utf-8")
+    with pytest.raises(SystemExit, match="missing pages"):
+        mod.stamp_tree(root, VERSION)
+
+
+def test_listed_page_without_body_fails(tmp_path: Path) -> None:
+    mod = load()
+    root = tmp_path / "site"
+    root.mkdir()
+    (root / "chat-policy.json").write_text(json.dumps({"pages": ["index.html"]}), encoding="utf-8")
+    (root / "index.html").write_text("<html><p>no body</p></html>", encoding="utf-8")
+    with pytest.raises(SystemExit, match="no </body>"):
+        mod.stamp_tree(root, VERSION)
