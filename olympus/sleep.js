@@ -45,27 +45,8 @@
   var preview = params.get("preview") === "1";
   if (preview) document.body.classList.add("sleep-shot");
 
-  function bars(liveFrame) {
-    var frame = el("div", liveFrame ? "sleep-ui is-live" : "sleep-ui");
-    ["40%", "100%", "80%", "70px", "60%"].forEach(function (hint, index) {
-      var bar = document.createElement("div");
-      if (index === 3) bar.style.height = hint;
-      else if (hint !== "100%") bar.style.width = hint;
-      frame.appendChild(bar);
-    });
-    return frame;
-  }
-
-  function drawPoster(isLive) {
+  function drawPoster() {
     poster.textContent = "";
-    if (isLive) {
-      var wrap = el("div", "sleep-live-frame");
-      wrap.appendChild(bars(true));
-      poster.appendChild(wrap);
-      return;
-    }
-    poster.appendChild(bars(false));
-    poster.appendChild(el("span", "sleep-cap", "Captured [date] on a live run."));
   }
 
   function pill(kind, text) {
@@ -78,7 +59,7 @@
   function show(name, opts) {
     opts = opts || {};
     panel.textContent = "";
-    drawPoster(name === "live");
+    drawPoster();
     if (name === "asleep") renderAsleep();
     else if (name === "requested") renderRequested();
     else if (name === "waking") renderWaking(opts.approved === true);
@@ -89,7 +70,6 @@
 
   function renderAsleep() {
     panel.appendChild(pill("", "Asleep. Request a look."));
-    panel.appendChild(el("h2", null, "The console, live"));
     var button = el("button", "btn btn-primary sleep-cta is-marked", "Request a look");
     button.type = "button";
     button.addEventListener("click", function () {

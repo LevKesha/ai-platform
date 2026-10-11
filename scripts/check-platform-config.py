@@ -56,10 +56,8 @@ SHORT_ID_CHECKS: list[tuple[str, str, str]] = [
     ("agent-api", "orchestrator/config/settings.py", r'anthropic_model_id:\s*str\s*=\s*"([^"]+)"'),
 ]
 
-OLYMPUS_MODEL_ID_FILES = (
-    "olympus/console-data.js",
-    "olympus/public-data.js",
-)
+# console-data.js no longer publishes model ids. public-data.js still does.
+OLYMPUS_MODEL_ID_FILES = ("olympus/public-data.js",)
 
 
 def load_doc() -> dict:
@@ -377,23 +375,7 @@ def main() -> int:
             errors.append(f"{path}: modelId want={want_claude!r} got={found!r}")
         max_found = js_string_field(text, "maxModelId")
         want_max = mix["max_bedrock_id"]
-        if rel == "olympus/console-data.js":
-            if max_found != [want_max]:
-                errors.append(f"{path}: maxModelId want={[want_max]!r} got={max_found!r}")
-            slot = js_string_field(text, "maxSlot")
-            if slot != [mix["max_litellm_model_name"]]:
-                errors.append(
-                    f"{path}: maxSlot want={[mix['max_litellm_model_name']]!r} got={slot!r}"
-                )
-            label = js_string_field(text, "modelLabel")
-            want_label = str((slots.get("default") or {}).get("label"))
-            if label != [want_label]:
-                errors.append(f"{path}: modelLabel want={[want_label]!r} got={label!r}")
-            max_label = js_string_field(text, "maxModelLabel")
-            want_max_label = str((slots.get("max") or {}).get("label"))
-            if max_label != [want_max_label]:
-                errors.append(f"{path}: maxModelLabel want={[want_max_label]!r} got={max_label!r}")
-        elif max_found and max_found != [want_max]:
+        if max_found and max_found != [want_max]:
             errors.append(f"{path}: maxModelId want={[want_max]!r} got={max_found!r}")
 
     if errors:
