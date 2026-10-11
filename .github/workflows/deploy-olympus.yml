@@ -29,6 +29,9 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-session-name: github-actions-olympus
 
+      - name: Stamp local asset URLs
+        run: python3 scripts/stamp-olympus-assets.py olympus --version "${GITHUB_SHA:0:7}"
+
       - name: Sync origin and invalidate
         run: |
           set -euo pipefail
@@ -41,10 +44,23 @@ jobs:
           BUCKET="${ORIGIN%%.*}"
           echo "distribution=${DIST_ID} bucket=${BUCKET}"
           aws s3api head-bucket --bucket "${BUCKET}"
+          # Delete removed keys first. cp below sets Cache-Control from cache_metadata()
+          # even when the bytes did not change. Do not sync again after these copies.
           aws s3 sync olympus/ "s3://${BUCKET}/" --delete --exclude README.md
+          manifest="$(python3 scripts/stamp-olympus-assets.py olympus --print-cache-manifest)"
+          while IFS=$'\t' read -r rel cache ctype; do
+            [[ -n "$rel" ]] || continue
+            aws s3 cp "olympus/${rel}" "s3://${BUCKET}/${rel}" \
+              --cache-control "$cache" \
+              --content-type "$ctype"
+          done <<< "$manifest"
           # Place A is olympus/cursor/index.html. Copy an extensionless key so /cursor resolves
-          # on the S3 origin (default root object does not cover subpaths).
+          # on the S3 origin (default root object does not cover subpaths). Same HTML headers.
+          meta="$(python3 scripts/stamp-olympus-assets.py --cache-metadata cursor/index.html)"
+          cache="${meta%%$'\t'*}"
+          ctype="${meta#*$'\t'}"
           aws s3 cp olympus/cursor/index.html "s3://${BUCKET}/cursor" \
-            --content-type "text/html; charset=utf-8" \
-            --cache-control "public, max-age=300"
+            --content-type "$ctype" \
+            --cache-control "$cache"
+          # /* covers HTML documents and the directory index.
           aws cloudfront create-invalidation --distribution-id "${DIST_ID}" --paths "/*"
