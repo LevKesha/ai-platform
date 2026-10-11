@@ -805,6 +805,16 @@ tbody tr:last-child td {
   margin: 0 0 0.9rem;
 }
 
+.console-panel .panel-diagram {
+  margin: 0 0 1rem;
+}
+
+.console-panel .panel-diagram img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
 .console-panel .panel-lines {
   margin: 0 0 1rem;
   padding: 0;
