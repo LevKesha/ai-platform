@@ -165,7 +165,10 @@ def test_stamped_olympus_copy_has_no_bare_local_assets(tmp_path: Path) -> None:
     assert mod.asset_refs_not_at_version(dest, VERSION) == []
     cursor = (dest / "cursor" / "index.html").read_text(encoding="utf-8")
     assert 'href="../styles.css?v=abc1234"' in cursor
-    assert 'src="../chat.js?v=abc1234"' in cursor
+    if mod.chat_enabled(dest):
+        assert 'src="../chat.js?v=abc1234"' in cursor
+    else:
+        assert "chat.js" not in cursor
     assert "olympus-agent-company-cursor-v5.png?v=abc1234" in cursor
     assert "https://github.com/LevKesha/ai-platform/pull/32" in cursor
     chat = (dest / "chat.js").read_text(encoding="utf-8")

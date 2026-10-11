@@ -4,8 +4,10 @@
 Source files stay unversioned. Deploy runs this on the checkout, then uploads
 with the Cache-Control map from cache_metadata(). External URLs are unchanged.
 
-Chat mounts from olympus/chat-policy.json `pages`. Stamp inserts one chat.js
-script on those pages before it versions asset URLs. Pages omit the tag.
+Chat mounts from olympus/chat-policy.json. `enabled` decides whether the
+site shows chat. When it is true, stamp inserts one chat.js script on `pages`
+before it versions asset URLs. When it is false, stamp inserts none. Pages
+omit the tag.
 
   python3 scripts/stamp-olympus-assets.py olympus --version "$SHORT_SHA"
   python3 scripts/stamp-olympus-assets.py olympus --print-cache-manifest
@@ -288,16 +290,36 @@ CHAT_SCRIPT_RE = re.compile(
 )
 
 
+def _read_chat_policy(root: Path) -> dict | None:
+    policy_path = root / "chat-policy.json"
+    if not policy_path.is_file():
+        return None
+    data = json.loads(policy_path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise SystemExit("chat-policy.json must be an object")
+    return data
+
+
+def chat_enabled(root: Path) -> bool | None:
+    """Whether this tree shows chat. None when the tree has no policy file."""
+    data = _read_chat_policy(root)
+    if data is None:
+        return None
+    enabled = data.get("enabled")
+    if not isinstance(enabled, bool):
+        raise SystemExit("chat-policy.json enabled must be a boolean")
+    return enabled
+
+
 def chat_page_list(root: Path) -> list[str] | None:
     """Pages that mount chat, from chat-policy.json. None when this tree has no policy.
 
     A tree with a policy and no `pages` list is a broken Olympus checkout.
     A fixture directory with no policy file is not one of those checkouts.
     """
-    policy_path = root / "chat-policy.json"
-    if not policy_path.is_file():
+    data = _read_chat_policy(root)
+    if data is None:
         return None
-    data = json.loads(policy_path.read_text(encoding="utf-8"))
     if "pages" not in data:
         raise SystemExit("chat-policy.json is missing pages")
     pages = data["pages"]
@@ -336,7 +358,12 @@ def _chat_src(rel: str) -> str:
 
 
 def inject_chat_scripts(root: Path) -> int:
-    """Insert the chat script on policy pages that do not already have one."""
+    """Insert the chat script on policy pages when chat is enabled.
+
+    A false flag inserts nothing. Pages keep their own tags out of source.
+    """
+    if chat_enabled(root) is not True:
+        return 0
     pages = chat_page_list(root)
     if pages is None:
         return 0

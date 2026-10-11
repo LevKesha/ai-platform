@@ -2349,20 +2349,20 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
 }
 
 @media (max-width: 480px) {
-  .page-evidence .ev {
+  .page-evidence:has(.chat-bubble) .ev {
     padding-top: 1.25rem;
     padding-bottom: 5.5rem;
   }
-  .page-evidence .ev-stats {
+  .page-evidence:has(.chat-bubble) .ev-stats {
     margin-top: 1rem;
   }
-  .page-evidence .ev-hero {
+  .page-evidence:has(.chat-bubble) .ev-hero {
     gap: 1rem;
   }
-  .page-evidence .ev-hero-line {
+  .page-evidence:has(.chat-bubble) .ev-hero-line {
     margin: 0.75rem 0 1rem !important;
   }
-  .page-evidence .ev-hero-card {
+  .page-evidence:has(.chat-bubble) .ev-hero-card {
     padding-top: 1.15rem;
   }
 }
