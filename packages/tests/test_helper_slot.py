@@ -108,6 +108,22 @@ def test_readme_ssot_model_reads_the_backticked_line() -> None:
     assert ("llm-cost", "README.md", "readme_ssot_model") in covered
 
 
+def test_readme_ssot_model_skips_blank_lines_like_the_llm_cost_readme() -> None:
+    checker = _checker()
+    want = load_model_mix(ROOT / "platform-config.yaml")["model_id"]
+    text = (
+        "# LLM Cost (LiteLLM + spend)\n\n"
+        "SSOT text model (from `LevKesha/ai-platform` `platform-config.yaml`):\n"
+        "\n"
+        f"`{want}`\n\n"
+        "## Local compose\n"
+    )
+    assert checker.readme_ssot_model(text) == want
+    prose = "SSOT text model (from platform-config.yaml):\n\nSee the config.\n"
+    assert checker.readme_ssot_model(prose) is None
+    assert checker.readme_ssot_model("SSOT text model:\n\n") is None
+
+
 def test_readme_ssot_model_fails_on_a_wrong_id() -> None:
     checker = _checker()
     want = load_model_mix(ROOT / "platform-config.yaml")["model_id"]
