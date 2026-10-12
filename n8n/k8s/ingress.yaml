@@ -17,6 +17,8 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/success-codes: '200,401,403'
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=120
+    alb.ingress.kubernetes.io/security-groups: sg-00028a2aeb8cbb87e
+    alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"
 spec:
   ingressClassName: alb
   rules:
