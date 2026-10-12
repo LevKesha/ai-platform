@@ -243,12 +243,13 @@ def readme_default(text: str, env_var: str) -> str | None:
 
 
 def readme_ssot_model(text: str) -> str | None:
-    """Backticked model id on the line after an 'SSOT text model' label."""
+    """Backticked model id on the first non-blank line after an 'SSOT text model' label."""
     lines = text.splitlines()
-    for index, line in enumerate(lines[:-1]):
+    for index, line in enumerate(lines):
         if "SSOT text model" not in line:
             continue
-        match = re.fullmatch(r"`([^`]+)`", lines[index + 1].strip())
+        following = next((nxt.strip() for nxt in lines[index + 1 :] if nxt.strip()), "")
+        match = re.fullmatch(r"`([^`]+)`", following)
         return match.group(1) if match else None
     return None
 
