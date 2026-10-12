@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -79,7 +80,40 @@ def file_errors(data: dict) -> list[str]:
         path = PARENT / rel
         for subnet in data["public_subnet_ids"]:
             must_contain(path, subnet, errors)
+    errors.extend(cloudfront_sg_errors(data))
     return errors
+
+
+def cloudfront_sg_errors(data: dict) -> list[str]:
+    """Annotation is absent until the exported security group id is a real sg- id."""
+    errors: list[str] = []
+    n8n = ROOT / "n8n/k8s/ingress.yaml"
+    text = n8n.read_text(encoding="utf-8") if n8n.exists() else ""
+    n8n_sg = _sg_id(data.get("n8n_cloudfront_sg_id"), "n8n_cloudfront_sg_id", errors)
+    if n8n_sg:
+        must_contain(n8n, f"alb.ingress.kubernetes.io/security-groups: {n8n_sg}", errors)
+        must_contain(
+            n8n,
+            'alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"',
+            errors,
+        )
+    elif "security-groups" in text or "manage-backend-security-group-rules" in text:
+        errors.append("n8n ingress renders a security group annotation before n8n_cloudfront_sg_id is set")
+
+    admin_sg = _sg_id(data.get("olympus_admin_cloudfront_sg_id"), "olympus_admin_cloudfront_sg_id", errors)
+    if admin_sg:
+        for rel in PATH_INGRESS_VALUES:
+            must_contain(PARENT / rel, admin_sg, errors)
+    return errors
+
+
+def _sg_id(raw: object, key: str, errors: list[str]) -> str:
+    if raw is None or raw == "":
+        return ""
+    if not isinstance(raw, str) or re.fullmatch(r"sg-[0-9a-f]+", raw.strip()) is None:
+        errors.append(f"{key} is not a security group id")
+        return ""
+    return raw.strip()
 
 
 def aws_text(args: list[str]) -> str:
