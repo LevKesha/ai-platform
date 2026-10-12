@@ -72,7 +72,7 @@
     var figure = el("figure", "panel-diagram");
     var img = document.createElement("img");
     img.src = "diagrams/soft-down.svg";
-    img.alt = "Soft-down: asleep with site and sign-in up; on request Lev approves, databases start, services scale up, live in about 15 min; after 1h idle it goes back to sleep.";
+    img.alt = "Asleep, with the site and sign-in still up. On request, Lev approves, databases start, services come up, and it is live in about 15 minutes. After an hour with no use, it goes back to sleep.";
     img.width = 1014;
     img.height = 203;
     img.loading = "lazy";
@@ -107,9 +107,9 @@
     }
     var list = el("ul", "sleep-steps");
     [
-      ["ok", "Cluster nodes"],
-      ["run", "Gateway & auth"],
-      ["wait", "LiteLLM"],
+      ["ok", "Servers"],
+      ["run", "Sign-in"],
+      ["wait", "AI gateway"],
       ["wait", "Console"]
     ].forEach(function (step) {
       var item = el("li");

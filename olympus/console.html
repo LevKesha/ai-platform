@@ -33,10 +33,10 @@
   </section>
 
   <section class="console-s1" aria-labelledby="console-s1-heading">
-    <p class="console-s1-intro" id="console-s1-heading">The platform behind single sign-on, with n8n running beside it.</p>
+    <p class="console-s1-intro" id="console-s1-heading">The platform you open after you sign in, with automations beside it.</p>
     <div class="hub-frame">
       <figure class="hub">
-        <figcaption id="hub-caption" class="visually-hidden">Hub. Visitors enter through CloudFront, then the ALB with Cognito sign-in, then the EKS cluster. Inside the cluster: CV×Jobs (signed-in) and AI spend control (signed-in; LiteLLM with Headroom as a sidecar). Connectors: optional hop from CV×Jobs to AI spend control. Beside the core, outside the sign-in path: n8n (public door, own load balancer), beside the EKS cluster, with a webhook into AI spend control.</figcaption>
+        <figcaption id="hub-caption" class="visually-hidden">Hub. Visitors come in through the public site, then sign in, then the place where the services run. Inside, after sign-in: CV×Jobs and AI spend control. AI spend control counts what you spend, with a helper beside it that shortens long prompts. CV×Jobs can take an extra stop into AI spend control when that path is on. Beside this, outside sign-in: n8n, on its own front door, with a link into AI spend control.</figcaption>
         <svg class="hub-diagram" viewBox="0 0 1200 440" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <marker id="hub-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
@@ -105,7 +105,7 @@
         </svg>
         <noscript>
           <style>.hub-diagram{display:none}</style>
-          <img class="hub-fallback" src="console-s1-hub.png" width="2400" height="880" alt="Hub diagram: CloudFront, then the ALB with Cognito sign-in, then the EKS cluster. Inside: CV×Jobs and AI spend control (LiteLLM with a Headroom sidecar). n8n sits beside the cluster on its own ALB.">
+          <img class="hub-fallback" src="console-s1-hub.png" width="2400" height="880" alt="Hub diagram: the public site, then sign-in, then where the services run. Inside: CV×Jobs and AI spend control, with a helper that shortens long prompts. Automations sit beside that, on their own front door.">
         </noscript>
       </figure>
     </div>
@@ -125,15 +125,15 @@
           <dt>EKS cluster</dt>
           <dd>The servers where the services run.</dd>
           <dt>beside</dt>
-          <dd>Next to it in the stack, not inside it.</dd>
+          <dd>Next to it, not inside it.</dd>
           <dt>optional hop</dt>
           <dd>An extra stop only when that path is turned on.</dd>
           <dt>sidecar</dt>
-          <dd>A helper process that rides next to the main service.</dd>
+          <dd>A helper that runs next to the main service.</dd>
           <dt>webhook</dt>
-          <dd>A link that starts a workflow when something calls it.</dd>
+          <dd>A link that starts an automation when something calls it.</dd>
           <dt>public door</dt>
-          <dd>The internet-facing entry (n8n&#8217;s host).</dd>
+          <dd>The public entry for the automations (n8n).</dd>
         </dl>
       </section>
     </main>
