@@ -17,6 +17,7 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/success-codes: '200,401,403'
     alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=120
+    __N8N_CF_SG_ANNOTATIONS__
 spec:
   ingressClassName: alb
   rules:

@@ -27,6 +27,21 @@ def load_infra() -> dict:
     return data
 
 
+def n8n_sg_annotations(data: dict) -> str:
+    raw = data.get("n8n_cloudfront_sg_id") or ""
+    if not isinstance(raw, str):
+        raise SystemExit("n8n_cloudfront_sg_id must be a string")
+    sg = raw.strip()
+    if not sg:
+        return ""
+    if re.fullmatch(r"sg-[0-9a-f]+", sg) is None:
+        raise SystemExit(f"n8n_cloudfront_sg_id is not a security group id: {sg!r}")
+    return (
+        f"    alb.ingress.kubernetes.io/security-groups: {sg}\n"
+        '    alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"\n'
+    )
+
+
 def render_ingress(data: dict) -> None:
     tpl = (ROOT / "n8n/k8s/ingress.yaml.tpl").read_text(encoding="utf-8")
     subnets = ",".join(data["public_subnet_ids"])
@@ -34,6 +49,7 @@ def render_ingress(data: dict) -> None:
         tpl.replace("__PUBLIC_SUBNET_IDS__", subnets)
         .replace("__N8N_ACM_CERTIFICATE_ARN__", data["n8n_acm_certificate_arn"])
         .replace("__N8N_DOMAIN_NAME__", data["n8n_domain_name"])
+        .replace("    __N8N_CF_SG_ANNOTATIONS__\n", n8n_sg_annotations(data))
     )
     path = ROOT / "n8n/k8s/ingress.yaml"
     path.write_text(out, encoding="utf-8")
