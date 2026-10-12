@@ -15,16 +15,16 @@ window.OLYMPUS_CONSOLE = {
   },
   spend: {
     title: "AI spend control",
-    subline: "Every model call goes through one gateway, gets trimmed, and gets counted.",
+    subline: "Every AI request goes through one place, gets shortened, and gets counted.",
     badge: "Behind sign-in",
     lines: [
       {
         label: "LiteLLM",
-        text: "the gateway every model call goes through. It counts the spend.",
+        text: "Every AI request goes through here. This is where spend is counted.",
       },
       {
         label: "Headroom",
-        text: "the sidecar beside LiteLLM. It compresses prompts.",
+        text: "Sits beside that gateway and shortens long prompts.",
       },
     ],
   },
@@ -40,11 +40,11 @@ window.OLYMPUS_CONSOLE = {
         name: "orchestrator-workflow",
       },
       {
-        label: "A quick health check on the model gateway",
+        label: "A quick check that the AI gateway is running",
         name: "litellm-demo",
       },
       {
-        label: "A live test of prompt compression",
+        label: "A live test that long prompts get shortened",
         name: "headroom-demo",
       },
     ],
