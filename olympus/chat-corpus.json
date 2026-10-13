@@ -333,121 +333,133 @@
       "text": "Use a relative link from this tree, or return to the overview."
     },
     {
-      "id": "olympus-public-data.js-54",
-      "source": "olympus/public-data.js",
-      "section": "platform",
-      "text": "Senior AI-driven cloud and platform engineering: AWS/EKS orchestration, Bedrock configuration as SSOT, Helm, Terraform, GitHub Actions, and controlled workflow automation. Not a traditional project gallery."
+      "id": "olympus-gated.html-54",
+      "source": "olympus/gated.html",
+      "section": "overview",
+      "text": "Read-only sample. This is not your data. Sign in for the full view."
     },
     {
-      "id": "olympus-public-data.js-55",
-      "source": "olympus/public-data.js",
-      "section": "platform",
-      "text": "Operate the boundary between AI services, Kubernetes, IaC, delivery automation, and read-only interview evidence."
+      "id": "olympus-gated.html-55",
+      "source": "olympus/gated.html",
+      "section": "overview",
+      "text": "Sign in to CV×Jobs Sign in to Headroom Sign in to the AI gateway"
     },
     {
       "id": "olympus-public-data.js-56",
       "source": "olympus/public-data.js",
       "section": "platform",
-      "text": "Own host. n8n 2.25 has no supported reverse-proxy path under Olympus. Login-gated; interview demo is screenshare."
+      "text": "Senior AI-driven cloud and platform engineering: AWS/EKS orchestration, Bedrock configuration as SSOT, Helm, Terraform, GitHub Actions, and controlled workflow automation. Not a traditional project gallery."
     },
     {
       "id": "olympus-public-data.js-57",
       "source": "olympus/public-data.js",
       "section": "platform",
-      "text": "EKS orchestration of agent-api, rag-service, mcp-server, and n8n. Bedrock SSOT via platform-config.yaml. Only public platform repository."
+      "text": "Operate the boundary between AI services, Kubernetes, IaC, delivery automation, and read-only interview evidence."
     },
     {
       "id": "olympus-public-data.js-58",
       "source": "olympus/public-data.js",
       "section": "platform",
-      "text": "Terraform (HCL), charts/, terraform-*.yml GHA, Bedrock budget TF."
+      "text": "Own host. n8n 2.25 has no supported reverse-proxy path under Olympus. Login-gated; interview demo is screenshare."
     },
     {
       "id": "olympus-public-data.js-59",
       "source": "olympus/public-data.js",
       "section": "platform",
-      "text": "Reusable GitHub Actions: ECR + Helm deploy SSOT."
+      "text": "EKS orchestration of agent-api, rag-service, mcp-server, and n8n. Bedrock SSOT via platform-config.yaml. Only public platform repository."
     },
     {
       "id": "olympus-public-data.js-60",
       "source": "olympus/public-data.js",
       "section": "platform",
-      "text": "FastAPI Bedrock /agent gateway; Helm/EKS; local orchestrator Research→UX→Frontend→Engineering; GitHub-as-user via agent-api. LiteLLM hop only when LITELLM_BASE_URL is set. /agent stays unwired from LiteLLM."
+      "text": "Terraform (HCL), charts/, terraform-*.yml GHA, Bedrock budget TF."
     },
     {
       "id": "olympus-public-data.js-61",
       "source": "olympus/public-data.js",
       "section": "platform",
-      "text": "Ingestion + semantic search + Claude on EKS; Helm. README empty."
+      "text": "Reusable GitHub Actions: ECR + Helm deploy SSOT."
     },
     {
       "id": "olympus-public-data.js-62",
       "source": "olympus/public-data.js",
       "section": "platform",
-      "text": "MCP tools/resources/prompts; Helm; IRSA."
+      "text": "FastAPI Bedrock /agent gateway; Helm/EKS; local orchestrator Research→UX→Frontend→Engineering; GitHub-as-user via agent-api. LiteLLM hop only when LITELLM_BASE_URL is set. /agent stays unwired from LiteLLM."
     },
     {
       "id": "olympus-public-data.js-63",
       "source": "olympus/public-data.js",
       "section": "platform",
-      "text": "LiteLLM ClusterIP + Headroom sidecar + spend; Helm. Not public."
+      "text": "Ingestion + semantic search + Claude on EKS; Helm. README empty."
     },
     {
       "id": "olympus-public-data.js-64",
       "source": "olympus/public-data.js",
       "section": "platform",
+      "text": "MCP tools/resources/prompts; Helm; IRSA."
+    },
+    {
+      "id": "olympus-public-data.js-65",
+      "source": "olympus/public-data.js",
+      "section": "platform",
+      "text": "LiteLLM ClusterIP + Headroom sidecar + spend; Helm. Not public."
+    },
+    {
+      "id": "olympus-public-data.js-66",
+      "source": "olympus/public-data.js",
+      "section": "platform",
       "text": "Older services. Helm charts live in infrastructure."
-    },
-    {
-      "id": "olympus-console-data.js-65",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": "Score a CV against the jobs you paste, then tailor it for the one you want."
-    },
-    {
-      "id": "olympus-console-data.js-66",
-      "source": "olympus/console-data.js",
-      "section": "platform",
-      "text": "Every AI request goes through one place, gets shortened, and gets counted."
     },
     {
       "id": "olympus-console-data.js-67",
       "source": "olympus/console-data.js",
       "section": "platform",
-      "text": "Every AI request goes through here. This is where spend is counted."
+      "text": "Score a CV against the jobs you paste, then tailor it for the one you want."
     },
     {
       "id": "olympus-console-data.js-68",
       "source": "olympus/console-data.js",
       "section": "platform",
-      "text": "Sits beside that gateway and shortens long prompts."
+      "text": "Every AI request goes through one place, gets shortened, and gets counted."
     },
     {
       "id": "olympus-console-data.js-69",
       "source": "olympus/console-data.js",
       "section": "platform",
-      "text": "The automations that tie the platform together."
+      "text": "Every AI request goes through here. This is where spend is counted."
     },
     {
       "id": "olympus-console-data.js-70",
       "source": "olympus/console-data.js",
       "section": "platform",
-      "text": "One request in, the right service answers"
+      "text": "Sits beside that gateway and shortens long prompts."
     },
     {
       "id": "olympus-console-data.js-71",
       "source": "olympus/console-data.js",
       "section": "platform",
-      "text": "A quick check that the AI gateway is running"
+      "text": "The automations that tie the platform together."
     },
     {
       "id": "olympus-console-data.js-72",
       "source": "olympus/console-data.js",
       "section": "platform",
-      "text": "A live test that long prompts get shortened"
+      "text": "One request in, the right service answers"
     },
     {
       "id": "olympus-console-data.js-73",
+      "source": "olympus/console-data.js",
+      "section": "platform",
+      "text": "A quick check that the AI gateway is running"
+    },
+    {
+      "id": "olympus-console-data.js-74",
+      "source": "olympus/console-data.js",
+      "section": "platform",
+      "text": "A live test that long prompts get shortened"
+    },
+    {
+      "id": "olympus-console-data.js-75",
       "source": "olympus/console-data.js",
       "section": "platform",
       "text": "Private repository. No public GitHub link. Evidence is described here; source is not linked."
