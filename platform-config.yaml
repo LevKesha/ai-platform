@@ -5,8 +5,8 @@
 # Do not invent a second model ID in app code or charts.
 #
 # llm.model_id is the alias of llm.slots.default.bedrock_id (live invoke).
-# llm.slots.max is LiteLLM name platform-slot-max. Its bedrock_id is Opus 4.8,
-# not Opus 5.5. Embeddings stay amazon.titan-embed-text-v2:0.
+# llm.slots.max is LiteLLM name platform-slot-max. Its bedrock_id is the
+# same id as llm.slots.default. Embeddings stay amazon.titan-embed-text-v2:0.
 # llm.slots.helper is the Olympus chat slot. The Lambda calls Bedrock directly.
 # It is not a LiteLLM route and it is not the live invoke alias.
 #
@@ -27,10 +27,6 @@ llm:
   provider: bedrock
   # Env var name used by all Bedrock text services
   env_var: CLAUDE_MODEL_ID
-  # TEMPORARY: default slot is Sonnet 4.6. Sonnet 5.5 invoke is denied on this
-  # account in eu-central-1. Revert model_id and slots.default to
-  # eu.anthropic.claude-sonnet-5-5 / claude-sonnet-5-5 once Bedrock access and
-  # quotas are approved in eu-central-1. slots.helper stays Haiku 4.5.
   model_id: eu.anthropic.claude-sonnet-4-6
   # Env var name used by rag-service embeddings
   embedding_env_var: EMBEDDING_MODEL_ID
@@ -43,9 +39,9 @@ llm:
       label: "Sonnet 4.6"
     max:
       litellm_model_name: platform-slot-max
-      bedrock_id: eu.anthropic.claude-opus-4-8
-      anthropic_api_id: claude-opus-4-8
-      label: "Opus 4.8"
+      bedrock_id: eu.anthropic.claude-sonnet-4-6
+      anthropic_api_id: claude-sonnet-4-6
+      label: "Sonnet 4.6"
     helper:
       invoke: direct-bedrock
       litellm_model_name: eu.anthropic.claude-haiku-4-5-20251001-v1:0
