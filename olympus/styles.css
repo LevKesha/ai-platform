@@ -1834,7 +1834,8 @@ body.page-overview {
 }
 
 .sleep-steps .sleep-ok,
-.sleep-steps .sleep-pend {
+.sleep-steps .sleep-pend,
+.sleep-steps .sleep-spin {
   flex: 0 0 14px;
   width: 14px;
   text-align: left;
@@ -1969,7 +1970,10 @@ body.sleep-shot #private-modal {
   .sleep-dot.is-live,
   .sleep-spin {
     animation: none;
-    display: none;
+  }
+
+  .sleep-spin {
+    visibility: hidden;
   }
 
   .sleep-spin-text {
@@ -2480,7 +2484,8 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
 }
 
 .page-console .sleep-spin {
-  display: none;
+  display: block;
+  visibility: hidden;
 }
 
 .page-console .sleep-steps .sleep-spin-text {
