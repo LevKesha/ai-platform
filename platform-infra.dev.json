@@ -17,6 +17,8 @@
   "n8n_acm_certificate_arn": "arn:aws:acm:eu-central-1:126366239504:certificate/0664dddb-9b5c-4bcb-8938-6d9362a56c99",
   "n8n_alb_arn": "arn:aws:elasticloadbalancing:eu-central-1:126366239504:loadbalancer/app/k8s-n8n-n8n-da81168dc8/7b2df043afd31fad",
   "n8n_waf_web_acl_arn": "arn:aws:wafv2:eu-central-1:126366239504:regional/webacl/n8n-dev/579c5af5-8ee6-499f-a761-2b3a852652fd",
+  "olympus_admin_cloudfront_sg_id": "sg-0c3431fd87a4cda89",
+  "n8n_cloudfront_sg_id": "sg-00028a2aeb8cbb87e",
   "agent_api_irsa_arn": "arn:aws:iam::126366239504:role/AgentApiIRSA-dev",
   "rag_service_irsa_arn": "arn:aws:iam::126366239504:role/RagServiceIRSA-dev",
   "mcp_service_irsa_arn": "arn:aws:iam::126366239504:role/McpServiceIRSA-dev",
