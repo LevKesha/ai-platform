@@ -1,0 +1,129 @@
+name: Deploy n8n
+
+# Secrets, the owner claim, and workflow import stay manual.
+# This workflow applies only n8n/k8s/base.yaml and n8n/k8s/ingress.yaml.
+# pull_request and workflow_dispatch mode=dry-run do not apply.
+# Live apply and rollout run only on refs/heads/main (same branch as deploy-olympus.yml).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "n8n/k8s/**"
+      - "platform-infra.dev.json"
+      - ".github/workflows/deploy-n8n.yml"
+  pull_request:
+    paths:
+      - "n8n/k8s/**"
+      - "platform-infra.dev.json"
+      - ".github/workflows/deploy-n8n.yml"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: dry-run does not change the cluster. apply is the live deploy.
+        type: choice
+        options:
+          - dry-run
+          - apply
+        default: dry-run
+
+jobs:
+  deploy:
+    name: Deploy n8n
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Render check
+        run: python3 scripts/render-from-infra.py --check
+
+      # Region and cluster come from platform-infra.dev.json (TF output SSOT).
+      - name: Resolve platform config
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          data = json.load(open("platform-infra.dev.json", encoding="utf-8"))
+          missing = [k for k in ("aws_region", "cluster_name") if not data.get(k)]
+          if missing:
+              print(f"::error::platform-infra.dev.json missing {missing}")
+              sys.exit(1)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"AWS_REGION={data['aws_region']}\n")
+              env.write(f"EKS_CLUSTER_NAME={data['cluster_name']}\n")
+          PY
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-n8n
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --name "$EKS_CLUSTER_NAME" \
+            --region "$AWS_REGION"
+
+      # Soft-downed EKS still answers the API with 0 Ready nodes. rollout status would wait
+      # for a pod that cannot schedule. Skip the apply instead of stretching the timeout.
+      - name: Count Ready nodes
+        id: nodes
+        run: |
+          # pipefail: a failed kubectl must not look like 0 Ready nodes
+          set -euo pipefail
+          ready="$(kubectl get nodes -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' | awk '$0=="True"{n++} END{print n+0}')"
+          echo "Ready nodes: ${ready}"
+          if [ "${ready}" -eq 0 ]; then
+            echo "::notice::cluster asleep (0 Ready nodes): skipping n8n apply; rollout would hang until the cluster is restored"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Dry-run apply
+        if: >-
+          steps.nodes.outputs.deploy == 'true' &&
+          (github.event_name == 'pull_request' ||
+           (github.event_name == 'workflow_dispatch' && inputs.mode == 'dry-run'))
+        run: |
+          set -euo pipefail
+          kubectl apply -n n8n --dry-run=client -f n8n/k8s/base.yaml
+          kubectl apply -n n8n --dry-run=client -f n8n/k8s/ingress.yaml
+
+      - name: Apply manifests
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          steps.nodes.outputs.deploy == 'true' &&
+          (github.event_name == 'push' ||
+           (github.event_name == 'workflow_dispatch' && inputs.mode == 'apply'))
+        run: |
+          set -euo pipefail
+          kubectl apply -n n8n -f n8n/k8s/base.yaml
+          kubectl apply -n n8n -f n8n/k8s/ingress.yaml
+
+      - name: Wait for rollout
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          steps.nodes.outputs.deploy == 'true' &&
+          (github.event_name == 'push' ||
+           (github.event_name == 'workflow_dispatch' && inputs.mode == 'apply'))
+        run: |
+          kubectl rollout status deployment/n8n \
+            -n n8n \
+            --timeout=120s
+
+      - name: Post-deploy smoke direct ALB
+        if: steps.nodes.outputs.deploy == 'true'
+        run: python3 scripts/smoke-direct-alb.py
