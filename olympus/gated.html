@@ -24,8 +24,16 @@
   <main id="gated-panel" class="gated-wrap">
     <h1 id="gated-title">Console</h1>
     <section class="gated-panel" aria-labelledby="gated-title">
-      <p class="sleep-pill"><span class="sleep-dot"></span>Asleep</p>
+      <p class="sleep-pill"><span class="sleep-dot"></span><span class="sleep-status">Asleep</span></p>
       <p class="gated-copy">This part is asleep right now. Request a look and Lev will open it up.</p>
+      <aside class="anon-preview" aria-label="Read-only preview">
+        <p class="anon-kicker">Preview</p>
+        <p class="anon-note">Read-only sample. This is not your data. Sign in for the full view.</p>
+        <div class="anon-row"><span>CV×Jobs</span><span class="anon-mark">Sample</span></div>
+        <div class="anon-row"><span>AI spend control</span><span class="anon-mark">Sample</span></div>
+        <div class="anon-row"><span>Automations</span><span class="anon-mark">Sample</span></div>
+      </aside>
+      <p class="anon-quiet"><a href="/cv-jobs/">Sign in</a></p>
       <button type="button" class="btn btn-primary sleep-cta" id="gated-look">Request a look</button>
     </section>
   </main>

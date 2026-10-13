@@ -49,9 +49,16 @@
     poster.textContent = "";
   }
 
+  function statusLabel(kind) {
+    if (kind === "is-live") return "Live";
+    if (kind === "is-wait") return "Waiting";
+    return "Asleep";
+  }
+
   function pill(kind, text) {
     var node = el("p", "sleep-pill");
     node.appendChild(el("span", "sleep-dot" + (kind ? " " + kind : "")));
+    node.appendChild(el("span", "sleep-status", statusLabel(kind)));
     node.appendChild(document.createTextNode(text));
     return node;
   }
@@ -113,12 +120,18 @@
       ["wait", "Console"]
     ].forEach(function (step) {
       var item = el("li");
-      if (step[0] === "ok") item.appendChild(el("span", "sleep-ok", "\u2713"));
-      else if (step[0] === "run") {
+      if (step[0] === "ok") {
+        item.appendChild(el("span", "sleep-ok", "\u2713"));
+        item.appendChild(el("span", "sleep-status", "Done"));
+      } else if (step[0] === "run") {
         var spin = el("span", "sleep-spin");
         spin.setAttribute("aria-hidden", "true");
         item.appendChild(spin);
-      } else item.appendChild(el("span", "sleep-pend", "\u25cb"));
+        item.appendChild(el("span", "sleep-spin-text", "Waking\u2026"));
+      } else {
+        item.appendChild(el("span", "sleep-pend", "\u25cb"));
+        item.appendChild(el("span", "sleep-status", "Waiting"));
+      }
       item.appendChild(el("span", step[0] === "wait" ? "sleep-muted" : null, step[1]));
       list.appendChild(item);
     });

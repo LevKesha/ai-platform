@@ -160,6 +160,7 @@ main {
 .page-console main {
   max-width: none;
   padding: 0;
+  animation: none;
 }
 
 h1,
@@ -272,7 +273,7 @@ p {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #737373;
+  color: #8a8a8a;
 }
 
 .timeline-rail {
@@ -388,7 +389,7 @@ a.btn-primary:focus-visible,
 }
 
 .card.featured > p {
-  color: #737373;
+  color: #8a8a8a;
 }
 
 .card.featured a {
@@ -493,7 +494,7 @@ tbody tr:last-child td {
 
 .explore-label {
   margin: 0 0.65rem 0 0;
-  color: #737373;
+  color: #8a8a8a;
   font-size: 0.8rem;
 }
 
@@ -505,12 +506,12 @@ tbody tr:last-child td {
 
 .explore a:not(:last-child)::after {
   content: "·";
-  color: #525252;
+  color: #8a8a8a;
   margin-left: 0.75rem;
 }
 
 .explore a span {
-  color: #737373;
+  color: #8a8a8a;
 }
 
 .explore a:hover {
@@ -542,7 +543,7 @@ tbody tr:last-child td {
 }
 
 .diagram-kicker {
-  color: #737373;
+  color: #8a8a8a;
   font-size: 13px;
   margin-bottom: 0.65rem;
 }
@@ -579,7 +580,7 @@ tbody tr:last-child td {
 
 .diagram-hero figcaption {
   padding: 0.55rem 1rem 0;
-  color: #737373;
+  color: #8a8a8a;
   font-size: 0.8rem;
 }
 
@@ -1334,7 +1335,7 @@ body.page-overview {
 
 .quiet-block {
   margin-top: 2rem;
-  color: #737373;
+  color: #8a8a8a;
 }
 
 .quiet-block h2 {
@@ -1343,12 +1344,12 @@ body.page-overview {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #525252;
+  color: #8a8a8a;
 }
 
 .quiet-block .timeline-rail li,
 .quiet-block .chip-row .badge {
-  color: #737373;
+  color: #8a8a8a;
   border-top-color: #333;
 }
 
@@ -1413,7 +1414,7 @@ body.page-overview {
 .arch-footer .note,
 .cursor-note {
   margin: 0;
-  color: #737373;
+  color: #8a8a8a;
   font-size: 0.8rem;
 }
 
@@ -1430,7 +1431,7 @@ body.page-overview {
 
 .work-kicker {
   margin: 0 0 0.4rem;
-  color: #737373;
+  color: #8a8a8a;
   font-size: 0.75rem;
 }
 
@@ -1506,7 +1507,7 @@ body.page-overview {
 
 .raster-well figcaption {
   margin-top: 0.4rem;
-  color: #737373;
+  color: #8a8a8a;
   font-family: var(--font-mono);
   font-size: 0.68rem;
 }
@@ -1745,12 +1746,27 @@ body.page-overview {
 
 .sleep-dot.is-wait {
   background: var(--focus);
-  animation: sleep-pulse 1.4s infinite;
 }
 
 .sleep-dot.is-live {
   background: #4ade80;
-  animation: sleep-pulse 2s infinite;
+}
+
+.sleep-status {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.sleep-spin-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @keyframes sleep-pulse {
@@ -1817,6 +1833,14 @@ body.page-overview {
   padding: 0.3rem 0;
 }
 
+.sleep-steps .sleep-ok,
+.sleep-steps .sleep-pend,
+.sleep-steps .sleep-spin {
+  flex: 0 0 14px;
+  width: 14px;
+  text-align: left;
+}
+
 .sleep-ok { color: #4ade80; }
 .sleep-pend { color: #8a8a8a; }
 
@@ -1826,7 +1850,6 @@ body.page-overview {
   border: 2px solid #444;
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: sleep-spin 1s linear infinite;
 }
 
 @keyframes sleep-spin {
@@ -1947,6 +1970,19 @@ body.sleep-shot #private-modal {
   .sleep-dot.is-live,
   .sleep-spin {
     animation: none;
+  }
+
+  .sleep-spin {
+    visibility: hidden;
+  }
+
+  .sleep-spin-text {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
   }
 }
 
@@ -2249,15 +2285,10 @@ body.sleep-shot #private-modal {
   height: 0.45rem;
   border-radius: 50%;
   background: #a3a3a3;
-  animation: chat-blink 1s infinite;
 }
 
-.chat-dots i:nth-child(2) {
-  animation-delay: 0.15s;
-}
-
-.chat-dots i:nth-child(3) {
-  animation-delay: 0.3s;
+.page-console .chat-dots i {
+  opacity: 0.85;
 }
 
 @keyframes chat-blink {
@@ -2280,7 +2311,7 @@ body.page-console:has(.console-shell) .chat-bubble {
   max-width: 12.5rem;
   box-sizing: border-box;
   white-space: nowrap;
-  transition: opacity 150ms ease;
+  transition: none;
 }
 
 body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
@@ -2386,3 +2417,91 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
 .ev .ev-product-card h3 { font-size: 1.5rem; color: #f5f5f5; }
 .ev .ev-product-card p.ev-product-line { font-size: 1.15rem; line-height: 1.5; color: #f5f5f5; margin: .6rem 0 1.4rem !important; max-width: 46rem; }
 @media (max-width: 720px) { .ev .ev-product-card { padding: 1.4rem; } }
+
+/* Console stills: final state, no motion. */
+.page-console,
+.page-console *,
+.page-console *::before,
+.page-console *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+.anon-preview {
+  max-width: 28rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  text-align: left;
+}
+
+.anon-kicker {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.anon-note {
+  margin: 0.35rem 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.anon-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.anon-mark {
+  color: var(--muted);
+}
+
+.anon-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.anon-quiet {
+  margin: 0.15rem 0 0.2rem;
+  font-size: 0.85rem;
+}
+
+.anon-quiet a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.page-console .sleep-spin {
+  display: block;
+  visibility: hidden;
+}
+
+.page-console .sleep-steps .sleep-spin-text {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.page-console .sleep-spin-text {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+}
+
+.gated-panel .anon-preview {
+  width: 100%;
+}
