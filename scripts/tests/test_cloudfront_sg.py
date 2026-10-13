@@ -46,3 +46,44 @@ def test_render_pins_snapshot_id() -> None:
     text = render.n8n_sg_annotations({"n8n_cloudfront_sg_id": sg_id})
     assert f"alb.ingress.kubernetes.io/security-groups: {sg_id}" in text
     assert 'manage-backend-security-group-rules: "true"' in text
+
+
+def test_check_does_not_write_on_drift(tmp_path: Path, monkeypatch) -> None:
+    render = _load("render_from_infra", "render-from-infra.py")
+    path = tmp_path / "ingress.yaml"
+    path.write_text("old\n", encoding="utf-8")
+    monkeypatch.setattr(render, "ROOT", tmp_path)
+    try:
+        render.store_rendered(path, "new\n", True)
+    except SystemExit as exc:
+        assert str(exc) == "drift: ingress.yaml"
+    else:
+        raise AssertionError("drift must fail")
+    assert path.read_text(encoding="utf-8") == "old\n"
+
+
+def test_deploy_workflow_has_no_infra_literals() -> None:
+    scanner = _load("check_workflow_literals", "check-workflow-literals.py")
+    text = (ROOT / ".github" / "workflows" / "deploy-n8n.yml").read_text(encoding="utf-8")
+    owners = scanner.owner_values(ROOT / "platform-infra.dev.json")
+    hits = scanner.scan_text(text, owners)
+    assert hits == [], hits
+    assert "n8n/k8s/secrets.yaml" not in text
+    assert "render-from-infra.py --check" in text
+    assert "scripts/smoke-direct-alb.py" in text
+    assert "n8n/k8s/base.yaml" in text
+    assert "n8n/k8s/ingress.yaml" in text
+
+
+def test_render_check_matches_committed_files() -> None:
+    import subprocess
+
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPTS / "render-from-infra.py"), "--check"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "OK: render --check" in proc.stdout
+    assert "drift:" not in proc.stdout
