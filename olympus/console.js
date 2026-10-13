@@ -81,7 +81,7 @@
       '<p class="panel-tag">' +
       badges +
       "</p>" +
-      '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg" alt="CV×Jobs: a master CV, the jobs you paste, a fit report, a tailored CV, and an export. An AI step and a role focus are optional." width="1016" height="444" loading="lazy"></figure>' +
+      '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg" alt="CV×Jobs: a master CV, the jobs you paste, a fit report, a tailored CV, and an export, with a model call and a role focus." width="1016" height="444" loading="lazy"></figure>' +
       anonPreview(previewNote, ["Master CV", "Job inbox", "Fit report"]) +
       '<p class="anon-actions"><a class="btn btn-primary" href="/cv-jobs/">Sign in</a></p>' +
       '<p><a class="btn" href="' +
