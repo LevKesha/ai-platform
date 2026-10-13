@@ -27,16 +27,20 @@ llm:
   provider: bedrock
   # Env var name used by all Bedrock text services
   env_var: CLAUDE_MODEL_ID
-  model_id: eu.anthropic.claude-sonnet-5-5
+  # TEMPORARY: default slot is Sonnet 4.6. Sonnet 5.5 invoke is denied on this
+  # account in eu-central-1. Revert model_id and slots.default to
+  # eu.anthropic.claude-sonnet-5-5 / claude-sonnet-5-5 once Bedrock access and
+  # quotas are approved in eu-central-1. slots.helper stays Haiku 4.5.
+  model_id: eu.anthropic.claude-sonnet-4-6
   # Env var name used by rag-service embeddings
   embedding_env_var: EMBEDDING_MODEL_ID
   embedding_model_id: amazon.titan-embed-text-v2:0
   slots:
     default:
-      litellm_model_name: eu.anthropic.claude-sonnet-5-5
-      bedrock_id: eu.anthropic.claude-sonnet-5-5
-      anthropic_api_id: claude-sonnet-5-5
-      label: "Sonnet 5.5"
+      litellm_model_name: eu.anthropic.claude-sonnet-4-6
+      bedrock_id: eu.anthropic.claude-sonnet-4-6
+      anthropic_api_id: claude-sonnet-4-6
+      label: "Sonnet 4.6"
     max:
       litellm_model_name: platform-slot-max
       bedrock_id: eu.anthropic.claude-opus-4-8
