@@ -42,7 +42,7 @@ Hosted UI and managed login cannot set the strings "The Olympus" or "Sign in to 
 
 ## Console
 
-`console.js` switches views from `console-data.js`. Views: Glossary, CV×Jobs, AI spend control, n8n. Unknown hashes open Glossary. CV×Jobs and AI spend control, and `gated.html`, show a read-only sample with no live figures. Sign-in links go to the Cognito paths `/cv-jobs/`, `/headroom`, and `/litellm/ui`. The sample does not call those apps and does not include credentials.
+`console.js` switches views from `console-data.js`. Views: Glossary, CV×Jobs, AI spend control, n8n. Unknown hashes open Glossary. CV×Jobs and AI spend control, and `gated.html`, show a read-only sample with no live figures. CV×Jobs has one sign-in button to `/cv-jobs/`. AI spend control still links to `/headroom` and `/litellm/ui`. The asleep page keeps one quiet sign-in link, and Request a look is the only main button. The sample does not call those apps and does not include credentials.
 
 Verified copy lives in `public-data.js`. Do not invent metrics or extra public URLs.
 

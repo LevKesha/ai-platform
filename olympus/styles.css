@@ -1752,6 +1752,23 @@ body.page-overview {
   background: #4ade80;
 }
 
+.sleep-status {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.sleep-spin-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 @keyframes sleep-pulse {
   50% { opacity: 0.35; }
 }
@@ -1945,6 +1962,19 @@ body.sleep-shot #private-modal {
   .sleep-dot.is-live,
   .sleep-spin {
     animation: none;
+  }
+
+  .sleep-spin {
+    display: none;
+  }
+
+  .sleep-spin-text {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
   }
 }
 
@@ -2432,6 +2462,30 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin: 0 0 1rem;
+}
+
+.anon-quiet {
+  margin: 0.15rem 0 0.2rem;
+  font-size: 0.85rem;
+}
+
+.anon-quiet a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.page-console .sleep-spin {
+  display: none;
+}
+
+.page-console .sleep-spin-text {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
 }
 
 .gated-panel .anon-preview {

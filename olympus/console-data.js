@@ -31,7 +31,7 @@ window.OLYMPUS_CONSOLE = {
   n8n: {
     title: "n8n",
     subline: "The automations that tie the platform together.",
-    pill: "Asleep. Request a look.",
+    pill: "Request a look.",
     cta: "Request a look",
     ctaHref: "#sleep-portal",
     workflows: [
