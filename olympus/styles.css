@@ -160,6 +160,7 @@ main {
 .page-console main {
   max-width: none;
   padding: 0;
+  animation: none;
 }
 
 h1,
@@ -1745,12 +1746,10 @@ body.page-overview {
 
 .sleep-dot.is-wait {
   background: var(--focus);
-  animation: sleep-pulse 1.4s infinite;
 }
 
 .sleep-dot.is-live {
   background: #4ade80;
-  animation: sleep-pulse 2s infinite;
 }
 
 @keyframes sleep-pulse {
@@ -1826,7 +1825,6 @@ body.page-overview {
   border: 2px solid #444;
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: sleep-spin 1s linear infinite;
 }
 
 @keyframes sleep-spin {
@@ -2249,15 +2247,10 @@ body.sleep-shot #private-modal {
   height: 0.45rem;
   border-radius: 50%;
   background: #a3a3a3;
-  animation: chat-blink 1s infinite;
 }
 
-.chat-dots i:nth-child(2) {
-  animation-delay: 0.15s;
-}
-
-.chat-dots i:nth-child(3) {
-  animation-delay: 0.3s;
+.page-console .chat-dots i {
+  opacity: 0.85;
 }
 
 @keyframes chat-blink {
@@ -2280,7 +2273,7 @@ body.page-console:has(.console-shell) .chat-bubble {
   max-width: 12.5rem;
   box-sizing: border-box;
   white-space: nowrap;
-  transition: opacity 150ms ease;
+  transition: none;
 }
 
 body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
@@ -2386,3 +2379,61 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
 .ev .ev-product-card h3 { font-size: 1.5rem; color: #f5f5f5; }
 .ev .ev-product-card p.ev-product-line { font-size: 1.15rem; line-height: 1.5; color: #f5f5f5; margin: .6rem 0 1.4rem !important; max-width: 46rem; }
 @media (max-width: 720px) { .ev .ev-product-card { padding: 1.4rem; } }
+
+/* Console stills: final state, no motion. */
+.page-console,
+.page-console *,
+.page-console *::before,
+.page-console *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+.anon-preview {
+  max-width: 28rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  text-align: left;
+}
+
+.anon-kicker {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.anon-note {
+  margin: 0.35rem 0 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.anon-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.anon-mark {
+  color: var(--muted);
+}
+
+.anon-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.gated-panel .anon-preview {
+  width: 100%;
+}

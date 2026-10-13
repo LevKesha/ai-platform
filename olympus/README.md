@@ -42,7 +42,7 @@ Hosted UI and managed login cannot set the strings "The Olympus" or "Sign in to 
 
 ## Console
 
-`console.js` switches views from `console-data.js`. Views: Configuration, Delivery, Infrastructure, Services & Spend, **CV×Jobs Demo**, **Headroom Admin**, **LiteLLM Admin UI**. Unknown hashes, including the removed `#topology`, open Configuration. Banner is Demo Mode – Read-Only except live probes and Cognito-gated Admin links. CV×Jobs primary CTA opens `https://olympus.levkesha.com/cv-jobs/` (Cognito → agent-api). Headroom primary CTA opens `https://olympus.levkesha.com/headroom` (Cognito → savings API → `:8787`); secondary demo POSTs `https://n8n.levkesha.com/webhook/headroom-demo`. LiteLLM primary CTA opens `https://olympus.levkesha.com/litellm/ui`; secondary health probe POSTs `https://n8n.levkesha.com/webhook/litellm-demo`. Break-glass: `kubectl -n llm-cost port-forward svc/litellm 4000:4000`. No invented ratios/health on failure.
+`console.js` switches views from `console-data.js`. Views: Glossary, CV×Jobs, AI spend control, n8n. Unknown hashes open Glossary. CV×Jobs and AI spend control, and `gated.html`, show a read-only sample with no live figures. Sign-in links go to the Cognito paths `/cv-jobs/`, `/headroom`, and `/litellm/ui`. The sample does not call those apps and does not include credentials.
 
 Verified copy lives in `public-data.js`. Do not invent metrics or extra public URLs.
 

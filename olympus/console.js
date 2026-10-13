@@ -39,6 +39,30 @@
     return glossaryMarkup;
   }
 
+  function anonPreview(caption, labels) {
+    var rows = labels
+      .map(function (label) {
+        return (
+          '<div class="anon-row"><span>' +
+          escapeHtml(label) +
+          '</span><span class="anon-mark">Sample</span></div>'
+        );
+      })
+      .join("");
+    return (
+      '<aside class="anon-preview" aria-label="Read-only preview">' +
+      '<p class="anon-kicker">Preview</p>' +
+      '<p class="anon-note">' +
+      escapeHtml(caption) +
+      "</p>" +
+      rows +
+      "</aside>"
+    );
+  }
+
+  var previewNote =
+    "Read-only sample. This is not your data. Sign in for the full view.";
+
   function renderCvJobs() {
     var cj = data.cvjobs;
     var badges = (cj.badges || [])
@@ -57,6 +81,8 @@
       '<p class="panel-tag">' +
       badges +
       "</p>" +
+      anonPreview(previewNote, ["Master CV", "Job inbox", "Fit report"]) +
+      '<p class="anon-actions"><a class="btn btn-primary" href="/cv-jobs/">Sign in</a></p>' +
       '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg" alt="CV×Jobs: a master CV, the jobs you paste, a fit report, a tailored CV, and an export. An AI step and a role focus are optional." width="1016" height="444" loading="lazy"></figure>' +
       '<p><a class="btn" href="' +
       escapeHtml(cj.ctaHref) +
@@ -90,6 +116,9 @@
       '<p class="panel-tag"><span class="badge">' +
       escapeHtml(s.badge) +
       "</span></p>" +
+      anonPreview(previewNote, ["Requests", "Prompt length", "Spend"]) +
+      '<p class="anon-actions"><a class="btn btn-primary" href="/headroom">Sign in to Headroom</a>' +
+      '<a class="btn" href="/litellm/ui">Sign in to the AI gateway</a></p>' +
       '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend: CV×Jobs and the automations can send requests through the LiteLLM gateway. Headroom shortens long prompts. Spend is logged in one place." width="1016" height="444" loading="lazy"></figure>' +
       '<ul class="panel-lines">' +
       lines +
