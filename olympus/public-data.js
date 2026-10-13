@@ -67,5 +67,5 @@ window.OLYMPUS_PUBLIC = {
     },
   ],
   skipped: ["peakyblinders", "moviescicd", "APIs", "azurepipeline", "WorldOfGames"],
-  modelId: "eu.anthropic.claude-sonnet-5-5",
+  modelId: "eu.anthropic.claude-sonnet-4-6",
 };
