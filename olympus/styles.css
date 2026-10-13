@@ -1833,6 +1833,13 @@ body.page-overview {
   padding: 0.3rem 0;
 }
 
+.sleep-steps .sleep-ok,
+.sleep-steps .sleep-pend {
+  flex: 0 0 14px;
+  width: 14px;
+  text-align: left;
+}
+
 .sleep-ok { color: #4ade80; }
 .sleep-pend { color: #8a8a8a; }
 
@@ -1962,9 +1969,6 @@ body.sleep-shot #private-modal {
   .sleep-dot.is-live,
   .sleep-spin {
     animation: none;
-  }
-
-  .sleep-spin {
     display: none;
   }
 
@@ -2477,6 +2481,11 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
 
 .page-console .sleep-spin {
   display: none;
+}
+
+.page-console .sleep-steps .sleep-spin-text {
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .page-console .sleep-spin-text {
