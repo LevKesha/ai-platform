@@ -1,0 +1,67 @@
+name: n8n direct ALB smoke
+
+# Read-only. Does not apply the ingress or change the cluster.
+# Run after a workflow deploy of n8n/k8s/ingress.yaml. Timeout or 403 passes.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "n8n/k8s/ingress.yaml"
+      - "n8n/k8s/ingress.yaml.tpl"
+      - "scripts/cloudfront_sg.py"
+      - "scripts/render-from-infra.py"
+      - "scripts/check-infra-consumers.py"
+      - "scripts/smoke-direct-alb.py"
+      - "platform-infra.dev.json"
+      - ".github/workflows/n8n-direct-alb-smoke.yml"
+  push:
+    branches: [main]
+    paths:
+      - "n8n/k8s/ingress.yaml"
+      - "n8n/k8s/ingress.yaml.tpl"
+      - "scripts/cloudfront_sg.py"
+      - "scripts/render-from-infra.py"
+      - "scripts/check-infra-consumers.py"
+      - "scripts/smoke-direct-alb.py"
+      - "platform-infra.dev.json"
+      - ".github/workflows/n8n-direct-alb-smoke.yml"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  smoke:
+    name: Post-deploy smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Resolve platform config
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          data = json.load(open("platform-infra.dev.json", encoding="utf-8"))
+          region = data.get("aws_region")
+          if not region:
+              print("::error::aws_region is missing or empty")
+              sys.exit(1)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"AWS_REGION={region}\n")
+          PY
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-n8n-alb-smoke
+
+      - name: Post-deploy smoke direct ALB
+        run: python3 scripts/smoke-direct-alb.py

@@ -7,6 +7,8 @@ import re
 import sys
 from pathlib import Path
 
+from cloudfront_sg import require_sg_id
+
 ROOT = Path(__file__).resolve().parents[1]
 INFRA = ROOT / "platform-infra.dev.json"
 
@@ -28,14 +30,11 @@ def load_infra() -> dict:
 
 
 def n8n_sg_annotations(data: dict) -> str:
-    raw = data.get("n8n_cloudfront_sg_id") or ""
-    if not isinstance(raw, str):
-        raise SystemExit("n8n_cloudfront_sg_id must be a string")
-    sg = raw.strip()
-    if not sg:
-        return ""
-    if re.fullmatch(r"sg-[0-9a-f]+", sg) is None:
-        raise SystemExit(f"n8n_cloudfront_sg_id is not a security group id: {sg!r}")
+    """Pin the CloudFront-only group. An empty id must not render a world-open ingress."""
+    try:
+        sg = require_sg_id(data, "n8n_cloudfront_sg_id")
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
     return (
         f"    alb.ingress.kubernetes.io/security-groups: {sg}\n"
         '    alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"\n'
