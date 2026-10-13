@@ -33,7 +33,7 @@ def test_each_slot_rate_family_matches_its_model_id() -> None:
         else:
             with pytest.raises(ValueError, match=rf"llm\.slots\.{name}"):
                 rates_for_slot(name)
-    assert priced == ["default", "helper"]
+    assert priced == ["default", "max", "helper"]
 
 
 def test_reservation_is_priced_for_the_slot() -> None:
