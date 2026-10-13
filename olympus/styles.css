@@ -273,7 +273,7 @@ p {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #737373;
+  color: #8a8a8a;
 }
 
 .timeline-rail {
@@ -389,7 +389,7 @@ a.btn-primary:focus-visible,
 }
 
 .card.featured > p {
-  color: #737373;
+  color: #8a8a8a;
 }
 
 .card.featured a {
@@ -494,7 +494,7 @@ tbody tr:last-child td {
 
 .explore-label {
   margin: 0 0.65rem 0 0;
-  color: #737373;
+  color: #8a8a8a;
   font-size: 0.8rem;
 }
 
@@ -506,12 +506,12 @@ tbody tr:last-child td {
 
 .explore a:not(:last-child)::after {
   content: "·";
-  color: #525252;
+  color: #8a8a8a;
   margin-left: 0.75rem;
 }
 
 .explore a span {
-  color: #737373;
+  color: #8a8a8a;
 }
 
 .explore a:hover {
@@ -543,7 +543,7 @@ tbody tr:last-child td {
 }
 
 .diagram-kicker {
-  color: #737373;
+  color: #8a8a8a;
   font-size: 13px;
   margin-bottom: 0.65rem;
 }
@@ -580,7 +580,7 @@ tbody tr:last-child td {
 
 .diagram-hero figcaption {
   padding: 0.55rem 1rem 0;
-  color: #737373;
+  color: #8a8a8a;
   font-size: 0.8rem;
 }
 
@@ -1335,7 +1335,7 @@ body.page-overview {
 
 .quiet-block {
   margin-top: 2rem;
-  color: #737373;
+  color: #8a8a8a;
 }
 
 .quiet-block h2 {
@@ -1344,12 +1344,12 @@ body.page-overview {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #525252;
+  color: #8a8a8a;
 }
 
 .quiet-block .timeline-rail li,
 .quiet-block .chip-row .badge {
-  color: #737373;
+  color: #8a8a8a;
   border-top-color: #333;
 }
 
@@ -1414,7 +1414,7 @@ body.page-overview {
 .arch-footer .note,
 .cursor-note {
   margin: 0;
-  color: #737373;
+  color: #8a8a8a;
   font-size: 0.8rem;
 }
 
@@ -1431,7 +1431,7 @@ body.page-overview {
 
 .work-kicker {
   margin: 0 0 0.4rem;
-  color: #737373;
+  color: #8a8a8a;
   font-size: 0.75rem;
 }
 
@@ -1507,7 +1507,7 @@ body.page-overview {
 
 .raster-well figcaption {
   margin-top: 0.4rem;
-  color: #737373;
+  color: #8a8a8a;
   font-family: var(--font-mono);
   font-size: 0.68rem;
 }

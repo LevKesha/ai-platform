@@ -16,7 +16,7 @@
   <rect width="1160" height="540" fill="#0a0a0a"/>
 
   <rect x="16" y="16" width="1128" height="72" fill="#0f0f0f" stroke="#2dd4bf" stroke-opacity="0.35"/>
-  <text x="32" y="42" fill="#737373" font-family="ui-monospace, Consolas, monospace" font-size="12">public host</text>
+  <text x="32" y="42" fill="#8a8a8a" font-family="ui-monospace, Consolas, monospace" font-size="12">public host</text>
   <text x="32" y="66" fill="#f5f5f5" font-family="Segoe UI, system-ui, sans-serif" font-size="16">n8n.levkesha.com · own ALB · screenshare</text>
 
   <rect x="16" y="104" width="1128" height="220" fill="#141414" stroke="#2dd4bf" stroke-opacity="0.35"/>
@@ -25,28 +25,28 @@
 
   <rect class="svc" x="32" y="152" width="264" height="148" rx="12" fill="#1a1a1a" stroke="#2dd4bf" stroke-opacity="0.35"/>
   <text x="48" y="184" fill="#f5f5f5" font-family="ui-monospace, Consolas, monospace" font-size="15">agent-api</text>
-  <text x="48" y="214" fill="#737373" font-family="Segoe UI, system-ui, sans-serif" font-size="13">FastAPI /agent · Helm · ClusterIP</text>
+  <text x="48" y="214" fill="#8a8a8a" font-family="Segoe UI, system-ui, sans-serif" font-size="13">FastAPI /agent · Helm · ClusterIP</text>
 
   <rect class="svc" x="312" y="152" width="264" height="148" rx="12" fill="#1a1a1a" stroke="#2dd4bf" stroke-opacity="0.35"/>
   <text x="328" y="184" fill="#f5f5f5" font-family="ui-monospace, Consolas, monospace" font-size="15">rag-service</text>
-  <text x="328" y="214" fill="#737373" font-family="Segoe UI, system-ui, sans-serif" font-size="13">ingest + search · Claude on EKS</text>
+  <text x="328" y="214" fill="#8a8a8a" font-family="Segoe UI, system-ui, sans-serif" font-size="13">ingest + search · Claude on EKS</text>
 
   <rect class="svc" x="592" y="152" width="264" height="148" rx="12" fill="#1a1a1a" stroke="#2dd4bf" stroke-opacity="0.35"/>
   <text x="608" y="184" fill="#f5f5f5" font-family="ui-monospace, Consolas, monospace" font-size="15">mcp-server</text>
-  <text x="608" y="214" fill="#737373" font-family="Segoe UI, system-ui, sans-serif" font-size="13">tools · resources · prompts · IRSA</text>
+  <text x="608" y="214" fill="#8a8a8a" font-family="Segoe UI, system-ui, sans-serif" font-size="13">tools · resources · prompts · IRSA</text>
 
   <rect class="svc" x="872" y="152" width="256" height="148" rx="12" fill="#1a1a1a" stroke="#2dd4bf" filter="url(#n8nGlow)"/>
   <text x="888" y="184" fill="#f5f5f5" font-family="ui-monospace, Consolas, monospace" font-size="15">n8n</text>
-  <text x="888" y="214" fill="#737373" font-family="Segoe UI, system-ui, sans-serif" font-size="13">workflows · public ALB</text>
+  <text x="888" y="214" fill="#8a8a8a" font-family="Segoe UI, system-ui, sans-serif" font-size="13">workflows · public ALB</text>
 
   <line x1="1000" y1="88" x2="1000" y2="152" stroke="#2dd4bf" stroke-width="1.5"/>
 
   <rect x="16" y="340" width="1128" height="88" fill="#121212" stroke="#2dd4bf" stroke-opacity="0.35"/>
-  <text x="32" y="368" fill="#737373" font-family="ui-monospace, Consolas, monospace" font-size="12">auth-gated (olympus)</text>
+  <text x="32" y="368" fill="#8a8a8a" font-family="ui-monospace, Consolas, monospace" font-size="12">auth-gated (olympus)</text>
   <text x="32" y="394" fill="#f5f5f5" font-family="Segoe UI, system-ui, sans-serif" font-size="15">/cv-jobs · /litellm · /headroom · Cognito</text>
-  <text x="32" y="414" fill="#737373" font-family="Segoe UI, system-ui, sans-serif" font-size="12">CF→ALB · /oauth2* · /logout*</text>
+  <text x="32" y="414" fill="#8a8a8a" font-family="Segoe UI, system-ui, sans-serif" font-size="12">CF→ALB · /oauth2* · /logout*</text>
 
   <rect x="16" y="444" width="1128" height="76" fill="#0d0d0d" stroke="#2dd4bf" stroke-opacity="0.35"/>
-  <text x="32" y="472" fill="#737373" font-family="ui-monospace, Consolas, monospace" font-size="12">cluster-internal</text>
+  <text x="32" y="472" fill="#8a8a8a" font-family="ui-monospace, Consolas, monospace" font-size="12">cluster-internal</text>
   <text x="32" y="498" fill="#f5f5f5" font-family="Segoe UI, system-ui, sans-serif" font-size="15">agent-api · spend</text>
 </svg>
