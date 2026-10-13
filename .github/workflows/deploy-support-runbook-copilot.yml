@@ -26,7 +26,7 @@ jobs:
       - name: Lint and import check
         working-directory: ${{ env.AGENT_DIR }}
         run: |
-          pip install -r requirements.txt ruff
+          pip install -r requirements.txt ruff==0.17.0
           ruff check .
           python -c "from app.main import app"
 

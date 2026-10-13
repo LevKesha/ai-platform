@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: claude-router
-        run: pip install -r requirements.txt ruff
+        run: pip install -r requirements.txt ruff==0.17.0
 
       - name: Lint
         working-directory: claude-router
