@@ -103,11 +103,26 @@ jobs:
       - uses: azure/setup-kubectl@v3
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+      # Same asleep-cluster skip as LevKesha/cicd reusable-helm-deploy.yml.
+      # Soft-downed EKS still answers the API with 0 Ready nodes; rollout would hang.
+      - name: Count Ready nodes
+        id: nodes
+        run: |
+          ready="$(kubectl get nodes -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' | awk '$0=="True"{n++} END{print n+0}')"
+          echo "Ready nodes: ${ready}"
+          if [ "${ready}" -eq 0 ]; then
+            echo "::notice::cluster asleep (0 nodes): skipping deploy; image already pushed, will roll out on next deploy after restore"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Apply manifests
+        if: steps.nodes.outputs.deploy == 'true'
         env:
           IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
         run: |
           sed "s/IMAGE_TAG/${IMAGE_TAG}/g" ${{ env.AGENT_DIR }}/k8s/deployment.yaml | kubectl apply -f -
           kubectl apply -f ${{ env.AGENT_DIR }}/k8s/service.yaml
       - name: Wait for rollout
+        if: steps.nodes.outputs.deploy == 'true'
         run: kubectl rollout status deployment/${{ env.SERVICE_NAME }} -n ${{ env.K8S_NAMESPACE }} --timeout=120s
