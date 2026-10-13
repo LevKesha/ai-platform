@@ -9,7 +9,6 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: eu-central-1
   OLYMPUS_DOMAIN: olympus.levkesha.com
 
 jobs:
@@ -22,6 +21,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Region and cluster come from platform-infra.dev.json (TF output SSOT).
+      - name: Resolve platform config
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          data = json.load(open("platform-infra.dev.json", encoding="utf-8"))
+          missing = [k for k in ("aws_region", "cluster_name") if not data.get(k)]
+          if missing:
+              print(f"::error::platform-infra.dev.json missing {missing}")
+              sys.exit(1)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"AWS_REGION={data['aws_region']}\n")
+              env.write(f"EKS_CLUSTER_NAME={data['cluster_name']}\n")
+          PY
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:

@@ -9,11 +9,9 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: eu-central-1
   ECR_REPOSITORY: support-runbook-copilot
   SERVICE_NAME: support-runbook-copilot
   K8S_NAMESPACE: dev
-  EKS_CLUSTER_NAME: dev-cluster
   AGENT_DIR: agents/support-runbook-copilot
 
 jobs:
@@ -28,7 +26,7 @@ jobs:
       - name: Lint and import check
         working-directory: ${{ env.AGENT_DIR }}
         run: |
-          pip install -r requirements.txt ruff
+          pip install -r requirements.txt ruff==0.17.0
           ruff check .
           python -c "from app.main import app"
 
@@ -43,6 +41,20 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      # Region and cluster come from platform-infra.dev.json (TF output SSOT).
+      - name: Resolve platform config
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          data = json.load(open("platform-infra.dev.json", encoding="utf-8"))
+          missing = [k for k in ("aws_region", "cluster_name") if not data.get(k)]
+          if missing:
+              print(f"::error::platform-infra.dev.json missing {missing}")
+              sys.exit(1)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"AWS_REGION={data['aws_region']}\n")
+              env.write(f"EKS_CLUSTER_NAME={data['cluster_name']}\n")
+          PY
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
@@ -69,6 +81,20 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      # Region and cluster come from platform-infra.dev.json (TF output SSOT).
+      - name: Resolve platform config
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          data = json.load(open("platform-infra.dev.json", encoding="utf-8"))
+          missing = [k for k in ("aws_region", "cluster_name") if not data.get(k)]
+          if missing:
+              print(f"::error::platform-infra.dev.json missing {missing}")
+              sys.exit(1)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              env.write(f"AWS_REGION={data['aws_region']}\n")
+              env.write(f"EKS_CLUSTER_NAME={data['cluster_name']}\n")
+          PY
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
@@ -77,11 +103,26 @@ jobs:
       - uses: azure/setup-kubectl@v3
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+      # Same asleep-cluster skip as LevKesha/cicd reusable-helm-deploy.yml.
+      # Soft-downed EKS still answers the API with 0 Ready nodes; rollout would hang.
+      - name: Count Ready nodes
+        id: nodes
+        run: |
+          ready="$(kubectl get nodes -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' | awk '$0=="True"{n++} END{print n+0}')"
+          echo "Ready nodes: ${ready}"
+          if [ "${ready}" -eq 0 ]; then
+            echo "::notice::cluster asleep (0 nodes): skipping deploy; image already pushed, will roll out on next deploy after restore"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Apply manifests
+        if: steps.nodes.outputs.deploy == 'true'
         env:
           IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
         run: |
           sed "s/IMAGE_TAG/${IMAGE_TAG}/g" ${{ env.AGENT_DIR }}/k8s/deployment.yaml | kubectl apply -f -
           kubectl apply -f ${{ env.AGENT_DIR }}/k8s/service.yaml
       - name: Wait for rollout
+        if: steps.nodes.outputs.deploy == 'true'
         run: kubectl rollout status deployment/${{ env.SERVICE_NAME }} -n ${{ env.K8S_NAMESPACE }} --timeout=120s

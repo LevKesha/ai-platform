@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import logging
 from contextvars import ContextVar
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 request_id_ctx: ContextVar[str | None] = ContextVar("request_id", default=None)
@@ -23,7 +23,7 @@ _OPTIONAL_ATTRS = (
 class JsonFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         log_obj: dict[str, Any] = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "level": record.levelname,
             "message": record.getMessage(),
             "logger": record.name,

@@ -60,8 +60,10 @@ def load_model_mix(config_path: str | Path | None = None) -> dict[str, str]:
     mix: dict[str, str] = {"model_id": str(llm["model_id"])}
     for name in SLOT_NAMES:
         slot = slots.get(name) if isinstance(slots, dict) else None
-        if not isinstance(slot, dict):
+        if slot is None:
             raise ValueError(f"llm.slots.{name} is required")
+        if not isinstance(slot, dict):
+            raise TypeError(f"llm.slots.{name} must be a mapping")
         for field in SLOT_FIELDS:
             if field not in slot or slot[field] in ("", None):
                 raise ValueError(f"llm.slots.{name}.{field} is required")
