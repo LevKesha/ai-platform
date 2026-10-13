@@ -73,6 +73,17 @@ def test_deploy_workflow_has_no_infra_literals() -> None:
     assert "scripts/smoke-direct-alb.py" in text
     assert "n8n/k8s/base.yaml" in text
     assert "n8n/k8s/ingress.yaml" in text
+    assert "branches: [main]" in text
+    assert text.count("github.ref == 'refs/heads/main'") == 2
+    assert "kubectl apply -n n8n -f n8n/k8s/base.yaml" in text
+    assert "kubectl apply -n n8n -f n8n/k8s/ingress.yaml" in text
+    assert '"$EKS_CLUSTER_NAME"' in text
+    assert '"$AWS_REGION"' in text
+    assert "${{ env.EKS_CLUSTER_NAME }}" not in text
+    nodes = text.split("- name: Count Ready nodes", 1)[1].split("- name: Dry-run apply", 1)[0]
+    assert "set -euo pipefail" in nodes
+    smoke = (ROOT / ".github" / "workflows" / "n8n-direct-alb-smoke.yml").read_text(encoding="utf-8")
+    assert "branches: [main]" in smoke
 
 
 def test_render_check_matches_committed_files() -> None:

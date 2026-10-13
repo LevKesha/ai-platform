@@ -72,10 +72,7 @@ def alb_dns(data: dict) -> str:
     return dns
 
 
-def probe(dns: str) -> None:
-    curl = shutil.which("curl")
-    if not curl:
-        raise SystemExit("curl ABSENT")
+def curl_once(curl: str, url: str) -> tuple[int, str]:
     proc = subprocess.run(
         [
             curl,
@@ -89,13 +86,30 @@ def probe(dns: str) -> None:
             "--max-time",
             "12",
             "-k",
-            f"https://{dns}/",
+            url,
         ],
         capture_output=True,
         text=True,
     )
-    print(f"direct_alb_dns={dns} http={proc.stdout.strip() or 'none'} exit={proc.returncode}", flush=True)
-    classify(proc.returncode, proc.stdout)
+    return proc.returncode, proc.stdout
+
+
+def probe(dns: str) -> None:
+    curl = shutil.which("curl")
+    if not curl:
+        raise SystemExit("curl ABSENT")
+    # Port 80 is a second lock check, not a retry of HTTPS.
+    for label, url in (
+        ("https", f"https://{dns}/"),
+        ("port80", f"http://{dns}:80/"),
+    ):
+        returncode, http_code = curl_once(curl, url)
+        shown = (http_code or "").strip() or "none"
+        print(
+            f"direct_alb_dns={dns} probe={label} http={shown} exit={returncode}",
+            flush=True,
+        )
+        classify(returncode, http_code)
 
 
 def main() -> int:

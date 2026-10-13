@@ -2,7 +2,8 @@ name: Deploy n8n
 
 # Secrets, the owner claim, and workflow import stay manual.
 # This workflow applies only n8n/k8s/base.yaml and n8n/k8s/ingress.yaml.
-# pull_request and workflow_dispatch mode=dry-run do not apply. Push to main applies.
+# pull_request and workflow_dispatch mode=dry-run do not apply.
+# Live apply and rollout run only on refs/heads/main (same branch as deploy-olympus.yml).
 
 on:
   push:
@@ -72,14 +73,16 @@ jobs:
       - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig \
-            --name ${{ env.EKS_CLUSTER_NAME }} \
-            --region ${{ env.AWS_REGION }}
+            --name "$EKS_CLUSTER_NAME" \
+            --region "$AWS_REGION"
 
       # Soft-downed EKS still answers the API with 0 Ready nodes. rollout status would wait
       # for a pod that cannot schedule. Skip the apply instead of stretching the timeout.
       - name: Count Ready nodes
         id: nodes
         run: |
+          # pipefail: a failed kubectl must not look like 0 Ready nodes
+          set -euo pipefail
           ready="$(kubectl get nodes -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' | awk '$0=="True"{n++} END{print n+0}')"
           echo "Ready nodes: ${ready}"
           if [ "${ready}" -eq 0 ]; then
@@ -96,21 +99,23 @@ jobs:
            (github.event_name == 'workflow_dispatch' && inputs.mode == 'dry-run'))
         run: |
           set -euo pipefail
-          kubectl apply --dry-run=client -f n8n/k8s/base.yaml
-          kubectl apply --dry-run=client -f n8n/k8s/ingress.yaml
+          kubectl apply -n n8n --dry-run=client -f n8n/k8s/base.yaml
+          kubectl apply -n n8n --dry-run=client -f n8n/k8s/ingress.yaml
 
       - name: Apply manifests
         if: >-
+          github.ref == 'refs/heads/main' &&
           steps.nodes.outputs.deploy == 'true' &&
           (github.event_name == 'push' ||
            (github.event_name == 'workflow_dispatch' && inputs.mode == 'apply'))
         run: |
           set -euo pipefail
-          kubectl apply -f n8n/k8s/base.yaml
-          kubectl apply -f n8n/k8s/ingress.yaml
+          kubectl apply -n n8n -f n8n/k8s/base.yaml
+          kubectl apply -n n8n -f n8n/k8s/ingress.yaml
 
       - name: Wait for rollout
         if: >-
+          github.ref == 'refs/heads/main' &&
           steps.nodes.outputs.deploy == 'true' &&
           (github.event_name == 'push' ||
            (github.event_name == 'workflow_dispatch' && inputs.mode == 'apply'))
