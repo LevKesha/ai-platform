@@ -9,11 +9,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+from cloudfront_sg import require_sg_id
 
 ROOT = Path(__file__).resolve().parents[1]
 PARENT = ROOT.parent
@@ -48,6 +49,17 @@ def self_test() -> None:
         raise SystemExit("stale ids must not match live")
     if not same_ids(list(reversed(live)), live):
         raise SystemExit("order must not matter")
+    for key in ("n8n_cloudfront_sg_id", "olympus_admin_cloudfront_sg_id"):
+        for data in ({}, {key: None}, {key: ""}, {key: "   "}):
+            try:
+                require_sg_id(data, key)
+            except ValueError as exc:
+                if "missing or empty" not in str(exc):
+                    raise SystemExit(f"{key} blank must say missing or empty, got {exc}") from exc
+            else:
+                raise SystemExit(f"{key} must fail when missing or empty: {data!r}")
+        if require_sg_id({key: "sg-abc"}, key) != "sg-abc":
+            raise SystemExit(f"{key} must accept an sg- id")
     print("self-test ok", flush=True)
 
 
@@ -85,35 +97,31 @@ def file_errors(data: dict) -> list[str]:
 
 
 def cloudfront_sg_errors(data: dict) -> list[str]:
-    """Annotation is absent until the exported security group id is a real sg- id."""
+    """Both CloudFront SG ids are required. Empty used to omit the annotation and reopen the ALB."""
     errors: list[str] = []
-    n8n = ROOT / "n8n/k8s/ingress.yaml"
-    text = n8n.read_text(encoding="utf-8") if n8n.exists() else ""
-    n8n_sg = _sg_id(data.get("n8n_cloudfront_sg_id"), "n8n_cloudfront_sg_id", errors)
+    n8n_sg = _sg_id(data, "n8n_cloudfront_sg_id", errors)
     if n8n_sg:
+        n8n = ROOT / "n8n/k8s/ingress.yaml"
         must_contain(n8n, f"alb.ingress.kubernetes.io/security-groups: {n8n_sg}", errors)
         must_contain(
             n8n,
             'alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"',
             errors,
         )
-    elif "security-groups" in text or "manage-backend-security-group-rules" in text:
-        errors.append("n8n ingress renders a security group annotation before n8n_cloudfront_sg_id is set")
 
-    admin_sg = _sg_id(data.get("olympus_admin_cloudfront_sg_id"), "olympus_admin_cloudfront_sg_id", errors)
+    admin_sg = _sg_id(data, "olympus_admin_cloudfront_sg_id", errors)
     if admin_sg:
         for rel in PATH_INGRESS_VALUES:
             must_contain(PARENT / rel, admin_sg, errors)
     return errors
 
 
-def _sg_id(raw: object, key: str, errors: list[str]) -> str:
-    if raw is None or raw == "":
+def _sg_id(data: dict, key: str, errors: list[str]) -> str:
+    try:
+        return require_sg_id(data, key)
+    except ValueError as exc:
+        errors.append(str(exc))
         return ""
-    if not isinstance(raw, str) or re.fullmatch(r"sg-[0-9a-f]+", raw.strip()) is None:
-        errors.append(f"{key} is not a security group id")
-        return ""
-    return raw.strip()
 
 
 def aws_text(args: list[str]) -> str:
