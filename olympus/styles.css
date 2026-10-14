@@ -1879,7 +1879,8 @@ body.page-overview {
 }
 
 .sleep-form input[type="text"],
-.sleep-form input[type="email"] {
+.sleep-form input[type="email"],
+.sleep-form input[type="datetime-local"] {
   padding: 0.45rem 0.65rem;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -1887,6 +1888,7 @@ body.page-overview {
   color: var(--text);
   font: inherit;
   font-size: 14px;
+  color-scheme: dark;
 }
 
 .sleep-radios {
