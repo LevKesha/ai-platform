@@ -212,7 +212,8 @@
       company: form.company.value.replace(/^\s+|\s+$/g, ""),
       email: form.email.value.replace(/^\s+|\s+$/g, ""),
       when: form.when.value.replace(/^\s+|\s+$/g, ""),
-      where: ""
+      where: "",
+      form_token: "wake"
     };
     var chosen = form.querySelector("input[name=where]:checked");
     data.where = chosen ? chosen.value : "";
