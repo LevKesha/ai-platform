@@ -53,7 +53,14 @@ jobs:
             echo "No CloudFront distribution aliased to ${OLYMPUS_DOMAIN}"
             exit 1
           fi
-          ORIGIN="$(aws cloudfront get-distribution --id "${DIST_ID}" --query "Distribution.DistributionConfig.Origins.Items[0].DomainName" --output text)"
+          # Items[0] is not the site bucket. The wake origin is first.
+          # The static files are the default cache behavior's origin.
+          TARGET="$(aws cloudfront get-distribution --id "${DIST_ID}" --query "Distribution.DistributionConfig.DefaultCacheBehavior.TargetOriginId" --output text)"
+          ORIGIN="$(aws cloudfront get-distribution --id "${DIST_ID}" --query "Distribution.DistributionConfig.Origins.Items[?Id=='${TARGET}'].DomainName | [0]" --output text)"
+          if [[ -z "${ORIGIN}" || "${ORIGIN}" == "None" || "${ORIGIN}" != *.s3.*amazonaws.com ]]; then
+            echo "default origin ${TARGET} is not an S3 bucket (${ORIGIN})"
+            exit 1
+          fi
           BUCKET="${ORIGIN%%.*}"
           echo "distribution=${DIST_ID} bucket=${BUCKET}"
           aws s3api head-bucket --bucket "${BUCKET}"
