@@ -69,6 +69,7 @@
     drawPoster();
     if (name === "asleep") renderAsleep();
     else if (name === "requested") renderRequested();
+    else if (name === "scheduled") renderScheduled(opts.wakeAt);
     else if (name === "waking") renderWaking(opts.approved === true);
     else if (name === "live") renderLive();
     else renderForm(opts.where || "");
@@ -138,6 +139,12 @@
     panel.appendChild(list);
   }
 
+  function renderScheduled(wakeAt) {
+    var when = wakeAt ? israelClock(Number(wakeAt)) : "";
+    panel.appendChild(pill("is-wait", when ? "Scheduled for " + when + " Israel time." : "Scheduled."));
+    panel.appendChild(el("h2", null, "The console, live"));
+  }
+
   function renderLive() {
     panel.appendChild(pill("is-live", "Live now. Sleeps after an hour idle."));
     panel.appendChild(el("h2", null, "The console, live"));
@@ -145,6 +152,56 @@
     open.href = demoHref;
     panel.appendChild(open);
     panel.appendChild(el("p", "sleep-tiny", "Interview booked? Lev wakes it ahead of time."));
+  }
+
+  function two(n) {
+    n = Math.floor(Math.abs(n));
+    return (n < 10 ? "0" : "") + n;
+  }
+
+  function jerusalemParts(ms) {
+    var fmt = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Jerusalem",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    });
+    var bag = {};
+    fmt.formatToParts(new Date(ms)).forEach(function (part) {
+      if (part.type !== "literal") bag[part.type] = part.value;
+    });
+    return bag;
+  }
+
+  function israelClock(ms) {
+    var parts = jerusalemParts(ms);
+    return parts.day + "/" + parts.month + "/" + parts.year + " " + parts.hour + ":" + parts.minute;
+  }
+
+  function israelIso(localValue) {
+    var match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(localValue || "");
+    if (!match) return "";
+    var want = match[1] + "-" + match[2] + "-" + match[3] + " " + match[4] + ":" + match[5];
+    var guess = Date.UTC(+match[1], +match[2] - 1, +match[3], +match[4], +match[5], 0);
+    var i;
+    for (i = 0; i < 4; i++) {
+      var parts = jerusalemParts(guess);
+      var got = parts.year + "-" + parts.month + "-" + parts.day + " " + parts.hour + ":" + parts.minute;
+      if (got === want) break;
+      var gotMs = Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute, 0);
+      var wantMs = Date.UTC(+match[1], +match[2] - 1, +match[3], +match[4], +match[5], 0);
+      guess += wantMs - gotMs;
+    }
+    var shown = jerusalemParts(guess);
+    var shownKey = shown.year + "-" + shown.month + "-" + shown.day + " " + shown.hour + ":" + shown.minute;
+    if (shownKey !== want) return "";
+    var localAsUtc = Date.UTC(+match[1], +match[2] - 1, +match[3], +match[4], +match[5], 0);
+    var offMin = Math.round((localAsUtc - guess) / 60000);
+    var sign = offMin >= 0 ? "+" : "-";
+    return match[1] + "-" + match[2] + "-" + match[3] + "T" + match[4] + ":" + match[5] + ":00" + sign + two(offMin / 60) + ":" + two(offMin % 60);
   }
 
   function field(labelText, type, name, required) {
@@ -168,15 +225,31 @@
     rowName.appendChild(field("Company", "text", "company", true));
     var rowMail = el("div", "sleep-row");
     rowMail.appendChild(field("Email", "email", "email", true));
-    var when = field("When works for you (optional)", "text", "when", false);
-    rowMail.appendChild(when);
     form.appendChild(rowName);
     form.appendChild(rowMail);
+    var whenLabel = el("label");
+    whenLabel.appendChild(document.createTextNode("When should it wake?"));
+    var whenInput = document.createElement("input");
+    whenInput.type = "datetime-local";
+    whenInput.name = "when";
+    whenInput.required = where === "IL";
+    whenLabel.appendChild(whenInput);
+    var whenWrap = el("div");
+    whenWrap.appendChild(whenLabel);
+    whenWrap.appendChild(el("p", "sleep-tiny", "Times are Israel time (Asia/Jerusalem). Now " + israelClock(Date.now()) + "."));
+    whenWrap.hidden = where === "elsewhere";
+    form.appendChild(whenWrap);
     var legend = el("span", "sleep-muted", "Where are you?");
     form.appendChild(legend);
     var radios = el("div", "sleep-radios");
     radios.appendChild(radio("IL", "Israel", where === "IL"));
     radios.appendChild(radio("elsewhere", "Elsewhere", where === "elsewhere"));
+    radios.addEventListener("change", function () {
+      var picked = form.querySelector("input[name=where]:checked");
+      var il = !!(picked && picked.value === "IL");
+      whenWrap.hidden = !il;
+      whenInput.required = il;
+    });
     form.appendChild(radios);
     var error = el("p", "sleep-error");
     error.hidden = true;
@@ -211,7 +284,6 @@
       name: form.name.value.replace(/^\s+|\s+$/g, ""),
       company: form.company.value.replace(/^\s+|\s+$/g, ""),
       email: form.email.value.replace(/^\s+|\s+$/g, ""),
-      when: form.when.value.replace(/^\s+|\s+$/g, ""),
       where: "",
       form_token: "wake"
     };
@@ -222,6 +294,19 @@
       error.hidden = false;
       error.textContent = "Name, company, email, and where you are are required.";
       return;
+    }
+    if (data.where === "IL") {
+      data.when = israelIso(form.when.value);
+      var at = Date.parse(data.when);
+      var minAhead = 5 * 60 * 1000;
+      var maxAhead = 7 * 24 * 60 * 60 * 1000;
+      if (!data.when || !(at >= Date.now() + minAhead) || at > Date.now() + maxAhead) {
+        error.hidden = false;
+        error.textContent = "Pick an Israel time at least 5 minutes ahead, and within 7 days.";
+        return;
+      }
+    } else {
+      data.when = "";
     }
     error.hidden = true;
     if (!endpoint) {
@@ -247,7 +332,7 @@
 
   function allowed(name) {
     if (name === "asleep" || name === "form") return true;
-    return preview && (name === "requested" || name === "waking" || name === "live");
+    return preview && (name === "requested" || name === "scheduled" || name === "waking" || name === "live");
   }
 
   var asked = params.get("state") || "";
@@ -264,8 +349,8 @@
       if (!res.ok) return null;
       return res.json();
     }).then(function (body) {
-      if (!body || (body.state !== "requested" && body.state !== "waking" && body.state !== "live")) return;
-      show(body.state, { approved: body.approved === true });
+      if (!body || (body.state !== "requested" && body.state !== "scheduled" && body.state !== "waking" && body.state !== "live")) return;
+      show(body.state, { approved: body.approved === true, wakeAt: body.wakeAt });
     }).catch(function () {});
   }
 })();
