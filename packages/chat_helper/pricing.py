@@ -9,11 +9,15 @@ The cap itself lives in the chat policy.
 """
 from __future__ import annotations
 
+import os
 import re
 
 MAX_QUESTION_CHARS = 500
 MAX_HISTORY_MESSAGES = 8
+# Default only. max_output_tokens() is the owner; Lambda env may set the same number.
 MAX_OUTPUT_TOKENS = 400
+# About 8k tokens. Every Bedrock call is trimmed to this before converse.
+MAX_INPUT_TOKENS = 8000
 
 # Application rates. The family name must occur in the slot's model ID.
 RATES = {
@@ -43,6 +47,31 @@ def bound_history(history: list) -> list[dict[str, str]]:
 def _input_tokens(question: str, history: list[dict[str, str]], system: str) -> int:
     chars = len(system) + len(question) + sum(len(item["text"]) for item in history)
     return chars // 4 + 1
+
+
+def max_output_tokens() -> int:
+    """Output cap sent on every Bedrock converse. Env overrides the default."""
+    raw = os.environ.get("MAX_OUTPUT_TOKENS", "").strip()
+    if raw == "":
+        return MAX_OUTPUT_TOKENS
+    value = int(raw)
+    if value < 1:
+        raise ValueError("MAX_OUTPUT_TOKENS must be a positive integer")
+    return value
+
+
+def fit_input(
+    question: str, history: list[dict[str, str]], system: str
+) -> tuple[str, list[dict[str, str]], str]:
+    """Trim history, then the question, then the system text until the estimate fits."""
+    kept = list(history)
+    while _input_tokens(question, kept, system) > MAX_INPUT_TOKENS and kept:
+        kept = kept[1:]
+    while _input_tokens(question, kept, system) > MAX_INPUT_TOKENS and question:
+        question = question[: len(question) // 2]
+    while _input_tokens(question, kept, system) > MAX_INPUT_TOKENS and system:
+        system = system[: len(system) // 2]
+    return question, kept, system
 
 
 def rate_family(model_id: str) -> str:
@@ -75,7 +104,7 @@ def rates_for_slot(slot: str) -> tuple[int, int]:
 def worst_case_micro(question: str, history: list[dict[str, str]], system: str, slot: str) -> int:
     in_rate, out_rate = rates_for_slot(slot)
     tokens = _input_tokens(question, history, system)
-    return tokens * in_rate + MAX_OUTPUT_TOKENS * out_rate
+    return tokens * in_rate + max_output_tokens() * out_rate
 
 
 def actual_micro(usage: dict, slot: str) -> int:

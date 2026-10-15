@@ -22,10 +22,11 @@ from chat_helper.corpus import (
 from chat_helper.ledger import LedgerError, MemoryLedger, ledger_from_env
 from chat_helper.policy import load_policy
 from chat_helper.pricing import (
-    MAX_OUTPUT_TOKENS,
     actual_micro,
     bound_history,
     bound_question,
+    fit_input,
+    max_output_tokens,
     worst_case_micro,
 )
 
@@ -148,12 +149,13 @@ def publishable(text: str, lines: list[dict[str, str]]) -> bool:
 
 
 def _converse(backend, model_id: str, system: str, question: str, history: list) -> Any:
+    question, history, system = fit_input(question, history, system)
     return backend.converse(
         model_id=model_id,
         system=system,
         question=question,
         history=history,
-        max_tokens=MAX_OUTPUT_TOKENS,
+        max_tokens=max_output_tokens(),
     )
 
 
