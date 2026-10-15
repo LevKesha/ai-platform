@@ -89,6 +89,19 @@ def _json(response: dict) -> dict:
     return json.loads(response["body"])
 
 
+def test_every_bedrock_call_uses_the_output_cap_and_trimmed_input(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MAX_OUTPUT_TOKENS", raising=False)
+    from chat_helper.handler import _converse
+    from chat_helper.pricing import MAX_INPUT_TOKENS, _input_tokens
+
+    stub = Stub("haiku")
+    _converse(stub, "model", "s" * 80000, "q" * 5000, [{"role": "user", "text": "h" * 4000}])
+    call = stub.calls[0]
+    assert call["max_tokens"] == 400
+    assert call["model_id"] == "model"
+    assert _input_tokens(call["question"], call["history"], call["system"]) <= MAX_INPUT_TOKENS
+
+
 def test_policy_is_the_only_copy_of_the_limits() -> None:
     policy = load_policy()
     for key in (

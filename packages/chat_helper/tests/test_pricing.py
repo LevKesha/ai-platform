@@ -10,8 +10,13 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "packages"))
 
 from chat_helper.pricing import (  # noqa: E402
+    MAX_INPUT_TOKENS,
+    MAX_OUTPUT_TOKENS,
     RATES,
+    _input_tokens,
     actual_micro,
+    fit_input,
+    max_output_tokens,
     rate_family,
     rates_for_slot,
     worst_case_micro,
@@ -48,9 +53,23 @@ def test_reservation_is_priced_for_the_slot() -> None:
         actual_micro({"input_tokens": 1, "output_tokens": 1}, "haiku")
 
 
+def test_output_cap_defaults_and_reads_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MAX_OUTPUT_TOKENS", raising=False)
+    assert max_output_tokens() == MAX_OUTPUT_TOKENS == 400
+    monkeypatch.setenv("MAX_OUTPUT_TOKENS", "400")
+    assert max_output_tokens() == 400
+    monkeypatch.setenv("MAX_OUTPUT_TOKENS", "32")
+    assert max_output_tokens() == 32
+    assert worst_case_micro("q", [], "system", "helper") == _manual("helper")
+
+
+def test_bedrock_input_is_trimmed_to_about_8k(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MAX_OUTPUT_TOKENS", raising=False)
+    question, history, system = fit_input("q" * 4000, [{"role": "user", "text": "h" * 4000}], "s" * 80000)
+    assert _input_tokens(question, history, system) <= MAX_INPUT_TOKENS
+
+
 def _manual(slot: str) -> int:
     in_rate, out_rate = rates_for_slot(slot)
     tokens = (len("system") + len("q")) // 4 + 1
-    from chat_helper.pricing import MAX_OUTPUT_TOKENS
-
-    return tokens * in_rate + MAX_OUTPUT_TOKENS * out_rate
+    return tokens * in_rate + max_output_tokens() * out_rate
