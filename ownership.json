@@ -28,6 +28,7 @@
     "No Helm chart or Terraform module is tracked. Those classes stay propose-only if a path is added.",
     "Security owns no path. n8n/SECURITY.md stays on the n8n prefix.",
     "Grok commits and owns no path. Eng writes. The check does not see who typed a hunk.",
+    "Review shots sit outside olympus/ so the portal sync does not publish them. Eng owns that tree. Content keeps the one olympus/ tree.",
     "A Security stop, and a named Grok acceptance with an expiry, are review rules. ci_proves stays false.",
     "security_review is not ownership. reviewers lists LevKesha, the existing GitHub login.",
     "Vendored platform_common and rendered ingress stay on scripts/sync-platform-common.py --check and scripts/check-infra-consumers.py."
@@ -53,7 +54,7 @@
     },
     {
       "owner": "eng",
-      "prefixes": ["agents/", "claude-router/", ".cursor/", "AGENTS.md", ".gitignore"]
+      "prefixes": ["agents/", "claude-router/", ".cursor/", "review-shots/", "AGENTS.md", ".gitignore"]
     },
     {
       "owner": "content",
