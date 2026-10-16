@@ -226,6 +226,8 @@
       return path === api || path.indexOf(api + "/") === 0;
     }
 
+    const turns = Array.isArray(options.history) ? options.history.slice() : [];
+
     function ask(question) {
       if (input.disabled) return Promise.resolve();
       addQuestion(question);
@@ -234,7 +236,7 @@
         chatId: options.chatId || "browser",
         idempotencyKey: (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()),
         question: question,
-        history: options.history || [],
+        history: turns.slice(),
       };
       const chatPath = chatApiPath();
       return buildRequest(payload)
@@ -257,8 +259,15 @@
           if (!payload) return;
           dots.remove();
           if (payload.kind === "closed") showClosed();
-          else if (payload.kind === "off_topic" || payload.kind === "not_in_cv") addNote(payload.text, true);
-          else if (payload.kind === "answer") addAnswer(payload.text, payload.label, payload.switch);
+          else if (payload.kind === "off_topic" || payload.kind === "not_in_cv") {
+            addNote(payload.text, true);
+            turns.push({ role: "user", text: question });
+            turns.push({ role: "assistant", text: payload.text });
+          } else if (payload.kind === "answer") {
+            addAnswer(payload.text, payload.label, payload.switch);
+            turns.push({ role: "user", text: question });
+            turns.push({ role: "assistant", text: payload.text });
+          }
         })
         .catch(function () {
           dots.remove();

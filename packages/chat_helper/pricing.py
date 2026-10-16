@@ -44,6 +44,28 @@ def bound_history(history: list) -> list[dict[str, str]]:
     return kept
 
 
+def prepare_converse(question: str, history: list) -> tuple[str, list[dict[str, str]]]:
+    """The one list Converse sends and spend prices.
+
+    bound_history is the only turn and character cap. Consecutive same-role
+    turns merge. A leading assistant is dropped. A trailing user turn merges
+    into the question, so the call starts and ends with user.
+    """
+    question = bound_question(question)
+    merged: list[dict[str, str]] = []
+    for item in bound_history(history):
+        if merged and merged[-1]["role"] == item["role"]:
+            merged[-1]["text"] = bound_question(merged[-1]["text"] + "\n" + item["text"])
+        else:
+            merged.append({"role": item["role"], "text": item["text"]})
+    while merged and merged[0]["role"] != "user":
+        merged.pop(0)
+    if merged and merged[-1]["role"] == "user":
+        question = bound_question(merged[-1]["text"] + "\n" + question)
+        merged.pop()
+    return question, merged
+
+
 def _input_tokens(question: str, history: list[dict[str, str]], system: str) -> int:
     chars = len(system) + len(question) + sum(len(item["text"]) for item in history)
     return chars // 4 + 1
@@ -67,6 +89,8 @@ def fit_input(
     kept = list(history)
     while _input_tokens(question, kept, system) > MAX_INPUT_TOKENS and kept:
         kept = kept[1:]
+        while kept and kept[0]["role"] != "user":
+            kept = kept[1:]
     while _input_tokens(question, kept, system) > MAX_INPUT_TOKENS and question:
         question = question[: len(question) // 2]
     while _input_tokens(question, kept, system) > MAX_INPUT_TOKENS and system:

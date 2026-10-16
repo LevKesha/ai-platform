@@ -367,6 +367,86 @@ def test_sixth_answer_is_haiku_when_theseus_is_on() -> None:
     assert theseus.calls[0]["model_id"] == live_model_id()
 
 
+def test_boto3_fallback_sends_the_bounded_alternating_history(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Patch boto3, not the stub. Fallback still uses the priced list."""
+    monkeypatch.delenv("MAX_OUTPUT_TOKENS", raising=False)
+    captured: list[dict] = []
+
+    class FakeClient:
+        def converse(self, **kwargs):
+            captured.append(kwargs)
+            return {
+                "output": {"message": {"content": [{"text": "A secret optional fact from nowhere."}]}},
+                "usage": {"inputTokens": 2, "outputTokens": 2},
+            }
+
+    import boto3
+
+    monkeypatch.setattr(boto3, "client", lambda *args, **kwargs: FakeClient())
+    import chat_helper.handler as handler_mod
+
+    priced: dict = {}
+    real_worst = handler_mod.worst_case_micro
+
+    def spy(question, history, system, slot):
+        priced["question"] = question
+        priced["history"] = [dict(item) for item in history]
+        return real_worst(question, history, system, slot)
+
+    monkeypatch.setattr(handler_mod, "worst_case_micro", spy)
+
+    from chat_helper.corpus import grounded, load_lines
+    from chat_helper.handler import BedrockModel, publishable
+    from chat_helper.pricing import MAX_HISTORY_MESSAGES, MAX_QUESTION_CHARS
+
+    history = [{"role": "assistant", "text": "drop this leading turn"}]
+    for index in range(12):
+        role = "user" if index % 2 == 0 else "assistant"
+        history.append({"role": role, "text": ("turn " + role + " ") * 80})
+    history.append({"role": "user", "text": "How many AWS accounts?"})
+    history.append({"role": "user", "text": "And the organization?"})
+    question = _ask(0)
+    raw = json.dumps(
+        {"question": question, "idempotencyKey": "boto", "chatId": "c-boto", "history": history},
+        separators=(",", ":"),
+    )
+    event = {
+        "headers": {
+            "x-amz-content-sha256": hashlib.sha256(raw.encode()).hexdigest(),
+            "x-viewer-ip": "203.0.113.10",
+        },
+        "body": raw,
+    }
+    theseus = Stub("sonnet", error=ModelTimeout())
+    payload = _json(handle(event, _deps(BedrockModel("helper-slot"), theseus=theseus)))
+    assert len(theseus.calls) == 1
+    assert len(captured) == 1
+    call = captured[0]
+    assert call["inferenceConfig"]["maxTokens"] == 400
+    messages = call["messages"]
+    roles = [item["role"] for item in messages]
+    assert roles[0] == "user"
+    assert roles[-1] == "user"
+    assert all(roles[index] != roles[index + 1] for index in range(len(roles) - 1))
+    blob = json.dumps(messages)
+    assert "drop this leading turn" not in blob
+    last = messages[-1]["content"][0]["text"]
+    assert "How many AWS accounts?" in last
+    assert "And the organization?" in last
+    assert question in last
+    assert len(messages) - 1 <= MAX_HISTORY_MESSAGES
+    for item in messages:
+        assert len(item["content"][0]["text"]) <= MAX_QUESTION_CHARS
+    sent_history = [{"role": item["role"], "text": item["content"][0]["text"]} for item in messages[:-1]]
+    assert priced["history"] == sent_history
+    assert priced["question"] == last
+    assert "nowhere" not in payload["text"]
+    if payload["kind"] == "answer":
+        lines = load_lines()
+        assert publishable(payload["text"], lines)
+        assert grounded(payload["text"], lines)
+
+
 def test_live_failure_continues_on_haiku() -> None:
     theseus = Stub("sonnet", error=ModelTimeout())
     haiku = Stub("haiku")
