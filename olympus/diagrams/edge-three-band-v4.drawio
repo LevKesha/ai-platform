@@ -203,7 +203,7 @@
     <mxCell id="b3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#007CBD;strokeColor=#2dd4bf;fontColor=#f5f5f5;fontStyle=1;fontSize=16;fontFamily=Helvetica;shadow=1;strokeWidth=2;align=center;verticalAlign=middle;labelBackgroundColor=none;" value="3" vertex="1" parent="1">
       <mxGeometry x="210" y="960" width="28" height="28" as="geometry" />
     </mxCell>
-        <mxCell id="legend-bg" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.rect;fillColor2=none;strokeWidth=1;fillColor=light-dark(#EDF3FF,#305363);strokeColor=#6c8ebf;" value="" vertex="1" parent="1">
+        <mxCell id="legend-bg" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.rect;fillColor2=none;strokeWidth=1;fillColor=#141414;strokeColor=#6c8ebf;" value="" vertex="1" parent="1">
           <mxGeometry height="1520" width="360" x="2200" y="90" as="geometry" />
         </mxCell>
         <mxCell id="legend-title" style="text;html=1;align=left;verticalAlign=top;fontSize=16;fontStyle=1;fontFamily=Helvetica;fontColor=#f5f5f5;" value="Flow" vertex="1" parent="1">
@@ -212,19 +212,19 @@
         <mxCell id="leg1-badge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#007CBD;fontColor=#f5f5f5;fontStyle=1;fontSize=20;fontFamily=Helvetica;shadow=1;strokeWidth=2;" value="1" vertex="1" parent="1">
           <mxGeometry x="2220" y="160" width="40" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="leg1-txt" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontFamily=Helvetica;whiteSpace=wrap;fontColor=#8a8a8a;" value="&lt;b&gt;Public&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0,0,0), rgb(255,255,255));&quot;&gt;R53 → WAF → ALB → EKS&lt;br&gt;&lt;i&gt;WAF on ALB (drawn before for readability)&lt;/i&gt;&lt;/span&gt;" vertex="1" parent="1">
+        <mxCell id="leg1-txt" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontFamily=Helvetica;whiteSpace=wrap;fontColor=#8a8a8a;" value="&lt;b style=&quot;color:#f5f5f5&quot;&gt;Public&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#8a8a8a;&quot;&gt;R53 → WAF → ALB → EKS&lt;br&gt;&lt;i&gt;WAF on ALB (drawn before for readability)&lt;/i&gt;&lt;/span&gt;" vertex="1" parent="1">
           <mxGeometry x="2275" y="156" width="260" height="90" as="geometry" />
         </mxCell>
         <mxCell id="leg2-badge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#007CBD;fontColor=#f5f5f5;fontStyle=1;fontSize=20;fontFamily=Helvetica;shadow=1;strokeWidth=2;" value="2" vertex="1" parent="1">
           <mxGeometry x="2220" y="270" width="40" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="leg2-txt" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontFamily=Helvetica;whiteSpace=wrap;fontColor=#8a8a8a;" value="&lt;b&gt;Auth-gated&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0,0,0), rgb(255,255,255));&quot;&gt;R53 → CF → OAC → S3&lt;br&gt;or CF → Cognito → ALB → EKS&lt;br&gt;&lt;i&gt;CF/S3/Cognito outside VPC&lt;/i&gt;&lt;/span&gt;" vertex="1" parent="1">
+        <mxCell id="leg2-txt" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontFamily=Helvetica;whiteSpace=wrap;fontColor=#8a8a8a;" value="&lt;b style=&quot;color:#f5f5f5&quot;&gt;Auth-gated&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#8a8a8a;&quot;&gt;R53 → CF → OAC → S3&lt;br&gt;or CF → Cognito → ALB → EKS&lt;br&gt;&lt;i&gt;CF/S3/Cognito outside VPC&lt;/i&gt;&lt;/span&gt;" vertex="1" parent="1">
           <mxGeometry x="2275" y="266" width="260" height="130" as="geometry" />
         </mxCell>
         <mxCell id="leg3-badge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#007CBD;fontColor=#f5f5f5;fontStyle=1;fontSize=20;fontFamily=Helvetica;shadow=1;strokeWidth=2;" value="3" vertex="1" parent="1">
           <mxGeometry x="2220" y="420" width="40" height="36" as="geometry" />
         </mxCell>
-        <mxCell id="leg3-txt" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontFamily=Helvetica;whiteSpace=wrap;fontColor=#8a8a8a;" value="&lt;b&gt;Cluster-internal&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0,0,0), rgb(255,255,255));&quot;&gt;VPC · NAT · Theseus · spend&lt;br&gt;no public host&lt;/span&gt;" vertex="1" parent="1">
+        <mxCell id="leg3-txt" style="text;html=1;align=left;verticalAlign=top;fontSize=13;fontFamily=Helvetica;whiteSpace=wrap;fontColor=#8a8a8a;" value="&lt;b style=&quot;color:#f5f5f5&quot;&gt;Cluster-internal&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#8a8a8a;&quot;&gt;VPC · NAT · Theseus · spend&lt;br&gt;no public host&lt;/span&gt;" vertex="1" parent="1">
           <mxGeometry x="2275" y="416" width="260" height="90" as="geometry" />
         </mxCell>
 
