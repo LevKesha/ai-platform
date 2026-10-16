@@ -15,7 +15,7 @@ window.OLYMPUS_CONSOLE = {
   },
   spend: {
     title: "AI spend control",
-    subline: "Every AI request goes through one place, gets shortened, and gets counted.",
+    subline: "Every CV×Jobs AI request goes through one place, gets shortened, and gets counted.",
     badge: "Behind sign-in",
     lines: [
       {

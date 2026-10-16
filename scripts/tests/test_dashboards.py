@@ -85,10 +85,17 @@ def test_soft_pages_match_the_copy_and_have_no_controls() -> None:
         assert size < 10 * 1024, name
     spend = (ROOT / "olympus" / "diagrams" / "spend-loop.svg").read_text(encoding="utf-8")
     assert "wake-only" in spend
+    assert "while live" not in spend
     assert "admin · Lev only" in spend
     data = (ROOT / "olympus" / "console-data.js").read_text(encoding="utf-8")
     assert "Wake-only." in data
     assert "admin · Lev only" in data
+    subline = "Every CV×Jobs AI request goes through one place, gets shortened, and gets counted."
+    assert subline in data
+    corpus = (ROOT / "olympus" / "chat-corpus.json").read_text(encoding="utf-8")
+    assert subline in corpus
+    assert "Every AI request goes through one place" not in data
+    assert "Every AI request goes through one place" not in corpus
 
 
 def test_new_copy_has_no_doc_count() -> None:
