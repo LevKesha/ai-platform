@@ -22,7 +22,7 @@
   "switch": "That's all the live answers for this chat. The rest come from Lev's CV.",
   "placeholder": "Ask about Lev's work",
   "bubble_name": "Chat about Lev's work",
-  "enabled": false,
+  "enabled": true,
   "pages": [
     "index.html",
     "proof.html",
