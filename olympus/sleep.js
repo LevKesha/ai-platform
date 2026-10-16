@@ -80,16 +80,16 @@
     var figure = el("figure", "panel-diagram");
     var img = document.createElement("img");
     img.src = "diagrams/soft-down.png";
-    var caption = "Asleep, with the site and sign-in still up. On request, Lev approves, databases start, services come up, and it is live in about 7 min. After an hour with no use, it goes back to sleep.";
+    var caption = "You pick a time. Lev approves. It starts then and is live in about 7 min.";
     img.className = "sleep-strip-desk";
-    img.alt = caption;
+    img.alt = caption + " Sleeps after 1h idle.";
     img.width = 1014;
     img.height = 203;
     img.loading = "lazy";
     var phone = document.createElement("img");
     phone.className = "sleep-strip-phone";
     phone.src = "diagrams/soft-down-phone.png";
-    phone.alt = caption;
+    phone.alt = caption + " Sleeps after 1h idle.";
     phone.width = 360;
     phone.height = 560;
     phone.loading = "lazy";
@@ -106,7 +106,7 @@
   }
 
   function renderRequested() {
-    panel.appendChild(pill("is-wait", "Request sent. Lev will reply by email."));
+    panel.appendChild(pill("is-wait", "Sent. Lev replies by email."));
     panel.appendChild(el("h2", null, "The console, live"));
   }
 
@@ -229,7 +229,7 @@
   function renderForm(where) {
     var form = el("form", "sleep-form");
     form.noValidate = true;
-    form.appendChild(el("h2", "sleep-form-title", "See it running"));
+    form.appendChild(el("h2", "sleep-form-title", "See it live"));
     var rowName = el("div", "sleep-row");
     rowName.appendChild(field("Name", "text", "name", true));
     rowName.appendChild(field("Company", "text", "company", true));
@@ -238,7 +238,7 @@
     form.appendChild(rowName);
     form.appendChild(rowMail);
     var whenLabel = el("label");
-    whenLabel.appendChild(document.createTextNode("When should it wake?"));
+    whenLabel.appendChild(document.createTextNode("Pick a time"));
     var whenInput = document.createElement("input");
     whenInput.type = "datetime-local";
     whenInput.name = "when";
@@ -246,7 +246,7 @@
     whenLabel.appendChild(whenInput);
     var whenWrap = el("div");
     whenWrap.appendChild(whenLabel);
-    whenWrap.appendChild(el("p", "sleep-tiny", "Times are Israel time (Asia/Jerusalem). Now " + israelClock(Date.now()) + "."));
+    whenWrap.appendChild(el("p", "sleep-tiny", "Israel time. Now " + israelClock(Date.now()) + "."));
     whenWrap.hidden = where === "elsewhere";
     form.appendChild(whenWrap);
     var legend = el("span", "sleep-muted", "Where are you?");
@@ -264,10 +264,10 @@
     var error = el("p", "sleep-error");
     error.hidden = true;
     form.appendChild(error);
-    var send = el("button", "btn btn-primary sleep-cta", "Send request");
+    var send = el("button", "btn btn-primary sleep-cta", "Request");
     send.type = "submit";
     form.appendChild(send);
-    form.appendChild(el("p", "sleep-tiny", "Lev reads every request himself."));
+    form.appendChild(el("p", "sleep-tiny", "Lev reads each one."));
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       submitForm(form, error);

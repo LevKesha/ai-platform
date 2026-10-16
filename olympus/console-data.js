@@ -11,7 +11,7 @@ window.OLYMPUS_CONSOLE = {
     subline: "Score a CV against the jobs you paste, then tailor it for the one you want.",
     badges: ["Behind sign-in", "Not LinkedIn auto-apply"],
     cta: "Request a walkthrough",
-    ctaHref: "/",
+    ctaHref: "console.html?state=form",
   },
   spend: {
     title: "AI spend control",
@@ -20,7 +20,7 @@ window.OLYMPUS_CONSOLE = {
     lines: [
       {
         label: "LiteLLM",
-        text: "Every AI request goes through here. This is where spend is counted.",
+        text: "Every CV×Jobs AI request goes through here. This is where its spend is counted.",
       },
       {
         label: "Headroom",
@@ -33,7 +33,7 @@ window.OLYMPUS_CONSOLE = {
     subline: "The automations that tie the platform together.",
     pill: "Request a look.",
     cta: "Request a look",
-    ctaHref: "#sleep-portal",
+    ctaHref: "console.html?state=form",
     workflows: [
       {
         label: "One request in, the right service answers",
@@ -49,7 +49,7 @@ window.OLYMPUS_CONSOLE = {
       },
     ],
   },
-  edgePaths: ["/cv-jobs", "/v1/demo", "/headroom", "/v1/hr", "/litellm", "/litellm/ui"],
+  edgePaths: ["/cv-jobs", "/v1/demo", "/headroom", "/v1/hr"],
   empty: {
     privateRepo:
       "Private repository. No public GitHub link. Evidence is described here; source is not linked.",

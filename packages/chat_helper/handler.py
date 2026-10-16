@@ -23,10 +23,10 @@ from chat_helper.ledger import LedgerError, MemoryLedger, ledger_from_env
 from chat_helper.policy import load_policy
 from chat_helper.pricing import (
     actual_micro,
-    bound_history,
     bound_question,
     fit_input,
     max_output_tokens,
+    prepare_converse,
     worst_case_micro,
 )
 
@@ -180,11 +180,12 @@ def handle(event: dict, deps: Deps) -> dict:
         return _finish(400, {"kind": "rejected"}, "denied")
 
     question = bound_question(str(payload.get("question") or ""))
-    history = bound_history(payload.get("history") if isinstance(payload.get("history"), list) else [])
+    history_in = payload.get("history") if isinstance(payload.get("history"), list) else []
     chat_id = str(payload.get("chatId") or "anon")[:64]
     idem = str(payload.get("idempotencyKey") or "")[:80]
     if not question or not idem:
         return _finish(400, {"kind": "rejected"}, "denied")
+    question, history = prepare_converse(question, history_in)
 
     policy = deps.policy
     now = deps.now()
@@ -282,10 +283,15 @@ class BedrockModel:
         import boto3
 
         client = boto3.client("bedrock-runtime")
+        messages = [
+            {"role": item["role"], "content": [{"text": item["text"]}]}
+            for item in kwargs["history"]
+        ]
+        messages.append({"role": "user", "content": [{"text": kwargs["question"]}]})
         reply = client.converse(
             modelId=kwargs["model_id"],
             system=[{"text": kwargs["system"]}],
-            messages=[{"role": "user", "content": [{"text": kwargs["question"]}]}],
+            messages=messages,
             inferenceConfig={"maxTokens": kwargs["max_tokens"]},
         )
         text = reply["output"]["message"]["content"][0]["text"]

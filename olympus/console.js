@@ -118,7 +118,6 @@
       "</span></p>" +
       '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend: CV×Jobs and the automations can send requests through the LiteLLM gateway. Headroom shortens long prompts. Spend is logged in one place." width="1016" height="444" loading="lazy"></figure>' +
       '<p class="anon-actions"><a class="btn btn-primary" href="/headroom">Sign in</a></p>' +
-      '<p class="anon-quiet"><a href="/litellm/ui">AI gateway</a></p>' +
       '<ul class="panel-lines">' +
       lines +
       "</ul></section>"

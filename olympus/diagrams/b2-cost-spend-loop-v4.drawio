@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="Electron" version="29.6.1" agent="Olympus Platform" type="device">
+  <diagram name="Cost / spend loop" id="olympus-cost-spend-loop-v4">
+    <mxGraphModel dx="1600" dy="1000" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1400" pageHeight="780" math="0" shadow="0" background="#0a0a0a">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontFamily=Helvetica;fontColor=#f5f5f5;" value="Cost / spend · loop" vertex="1" parent="1">
+          <mxGeometry x="60" y="24" width="420" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontFamily=Helvetica;fontColor=#8a8a8a;" value="ns llm-cost · LiteLLM · Headroom · llm-spend" vertex="1" parent="1">
+          <mxGeometry x="60" y="54" width="420" height="20" as="geometry" />
+        </mxCell>
+
+        
+        <mxCell id="agent" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#8a8a8a;strokeWidth=1;fontColor=#8a8a8a;dashed=1;dashPattern=4 4;" value="agent-api&lt;div style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;&lt;i&gt;CV×Jobs&lt;/i&gt;&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="620" y="92" width="150" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="n8n" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#8a8a8a;strokeWidth=1;fontColor=#8a8a8a;dashed=1;dashPattern=4 4;" value="n8n&lt;div style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;&lt;i&gt;caller crumb&lt;/i&gt;&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="800" y="92" width="120" height="40" as="geometry" />
+        </mxCell>
+
+        
+        <mxCell id="badge-cip" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=9;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1.5;fontColor=#8a8a8a;" value="ClusterIP only" vertex="1" parent="1">
+          <mxGeometry x="90" y="168" width="100" height="22" as="geometry" />
+        </mxCell>
+
+        
+        <mxCell id="spend" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="llm-spend&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;:4010&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="70" y="210" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="headroom" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="Headroom&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;savings · :8790&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="380" y="210" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="litellm" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=15;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="LiteLLM&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;:4000 · + Headroom sidecar&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="700" y="210" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        
+        <mxCell id="e-spend" value=":4000 · spend logs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Helvetica;fontSize=9;fontColor=#8a8a8a;labelBackgroundColor=#0a0a0a;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#2dd4bf;" edge="1" parent="1" source="spend" target="litellm">
+          <mxGeometry relative="1" as="geometry" x="-0.15" y="20">
+            <Array as="points">
+              <mxPoint x="150" y="340" />
+              <mxPoint x="810" y="340" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-save" value=":8787 · compress" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Helvetica;fontSize=9;fontColor=#8a8a8a;labelBackgroundColor=#0a0a0a;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2dd4bf;" edge="1" parent="1" source="headroom" target="litellm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        
+        <mxCell id="c-agent" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1.5;endArrow=block;endFill=1;fontFamily=Helvetica;strokeColor=#2dd4bf;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;" edge="1" parent="1" source="agent" target="litellm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="695" y="170" />
+              <mxPoint x="777" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c-n8n-l" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;dashed=1;dashPattern=4 4;endArrow=block;endFill=1;fontFamily=Helvetica;strokeColor=#8a8a8a;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;" edge="1" parent="1" source="n8n" target="litellm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="860" y="170" />
+              <mxPoint x="854" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c-n8n-h" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;dashed=1;dashPattern=4 4;endArrow=block;endFill=1;fontFamily=Helvetica;strokeColor=#8a8a8a;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;" edge="1" parent="1" source="n8n" target="headroom">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="465" y="112" />
+              <mxPoint x="465" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        
+        <mxCell id="ui-spend" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="UI · spend read&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;ClusterIP :4010 · port-forward&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="70" y="420" width="160" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="ui-headroom" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="UI · savings&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;/headroom Admin · POST /compress&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="380" y="420" width="170" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="ui-litellm" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="UI · Admin / proxy&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;proxy&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="700" y="420" width="220" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="u1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=none;fontFamily=Helvetica;strokeColor=#2dd4bf;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;" edge="1" parent="1" source="spend" target="ui-spend">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="150" y="370" />
+              <mxPoint x="150" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="u2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=none;fontFamily=Helvetica;strokeColor=#2dd4bf;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;" edge="1" parent="1" source="headroom" target="ui-headroom">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="465" y="370" />
+              <mxPoint x="465" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="u3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=none;fontFamily=Helvetica;strokeColor=#2dd4bf;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;" edge="1" parent="1" source="litellm" target="ui-litellm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="810" y="370" />
+              <mxPoint x="810" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        
+        <mxCell id="cap-a" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;fontSize=11;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=10;" value="&lt;b&gt;A · spend&lt;/b&gt;  Caller → LiteLLM :4000 · llm-spend reads spend logs" vertex="1" parent="1">
+          <mxGeometry x="70" y="520" width="520" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="cap-b" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;fontSize=11;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=10;" value="&lt;b&gt;B · savings&lt;/b&gt;  Caller → headroom-savings :8790 → sidecar :8787 → ledger" vertex="1" parent="1">
+          <mxGeometry x="70" y="568" width="620" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="cap-note" style="text;html=1;align=left;verticalAlign=middle;fontSize=9;fontFamily=Helvetica;fontColor=#8a8a8a;" value="profiles: agent-90 · cv_jobs_match · cv_jobs_edit · develop suite" vertex="1" parent="1">
+          <mxGeometry x="70" y="616" width="480" height="18" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

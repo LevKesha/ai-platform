@@ -42,7 +42,7 @@ Hosted UI and managed login cannot set the strings "The Olympus" or "Sign in to 
 
 ## Console
 
-`console.js` switches views from `console-data.js`. Views: Glossary, CV×Jobs, AI spend control, n8n. Unknown hashes open Glossary. CV×Jobs and `gated.html` show a read-only sample with no live figures. AI spend control does not. CV×Jobs has one sign-in button to `/cv-jobs/`. AI spend control has one Sign in button to `/headroom` under the diagram, and the AI gateway is a text link to `/litellm/ui`. The asleep page keeps one quiet sign-in link, and Request a look is the only main button. The sample does not call those apps and does not include credentials.
+`console.js` switches views from `console-data.js`. Views: Glossary, CV×Jobs, AI spend control, n8n. Unknown hashes open Glossary. CV×Jobs and `gated.html` show a read-only sample with no live figures. AI spend control does not. CV×Jobs has one sign-in button to `/cv-jobs/`. AI spend control has one Sign in button to `/headroom` under the diagram. The asleep page keeps one quiet sign-in link, and Request a look is the only main button. The sample does not call those apps and does not include credentials.
 
 Verified copy lives in `public-data.js`. Do not invent metrics or extra public URLs.
 
