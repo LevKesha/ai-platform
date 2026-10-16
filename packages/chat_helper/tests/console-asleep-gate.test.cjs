@@ -305,31 +305,13 @@ function assertClosed(page, label) {
   }
 }
 
-function litellmAdminLogins(root) {
-  return root.querySelectorAll("a").filter(function (node) {
-    return visible(node) && node.textContent.replace(/\s+/g, " ").trim() === "admin login" && node.href === "/litellm";
-  });
-}
-
 function assertOpen(page) {
   if (!page.document.querySelectorAll("button").some(function (node) { return node.textContent === "Live dashboards"; })) {
     fail("live missing Live dashboards nav");
   }
-  let litellmLogins = 0;
-  SECTIONS.forEach(function (section) {
-    openSection(page.document, section[0]);
-    litellmLogins += litellmAdminLogins(page.panel).length;
-  });
-  if (litellmLogins !== 1) fail("awake /litellm admin login count " + litellmLogins);
-  openSection(page.document, "LiteLLM");
-  const sectionLogin = litellmAdminLogins(page.panel);
-  if (sectionLogin.length !== 1 || sectionLogin[0].className !== "btn btn-primary") {
-    fail("LiteLLM section is not the /litellm admin login");
-  }
   openSection(page.document, "Live dashboards");
-  if (litellmAdminLogins(page.panel).length) fail("Live dashboards still has a /litellm admin login");
   const tiles = page.panel.querySelectorAll(".dash-tile");
-  if (tiles.length !== 3) fail("expected 3 tiles, saw " + tiles.length);
+  if (tiles.length !== 4) fail("expected 4 tiles, saw " + tiles.length);
   const logins = tiles.map(function (tile) {
     const buttons = tile.querySelectorAll("a");
     if (buttons.length !== 1 || buttons[0].textContent.trim() !== "admin login") {
@@ -338,13 +320,10 @@ function assertOpen(page) {
     const name = tile.querySelector(".dash-name");
     return (name ? name.textContent.trim() : "") + " " + buttons[0].href;
   });
-  ["n8n https://n8n.levkesha.com", "CV×Jobs /cv-jobs/", "Headroom /headroom"].forEach(function (needle) {
+  ["LiteLLM /litellm", "n8n https://n8n.levkesha.com", "CV×Jobs /cv-jobs/", "Headroom /headroom"].forEach(function (needle) {
     if (logins.indexOf(needle) < 0) fail("tile set " + logins.join(" | "));
   });
-  if (logins.some(function (line) { return line.indexOf("/litellm") >= 0 || line.indexOf("LiteLLM") === 0; })) {
-    fail("LiteLLM tile still present " + logins.join(" | "));
-  }
-  ["AI spend control", "CV×Jobs", "n8n"].forEach(function (label) {
+  ["AI spend control", "CV×Jobs", "n8n", "LiteLLM"].forEach(function (label) {
     openSection(page.document, label);
     const found = loginControls(page.panel);
     if (found.length) fail(label + " section showed " + found.map(function (node) { return node.textContent; }).join(", "));

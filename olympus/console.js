@@ -137,15 +137,6 @@
 
   function renderLiteLLM() {
     var lt = data.litellm;
-    var login = "";
-    if (clusterLive) {
-      login =
-        '<p><a class="btn btn-primary" href="' +
-        escapeHtml(lt.ctaHref) +
-        '">' +
-        escapeHtml(lt.cta) +
-        "</a></p>";
-    }
     return (
       '<section class="hub-glossary" aria-labelledby="pv-t">' +
       '<h2 id="pv-t">' +
@@ -153,9 +144,7 @@
       "</h2>" +
       '<p class="console-subline">' +
       escapeHtml(lt.subline) +
-      "</p>" +
-      login +
-      "</section>"
+      "</p></section>"
     );
   }
 
@@ -273,7 +262,7 @@
     var liveNow = !!(state && state.live);
     if (liveNow === clusterLive) return;
     clusterLive = liveNow;
-    if (viewId === "dashboards" || viewId === "litellm") setView(viewId);
+    if (viewId === "dashboards") setView(viewId);
   }
 
   if (window.olympusWakeState) {
