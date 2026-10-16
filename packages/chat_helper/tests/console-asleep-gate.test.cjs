@@ -181,7 +181,8 @@ function loginControls(rootNode) {
   return rootNode.querySelectorAll("a").concat(rootNode.querySelectorAll("button")).filter(function (node) {
     if (!visible(node)) return false;
     const text = node.textContent.replace(/\s+/g, " ").trim();
-    return text === "Sign in" || text.toLowerCase().indexOf("admin login") >= 0;
+    const href = node.href || "";
+    return text === "Sign in" || text === "admin login" || LOGIN_HREFS.indexOf(href) >= 0;
   });
 }
 
@@ -196,7 +197,9 @@ const SECTIONS = [
   ["CV×Jobs", "cvjobs"],
   ["n8n", "n8n"],
   ["LiteLLM", "litellm"],
+  ["Live dashboards", "dashboards"],
 ];
+const LOGIN_HREFS = ["/litellm", "https://n8n.levkesha.com", "/cv-jobs/", "/headroom"];
 
 function openSection(doc, label) {
   const button = doc.querySelectorAll("button").filter(function (node) {
@@ -206,7 +209,8 @@ function openSection(doc, label) {
   button.click();
 }
 
-function renderPage(fetchImpl) {
+function renderPage(fetchImpl, options) {
+  options = options || {};
   const document = new Node("#document");
   document.cookie = "";
   document.addEventListener = function (type, fn) {
@@ -242,10 +246,13 @@ function renderPage(fetchImpl) {
   context.globalThis = context;
   vm.createContext(context);
   scripts.forEach(function (name) {
+    if (options.skipWake && name === "wake-state.js") return;
     const source = fs.readFileSync(path.join(root, "olympus", name), "utf8");
     vm.runInContext(source, context, { filename: name });
   });
-  if (!context.olympusWakeState || !context.OLYMPUS_CONSOLE) fail("page scripts did not install wake state and console data");
+  if (!options.skipWake && !context.olympusWakeState) fail("page scripts did not install wake state");
+  if (options.skipWake && context.olympusWakeState) fail("wake state was present");
+  if (!context.OLYMPUS_CONSOLE) fail("page scripts did not install console data");
   const panel = document.querySelector("#console-panel");
   const column = document.querySelector(".console-column");
   if (!panel || !column) fail("console.html did not render the panel");
@@ -258,6 +265,12 @@ function fetchFor(mode) {
     if (!options || options.cache !== "no-store") fail("status read was not cache: no-store");
     if (mode.kind === "error") return Promise.reject(new Error("network"));
     if (mode.kind === "http") return Promise.resolve({ ok: false, json: function () { return Promise.resolve({}); } });
+    if (mode.kind === "badjson") {
+      return Promise.resolve({
+        ok: true,
+        json: function () { return Promise.reject(new Error("not json")); },
+      });
+    }
     return Promise.resolve({
       ok: true,
       json: function () { return Promise.resolve(mode.body); },
@@ -266,40 +279,55 @@ function fetchFor(mode) {
 }
 
 function assertClosed(page, label) {
+  if (!page.document.querySelectorAll("button").some(function (node) { return node.textContent === "Live dashboards"; })) {
+    fail(label + " missing Live dashboards nav");
+  }
   SECTIONS.forEach(function (section) {
     openSection(page.document, section[0]);
     const found = loginControls(page.column).map(function (node) { return node.textContent.trim(); });
     if (found.length) fail(label + " " + section[0] + " showed " + found.join(", "));
   });
+  openSection(page.document, "Live dashboards");
+  const looks = page.panel.querySelectorAll("a").filter(function (node) {
+    return node.textContent.trim() === "Request a look";
+  });
+  if (looks.length !== 1 || looks[0].href !== "console.html?state=form") {
+    fail(label + " dashboards Request a look " + looks.map(function (node) { return node.href; }).join(","));
+  }
   openSection(page.document, "CV×Jobs");
   if (page.panel.textContent.indexOf("Request a walkthrough") < 0) fail(label + " dropped Request a walkthrough");
-  if (page.panel.querySelector(".anon-preview") || page.panel.textContent.indexOf("Job inbox") >= 0) {
-    fail(label + " still shows the CV×Jobs preview");
-  }
+  const walk = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a walkthrough"; })[0];
+  if (!walk || walk.className !== "btn") fail(label + " changed Request a walkthrough");
   openSection(page.document, "n8n");
-  if (page.panel.textContent.indexOf("Request a look") < 0) fail(label + " dropped Request a look");
+  const look = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a look"; })[0];
+  if (!look || look.className !== "btn btn-primary" || look.href !== "console.html?state=form") {
+    fail(label + " changed Request a look");
+  }
 }
 
 function assertOpen(page) {
-  openSection(page.document, "AI spend control");
-  const spend = loginControls(page.panel);
-  if (spend.length !== 1 || spend[0].textContent.trim() !== "Sign in" || spend[0].href !== "/headroom") {
-    fail("awake spend login " + spend.map(function (node) { return node.textContent + " " + node.href; }).join(","));
+  if (!page.document.querySelectorAll("button").some(function (node) { return node.textContent === "Live dashboards"; })) {
+    fail("live missing Live dashboards nav");
   }
-  openSection(page.document, "CV×Jobs");
-  const jobs = loginControls(page.panel);
-  if (jobs.length !== 1 || jobs[0].href !== "/cv-jobs/") fail("awake cvjobs login missing");
-  if (page.panel.textContent.indexOf("Request a walkthrough") < 0) fail("awake dropped Request a walkthrough");
-  openSection(page.document, "n8n");
-  const n8nPanel = loginControls(page.panel);
-  if (n8nPanel.length) fail("n8n section rendered its own login");
-  const n8nTile = loginControls(page.column).filter(function (node) { return node.textContent.indexOf("n8n") >= 0; });
-  if (n8nTile.length !== 1 || n8nTile[0].href !== "https://n8n.levkesha.com") fail("awake n8n admin login missing");
-  openSection(page.document, "LiteLLM");
-  const litellm = loginControls(page.panel);
-  if (litellm.length !== 1 || litellm[0].textContent.trim() !== "admin login" || litellm[0].href !== "/litellm") {
-    fail("awake litellm admin login missing");
-  }
+  openSection(page.document, "Live dashboards");
+  const tiles = page.panel.querySelectorAll(".dash-tile");
+  if (tiles.length !== 4) fail("expected 4 tiles, saw " + tiles.length);
+  const logins = tiles.map(function (tile) {
+    const buttons = tile.querySelectorAll("a");
+    if (buttons.length !== 1 || buttons[0].textContent.trim() !== "admin login") {
+      fail("tile login count " + buttons.map(function (node) { return node.textContent; }).join(","));
+    }
+    const name = tile.querySelector(".dash-name");
+    return (name ? name.textContent.trim() : "") + " " + buttons[0].href;
+  });
+  ["LiteLLM /litellm", "n8n https://n8n.levkesha.com", "CV×Jobs /cv-jobs/", "Headroom /headroom"].forEach(function (needle) {
+    if (logins.indexOf(needle) < 0) fail("tile set " + logins.join(" | "));
+  });
+  ["AI spend control", "CV×Jobs", "n8n", "LiteLLM"].forEach(function (label) {
+    openSection(page.document, label);
+    const found = loginControls(page.panel);
+    if (found.length) fail(label + " section showed " + found.map(function (node) { return node.textContent; }).join(", "));
+  });
 }
 
 Promise.resolve()
@@ -313,6 +341,12 @@ Promise.resolve()
   .then(function (page) { return flush().then(function () { assertClosed(page, "fetch error"); }); })
   .then(function () { return renderPage(fetchFor({ kind: "http" })); })
   .then(function (page) { return flush().then(function () { assertClosed(page, "http error"); }); })
+  .then(function () { return renderPage(fetchFor({ kind: "json", body: "" })); })
+  .then(function (page) { return flush().then(function () { assertClosed(page, "empty body"); }); })
+  .then(function () { return renderPage(fetchFor({ kind: "badjson" })); })
+  .then(function (page) { return flush().then(function () { assertClosed(page, "non-json"); }); })
+  .then(function () { return renderPage(fetchFor({ kind: "json", body: { state: "live" } }), { skipWake: true }); })
+  .then(function (page) { return flush().then(function () { assertClosed(page, "wake script absent"); }); })
   .catch(function (error) {
     fail(error && error.stack ? error.stack : String(error));
   });

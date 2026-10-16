@@ -789,7 +789,7 @@ tbody tr:last-child td {
 
 .dash-tiles {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.6rem;
   margin: 0;
   padding: 0;
@@ -797,13 +797,22 @@ tbody tr:last-child td {
 }
 
 .dash-tile {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  height: 100%;
   border: 1px solid var(--border);
   background: var(--bg-elev);
   color: var(--text);
   text-decoration: none;
   padding: 0.75rem 0.85rem;
   font-weight: 600;
+}
+
+.dash-name {
+  display: block;
 }
 
 .dash-tile:hover {
