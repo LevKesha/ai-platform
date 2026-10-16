@@ -444,6 +444,12 @@
       "id": "olympus-console-data.js-72",
       "source": "olympus/console-data.js",
       "section": "platform",
+      "text": "Every CV×Jobs AI request goes through here."
+    },
+    {
+      "id": "olympus-console-data.js-73",
+      "source": "olympus/console-data.js",
+      "section": "platform",
       "text": "Private repository. No public GitHub link. Evidence is described here; source is not linked."
     }
   ]

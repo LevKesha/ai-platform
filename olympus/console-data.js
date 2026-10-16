@@ -5,11 +5,13 @@ window.OLYMPUS_CONSOLE = {
     { id: "cvjobs", label: "CV×Jobs" },
     { id: "spend", label: "AI spend control" },
     { id: "n8n", label: "n8n" },
+    { id: "litellm", label: "LiteLLM" },
   ],
   cvjobs: {
     title: "CV×Jobs",
     subline: "Score a CV against the jobs you paste, then tailor it for the one you want.",
     badges: ["Behind sign-in", "Not LinkedIn auto-apply"],
+    signInHref: "/cv-jobs/",
     cta: "Request a walkthrough",
     ctaHref: "console.html?state=form",
   },
@@ -17,6 +19,7 @@ window.OLYMPUS_CONSOLE = {
     title: "AI spend control",
     subline: "Every CV×Jobs AI request goes through one place and gets counted.",
     badge: "Behind sign-in",
+    signInHref: "/headroom",
     lines: [
       {
         label: "Routes",
@@ -56,6 +59,12 @@ window.OLYMPUS_CONSOLE = {
         name: "headroom-demo",
       },
     ],
+  },
+  litellm: {
+    title: "LiteLLM",
+    subline: "Every CV×Jobs AI request goes through here.",
+    cta: "admin login",
+    ctaHref: "/litellm",
   },
   edgePaths: ["/cv-jobs", "/v1/demo", "/headroom", "/v1/hr"],
   empty: {

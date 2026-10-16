@@ -39,29 +39,19 @@
     return glossaryMarkup;
   }
 
-  function anonPreview(caption, labels) {
-    var rows = labels
-      .map(function (label) {
-        return (
-          '<div class="anon-row"><span>' +
-          escapeHtml(label) +
-          '</span><span class="anon-mark">Sample</span></div>'
-        );
-      })
-      .join("");
+  var clusterLive = false;
+  var viewId = "glossary";
+
+  function loginLink(href, label) {
+    if (!clusterLive) return "";
     return (
-      '<aside class="anon-preview" aria-label="Read-only preview">' +
-      '<p class="anon-kicker">Preview</p>' +
-      '<p class="anon-note">' +
-      escapeHtml(caption) +
-      "</p>" +
-      rows +
-      "</aside>"
+      '<p class="anon-actions"><a class="btn btn-primary" href="' +
+      escapeHtml(href) +
+      '">' +
+      escapeHtml(label) +
+      "</a></p>"
     );
   }
-
-  var previewNote =
-    "Read-only sample. This is not your data. Sign in for the full view.";
 
   function renderCvJobs() {
     var cj = data.cvjobs;
@@ -82,8 +72,7 @@
       badges +
       "</p>" +
       '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg" alt="CV×Jobs: a master CV, the jobs you paste, a fit report, a tailored CV, and an export, with a model call and a role focus." width="1016" height="444" loading="lazy"></figure>' +
-      anonPreview(previewNote, ["Master CV", "Job inbox", "Fit report"]) +
-      '<p class="anon-actions"><a class="btn btn-primary" href="/cv-jobs/">Sign in</a></p>' +
+      loginLink(cj.signInHref, "Sign in") +
       '<p><a class="btn" href="' +
       escapeHtml(cj.ctaHref) +
       '">' +
@@ -117,7 +106,7 @@
       escapeHtml(s.badge) +
       "</span></p>" +
       '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend: CV×Jobs sends requests through the LiteLLM gateway. n8n calls Headroom to compress. Spend is logged in one place." width="1016" height="444" loading="lazy"></figure>' +
-      '<p class="anon-actions"><a class="btn btn-primary" href="/headroom">Sign in</a></p>' +
+      loginLink(s.signInHref, "Sign in") +
       '<ul class="panel-lines">' +
       lines +
       "</ul></section>"
@@ -159,11 +148,27 @@
     );
   }
 
+  function renderLiteLLM() {
+    var lt = data.litellm;
+    return (
+      '<section class="hub-glossary" aria-labelledby="pv-t">' +
+      '<h2 id="pv-t">' +
+      escapeHtml(lt.title) +
+      "</h2>" +
+      '<p class="console-subline">' +
+      escapeHtml(lt.subline) +
+      "</p>" +
+      loginLink(lt.ctaHref, lt.cta) +
+      "</section>"
+    );
+  }
+
   var renderers = {
     glossary: renderGlossary,
     cvjobs: renderCvJobs,
     spend: renderSpend,
     n8n: renderN8n,
+    litellm: renderLiteLLM,
   };
 
   function setView(id) {
@@ -174,6 +179,7 @@
       view = data.views[0];
       id = view.id;
     }
+    viewId = id;
     nav.querySelectorAll("button").forEach(function (btn) {
       if (btn.getAttribute("data-view") === id) {
         btn.setAttribute("aria-current", "page");
@@ -259,10 +265,20 @@
   }
 
   var column = document.querySelector(".console-column");
-  if (column && window.olympusWakeState) {
-    window.olympusWakeState.readWakeState().then(function (state) {
-      if (!state || !state.live || column.querySelector(".live-dashboards")) return;
+
+  function applyWake(state) {
+    var liveNow = !!(state && state.live);
+    if (!liveNow) return;
+    clusterLive = true;
+    if (column && !column.querySelector(".live-dashboards")) {
       column.appendChild(dashboardsCard());
-    });
+    }
+    if (viewId === "cvjobs" || viewId === "spend" || viewId === "litellm") {
+      setView(viewId);
+    }
+  }
+
+  if (window.olympusWakeState) {
+    window.olympusWakeState.readWakeState().then(applyWake);
   }
 })();
