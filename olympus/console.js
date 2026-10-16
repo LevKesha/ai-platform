@@ -42,17 +42,6 @@
   var clusterLive = false;
   var viewId = "glossary";
 
-  function loginLink(href, label) {
-    if (!clusterLive) return "";
-    return (
-      '<p class="anon-actions"><a class="btn btn-primary" href="' +
-      escapeHtml(href) +
-      '">' +
-      escapeHtml(label) +
-      "</a></p>"
-    );
-  }
-
   function renderCvJobs() {
     var cj = data.cvjobs;
     var badges = (cj.badges || [])
@@ -72,7 +61,6 @@
       badges +
       "</p>" +
       '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg" alt="CV×Jobs: a master CV, the jobs you paste, a fit report, a tailored CV, and an export, with a model call and a role focus." width="1016" height="444" loading="lazy"></figure>' +
-      loginLink(cj.signInHref, "Sign in") +
       '<p><a class="btn" href="' +
       escapeHtml(cj.ctaHref) +
       '">' +
@@ -106,7 +94,6 @@
       escapeHtml(s.badge) +
       "</span></p>" +
       '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend: CV×Jobs sends requests through the LiteLLM gateway. n8n calls Headroom to compress. Spend is logged in one place." width="1016" height="444" loading="lazy"></figure>' +
-      loginLink(s.signInHref, "Sign in") +
       '<ul class="panel-lines">' +
       lines +
       "</ul></section>"
@@ -140,7 +127,6 @@
       '<div class="flow-cards">' +
       cards +
       "</div>" +
-      loginLink(n.loginHref, "admin login") +
       '<p><a class="btn btn-primary" href="' +
       escapeHtml(n.ctaHref) +
       '">' +
@@ -151,6 +137,15 @@
 
   function renderLiteLLM() {
     var lt = data.litellm;
+    var login = "";
+    if (clusterLive) {
+      login =
+        '<p><a class="btn btn-primary" href="' +
+        escapeHtml(lt.ctaHref) +
+        '">' +
+        escapeHtml(lt.cta) +
+        "</a></p>";
+    }
     return (
       '<section class="hub-glossary" aria-labelledby="pv-t">' +
       '<h2 id="pv-t">' +
@@ -159,7 +154,46 @@
       '<p class="console-subline">' +
       escapeHtml(lt.subline) +
       "</p>" +
-      loginLink(lt.ctaHref, lt.cta) +
+      login +
+      "</section>"
+    );
+  }
+
+  function renderDashboards() {
+    var board = data.dashboards;
+    var body;
+    if (!clusterLive) {
+      body =
+        '<p><a class="btn btn-primary" href="' +
+        escapeHtml(board.ctaHref) +
+        '">' +
+        escapeHtml(board.cta) +
+        "</a></p>";
+    } else {
+      body =
+        '<ul class="dash-tiles">' +
+        (board.tiles || [])
+          .map(function (tile) {
+            return (
+              '<li><div class="dash-tile"><span class="dash-name">' +
+              escapeHtml(tile.label) +
+              '</span><a class="btn btn-primary" href="' +
+              escapeHtml(tile.href) +
+              '">admin login</a></div></li>'
+            );
+          })
+          .join("") +
+        "</ul>";
+    }
+    return (
+      '<section class="hub-glossary" aria-labelledby="pv-t">' +
+      '<h2 id="pv-t">' +
+      escapeHtml(board.title) +
+      "</h2>" +
+      '<p class="demo-note">' +
+      escapeHtml(board.note) +
+      "</p>" +
+      body +
       "</section>"
     );
   }
@@ -170,6 +204,7 @@
     spend: renderSpend,
     n8n: renderN8n,
     litellm: renderLiteLLM,
+    dashboards: renderDashboards,
   };
 
   function setView(id) {
@@ -238,7 +273,7 @@
     var liveNow = !!(state && state.live);
     if (liveNow === clusterLive) return;
     clusterLive = liveNow;
-    if (viewId === "cvjobs" || viewId === "spend" || viewId === "n8n" || viewId === "litellm") setView(viewId);
+    if (viewId === "dashboards" || viewId === "litellm") setView(viewId);
   }
 
   if (window.olympusWakeState) {

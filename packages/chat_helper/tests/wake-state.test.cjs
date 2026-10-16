@@ -37,7 +37,7 @@ if (!css.includes("color: #8a8a8a")) fail("demo note grey missing");
 
 const consoleJs = require("fs").readFileSync(require("path").join(__dirname, "../../../olympus/console.js"), "utf8") +
   require("fs").readFileSync(require("path").join(__dirname, "../../../olympus/console-data.js"), "utf8");
-["admin login", "Sign in", "Headroom", "https://n8n.levkesha.com", "olympusWakeState"].forEach(function (needle) {
+["Live dashboards", "admin login", "Headroom", "Demoed live by Lev.", "olympusWakeState"].forEach(function (needle) {
   if (consoleJs.indexOf(needle) < 0) fail("console missing " + needle);
 });
 
