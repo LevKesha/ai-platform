@@ -153,8 +153,16 @@ if (answerBlocks[1].children[0].attrs.class !== "chat-label") {
 }
 const retryPanel = createWidget(document(), { policy: policy, fixture: "retry" });
 if (retryPanel.log.textContent.indexOf(policy.retry) < 0) fail("retry line missing");
-if (!retryPanel.log.children.some(function (node) { return node.attrs.class === "chat-retry"; })) {
-  fail("retry line is not in the bubble");
+const retryBubble = retryPanel.log.children.find(function (node) {
+  return node.attrs.class === "chat-answer";
+});
+if (!retryBubble) fail("retry line is not an answer bubble");
+const retryText = retryBubble.children.find(function (node) {
+  return node.attrs.class === "chat-answer-text" && node.textContent === policy.retry;
+});
+if (!retryText) fail("retry line is not the answer text");
+if (retryPanel.log.children.some(function (node) { return node.attrs.class === "chat-retry"; })) {
+  fail("retry line is a bare paragraph");
 }
 
 function chatFetch(status) {

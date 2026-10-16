@@ -224,6 +224,65 @@ def test_fixed_url_rejects_user_shaped_values() -> None:
             fixed_url({"RAG_RETRIEVE_URL": raw})
 
 
+def test_retrieve_accepts_rag_service_chunk_objects() -> None:
+    """Items match rag-service /retrieve: {"source": str, "content": str}."""
+    from chat_helper.rag import RagError, _chunks
+
+    content = "Oracle Cloud Infrastructure Architect – Associate (1Z0-1072-26), Oracle Academy, 2026."
+    payload = {
+        "chunks": [
+            {"source": "olympus/proof.html", "content": content},
+            {"source": "olympus/index.html", "content": None},
+            {"source": "olympus/index.html", "content": ["not", "a", "string"]},
+            CERT,
+        ]
+    }
+    assert _chunks(payload) == [content, CERT]
+    with pytest.raises(RagError):
+        _chunks({"chunks": [{"source": "a", "content": 1}]})
+
+    seen = {}
+
+    def post(url, body, token):
+        return payload
+
+    def complete(model, system, question, history):
+        seen["system"] = system
+        return Reply("grounded")
+
+    body = handle_rag({"question": _question()}, _rag_deps(post=post, complete=complete))
+    assert body["kind"] == "draft"
+    assert content in seen["system"]
+    assert CERT in seen["system"]
+
+
+def test_retrieve_url_requires_https_and_verified_tls(monkeypatch) -> None:
+    import ssl
+
+    from chat_helper.rag import RagError, _tls_context, post_json
+
+    with pytest.raises(RagError):
+        fixed_url({"RAG_RETRIEVE_URL": "http://rag.internal/retrieve"})
+    ctx = _tls_context()
+    assert ctx.verify_mode == ssl.CERT_REQUIRED
+    assert ctx.check_hostname is True
+    source = (ROOT / "packages" / "chat_helper" / "rag.py").read_text(encoding="utf-8")
+    assert "CERT_NONE" not in source
+    assert "verify=False" not in source
+    with pytest.raises(RagError):
+        post_json("http://rag.internal/retrieve", {"question": "hi"}, "token")
+
+    def unverified() -> ssl.SSLContext:
+        bad = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        bad.check_hostname = False
+        bad.verify_mode = ssl.CERT_NONE
+        return bad
+
+    monkeypatch.setattr(ssl, "create_default_context", unverified)
+    with pytest.raises(RagError):
+        _tls_context()
+
+
 def test_sdk_clients_are_only_bedrock_secrets_and_dynamo() -> None:
     source = (ROOT / "packages" / "chat_helper" / "rag.py").read_text(encoding="utf-8")
     assert "requests" not in source

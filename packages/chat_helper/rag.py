@@ -10,6 +10,7 @@ cannot choose a URL or a model. Logs carry a path and no content.
 from __future__ import annotations
 
 import json
+import ssl
 import sys
 import urllib.error
 import urllib.request
@@ -80,20 +81,34 @@ def fit_chunks(question: str, history: list, chunks: list[str]) -> list[str]:
     return kept
 
 
+def _chunk_text(item: Any) -> str | None:
+    """String chunks, or rag-service items {"source": str, "content": str}."""
+    if isinstance(item, str):
+        text = item
+    elif isinstance(item, dict) and isinstance(item.get("content"), str):
+        text = item["content"]
+    else:
+        return None
+    cleaned = " ".join(text.split())
+    return cleaned or None
+
+
 def _chunks(payload: dict) -> list[str]:
     raw = payload.get("chunks")
     if not isinstance(raw, list) or not raw:
         raise RagError("chunks")
-    found: list[str] = []
-    for item in raw:
-        if not isinstance(item, str):
-            raise RagError("chunks")
-        text = " ".join(item.split())
-        if text:
-            found.append(text)
+    found = [text for item in raw if (text := _chunk_text(item))]
     if not found:
         raise RagError("chunks")
     return found
+
+
+def _tls_context() -> ssl.SSLContext:
+    """Verified TLS only. A context that skips certificate checks is refused."""
+    ctx = ssl.create_default_context()
+    if ctx.verify_mode != ssl.CERT_REQUIRED or not ctx.check_hostname:
+        raise RagError("url")
+    return ctx
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -102,6 +117,8 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def post_json(url: str, body: dict, token: str, timeout: float = RETRIEVE_TIMEOUT) -> dict:
+    if urlsplit(url).scheme != "https":
+        raise RagError("url")
     data = json.dumps({"question": body["question"]}).encode("utf-8")
     request = urllib.request.Request(
         url,
@@ -112,7 +129,10 @@ def post_json(url: str, body: dict, token: str, timeout: float = RETRIEVE_TIMEOU
             "authorization": "Bearer " + token,
         },
     )
-    opener = urllib.request.build_opener(_NoRedirect())
+    opener = urllib.request.build_opener(
+        _NoRedirect(),
+        urllib.request.HTTPSHandler(context=_tls_context()),
+    )
     try:
         with opener.open(request, timeout=timeout) as response:
             raw = response.read(MAX_BODY)

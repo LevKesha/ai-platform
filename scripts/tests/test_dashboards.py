@@ -42,6 +42,26 @@ def test_corpus_replaces_only_the_oci_cert() -> None:
     assert "Networking and Systems Administration" in blob
 
 
+def _inline_function(html: str) -> bytes:
+    """Inline viewer function that returns the page. 10 KB is the platform cap."""
+    escaped = json.dumps(html)[1:-1]
+    source = (
+        "function handler(event) {\n"
+        f'  var html = "{escaped}";\n'
+        "  return {\n"
+        "    statusCode: 503,\n"
+        '    statusDescription: "Service Unavailable",\n'
+        "    headers: {\n"
+        '      "content-type": { value: "text/html; charset=utf-8" },\n'
+        '      "cache-control": { value: "no-store" }\n'
+        "    },\n"
+        "    body: html\n"
+        "  };\n"
+        "}\n"
+    )
+    return source.encode("utf-8")
+
+
 def test_soft_pages_match_the_copy_and_have_no_controls() -> None:
     olympus = (ROOT / "olympus" / "asleep.html").read_text(encoding="utf-8")
     n8n = (ROOT / "olympus" / "asleep-n8n.html").read_text(encoding="utf-8")
@@ -54,7 +74,15 @@ def test_soft_pages_match_the_copy_and_have_no_controls() -> None:
         assert "<button" not in lowered
         assert "<link" not in lowered
         assert "#0a0a0a" in text
-        assert "<svg" in text
+    assert "<svg" in olympus
+    assert "<svg" not in n8n.lower()
+    assert "Lev approves" not in n8n
+    assert "about 7" not in n8n
+    paragraphs = [part.split("<", 1)[0] for part in n8n.split("<p>")[1:]]
+    assert paragraphs == ["Asleep right now."]
+    for name in ("asleep.html", "asleep-n8n.html"):
+        size = len(_inline_function((ROOT / "olympus" / name).read_text(encoding="utf-8")))
+        assert size < 10 * 1024, name
     spend = (ROOT / "olympus" / "diagrams" / "spend-loop.svg").read_text(encoding="utf-8")
     assert "wake-only" in spend
     assert "admin · Lev only" in spend

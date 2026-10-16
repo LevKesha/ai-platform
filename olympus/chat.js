@@ -139,7 +139,9 @@
     }
 
     function addRetry(text) {
-      log.appendChild(el(doc, "p", { class: "chat-retry" }, text || policy.retry));
+      const block = el(doc, "div", { class: "chat-answer" });
+      block.appendChild(el(doc, "p", { class: "chat-answer-text" }, text || policy.retry));
+      log.appendChild(block);
     }
 
     function showIdle() {

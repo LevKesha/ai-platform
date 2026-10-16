@@ -30,7 +30,9 @@ function check(body, expectLive, expectState) {
 const css = require("fs").readFileSync(require("path").join(__dirname, "../../../olympus/styles.css"), "utf8");
 if (!css.includes("color: #9ca3af")) fail("cv grey missing");
 if (!css.includes(".chat-label-rag") || !css.includes("color: var(--accent)")) fail("teal rag class missing");
-if (!css.includes("font-size: 13px")) fail("phone label size missing");
+const labelRule = css.slice(css.indexOf(".chat-label {"), css.indexOf(".chat-label-rag"));
+if (!labelRule.includes("font-size: 13px")) fail("label is not 13px");
+if (labelRule.includes("0.8rem")) fail("label uses rem");
 if (!css.includes("color: #8a8a8a")) fail("demo note grey missing");
 
 const consoleJs = require("fs").readFileSync(require("path").join(__dirname, "../../../olympus/console.js"), "utf8");

@@ -2301,18 +2301,11 @@ body.sleep-shot #private-modal {
   display: block;
   margin-top: 0.35rem;
   color: #9ca3af;
-  font-size: 0.8rem;
+  font-size: 13px;
 }
 
 .chat-label-rag {
   color: var(--accent);
-}
-
-.chat-retry {
-  margin: 0;
-  color: #9ca3af;
-  font-size: 1rem;
-  line-height: 1.45;
 }
 
 .chat-switch {
@@ -2408,10 +2401,6 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
     right: 0.75rem;
     bottom: 4.25rem;
     width: calc(100vw - 1.5rem);
-  }
-
-  .chat-label {
-    font-size: 13px;
   }
 }
 
