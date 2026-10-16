@@ -93,10 +93,8 @@
     phone.width = 360;
     phone.height = 560;
     phone.loading = "lazy";
-    var fallback = el("figcaption", "visually-hidden", caption);
     figure.appendChild(img);
     figure.appendChild(phone);
-    figure.appendChild(fallback);
     panel.appendChild(figure);
     panel.appendChild(pill("", "Asleep. Request a look."));
     var button = el("button", "btn btn-primary sleep-cta is-marked", "Request a look");
