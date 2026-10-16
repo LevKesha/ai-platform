@@ -14,11 +14,15 @@ window.OLYMPUS_CONSOLE = {
     badges: ["Behind sign-in", "Not LinkedIn auto-apply"],
     cta: "Request a walkthrough",
     ctaHref: "console.html?state=form",
+    look: "Request a look",
+    lookHref: "console.html?state=form",
   },
   spend: {
     title: "AI spend control",
     subline: "Every CV×Jobs AI request goes through one place and gets counted.",
     badge: "Behind sign-in",
+    look: "Request a look",
+    lookHref: "console.html?state=form",
     lines: [
       {
         label: "Routes",
@@ -62,6 +66,8 @@ window.OLYMPUS_CONSOLE = {
   litellm: {
     title: "LiteLLM",
     subline: "Every CV×Jobs AI request goes through here.",
+    look: "Request a look",
+    lookHref: "console.html?state=form",
   },
   dashboards: {
     title: "Live dashboards",
@@ -69,10 +75,10 @@ window.OLYMPUS_CONSOLE = {
     cta: "Request a look",
     ctaHref: "console.html?state=form",
     tiles: [
-      { label: "LiteLLM", href: "/litellm" },
-      { label: "n8n", href: "https://n8n.levkesha.com" },
-      { label: "CV×Jobs", href: "/cv-jobs/" },
-      { label: "Headroom", href: "/headroom" },
+      { label: "LiteLLM", href: "/litellm", login: "admin login" },
+      { label: "n8n", href: "https://n8n.levkesha.com", login: "admin login" },
+      { label: "CV×Jobs", href: "/cv-jobs/", login: "Sign in" },
+      { label: "Headroom", href: "/headroom", login: "admin login" },
     ],
   },
   edgePaths: ["/cv-jobs", "/v1/demo", "/headroom", "/v1/hr"],

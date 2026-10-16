@@ -42,6 +42,14 @@
   var clusterLive = false;
   var viewId = "glossary";
 
+  function requestLook(href) {
+    return (
+      '<p><a class="btn btn-primary" href="' +
+      escapeHtml(href) +
+      '">Request a look</a></p>'
+    );
+  }
+
   function renderCvJobs() {
     var cj = data.cvjobs;
     var badges = (cj.badges || [])
@@ -65,7 +73,9 @@
       escapeHtml(cj.ctaHref) +
       '">' +
       escapeHtml(cj.cta) +
-      "</a></p></section>"
+      "</a></p>" +
+      requestLook(cj.lookHref) +
+      "</section>"
     );
   }
 
@@ -96,7 +106,9 @@
       '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend: CV×Jobs sends requests through the LiteLLM gateway. n8n calls Headroom to compress. Spend is logged in one place." width="1016" height="444" loading="lazy"></figure>' +
       '<ul class="panel-lines">' +
       lines +
-      "</ul></section>"
+      "</ul>" +
+      requestLook(s.lookHref) +
+      "</section>"
     );
   }
 
@@ -127,11 +139,8 @@
       '<div class="flow-cards">' +
       cards +
       "</div>" +
-      '<p><a class="btn btn-primary" href="' +
-      escapeHtml(n.ctaHref) +
-      '">' +
-      escapeHtml(n.cta) +
-      "</a></p></section>"
+      requestLook(n.ctaHref) +
+      "</section>"
     );
   }
 
@@ -144,7 +153,9 @@
       "</h2>" +
       '<p class="console-subline">' +
       escapeHtml(lt.subline) +
-      "</p></section>"
+      "</p>" +
+      requestLook(lt.lookHref) +
+      "</section>"
     );
   }
 
@@ -153,7 +164,7 @@
     var body;
     if (!clusterLive) {
       body =
-        '<p><a class="btn btn-primary" href="' +
+        '<p><a href="' +
         escapeHtml(board.ctaHref) +
         '">' +
         escapeHtml(board.cta) +
@@ -168,7 +179,9 @@
               escapeHtml(tile.label) +
               '</span><a class="btn btn-primary" href="' +
               escapeHtml(tile.href) +
-              '">admin login</a></div></li>'
+              '">' +
+              escapeHtml(tile.login) +
+              "</a></div></li>"
             );
           })
           .join("") +

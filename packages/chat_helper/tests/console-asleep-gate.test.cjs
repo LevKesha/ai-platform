@@ -200,6 +200,13 @@ const SECTIONS = [
   ["Live dashboards", "dashboards"],
 ];
 const LOGIN_HREFS = ["/litellm", "https://n8n.levkesha.com", "/cv-jobs/", "/headroom"];
+const LOOK_SECTIONS = ["AI spend control", "CV×Jobs", "n8n", "LiteLLM"];
+const TILE_LOGINS = [
+  ["LiteLLM", "/litellm", "admin login"],
+  ["n8n", "https://n8n.levkesha.com", "admin login"],
+  ["CV×Jobs", "/cv-jobs/", "Sign in"],
+  ["Headroom", "/headroom", "admin login"],
+];
 
 function openSection(doc, label) {
   const button = doc.querySelectorAll("button").filter(function (node) {
@@ -278,6 +285,22 @@ function fetchFor(mode) {
   };
 }
 
+function assertSectionLooks(page, label) {
+  LOOK_SECTIONS.forEach(function (name) {
+    openSection(page.document, name);
+    const looks = page.panel.querySelectorAll("a").filter(function (node) {
+      return node.textContent.trim() === "Request a look";
+    });
+    if (looks.length !== 1 || looks[0].href !== "console.html?state=form" || looks[0].className !== "btn btn-primary") {
+      fail(label + " " + name + " Request a look " + looks.map(function (node) {
+        return node.className + " " + node.href;
+      }).join(","));
+    }
+    const found = loginControls(page.panel);
+    if (found.length) fail(label + " " + name + " showed " + found.map(function (node) { return node.textContent.trim(); }).join(", "));
+  });
+}
+
 function assertClosed(page, label) {
   if (!page.document.querySelectorAll("button").some(function (node) { return node.textContent === "Live dashboards"; })) {
     fail(label + " missing Live dashboards nav");
@@ -287,22 +310,20 @@ function assertClosed(page, label) {
     const found = loginControls(page.column).map(function (node) { return node.textContent.trim(); });
     if (found.length) fail(label + " " + section[0] + " showed " + found.join(", "));
   });
+  assertSectionLooks(page, label);
   openSection(page.document, "Live dashboards");
   const looks = page.panel.querySelectorAll("a").filter(function (node) {
     return node.textContent.trim() === "Request a look";
   });
-  if (looks.length !== 1 || looks[0].href !== "console.html?state=form") {
-    fail(label + " dashboards Request a look " + looks.map(function (node) { return node.href; }).join(","));
+  if (looks.length !== 1 || looks[0].href !== "console.html?state=form" || looks[0].className !== "") {
+    fail(label + " dashboards Request a look " + looks.map(function (node) {
+      return node.className + " " + node.href;
+    }).join(","));
   }
   openSection(page.document, "CV×Jobs");
   if (page.panel.textContent.indexOf("Request a walkthrough") < 0) fail(label + " dropped Request a walkthrough");
   const walk = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a walkthrough"; })[0];
-  if (!walk || walk.className !== "btn") fail(label + " changed Request a walkthrough");
-  openSection(page.document, "n8n");
-  const look = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a look"; })[0];
-  if (!look || look.className !== "btn btn-primary" || look.href !== "console.html?state=form") {
-    fail(label + " changed Request a look");
-  }
+  if (!walk || walk.className !== "btn" || walk.href !== "console.html?state=form") fail(label + " changed Request a walkthrough");
 }
 
 function assertOpen(page) {
@@ -314,20 +335,22 @@ function assertOpen(page) {
   if (tiles.length !== 4) fail("expected 4 tiles, saw " + tiles.length);
   const logins = tiles.map(function (tile) {
     const buttons = tile.querySelectorAll("a");
-    if (buttons.length !== 1 || buttons[0].textContent.trim() !== "admin login") {
+    if (buttons.length !== 1) {
       fail("tile login count " + buttons.map(function (node) { return node.textContent; }).join(","));
     }
     const name = tile.querySelector(".dash-name");
-    return (name ? name.textContent.trim() : "") + " " + buttons[0].href;
+    return [name ? name.textContent.trim() : "", buttons[0].href, buttons[0].textContent.trim()];
   });
-  ["LiteLLM /litellm", "n8n https://n8n.levkesha.com", "CV×Jobs /cv-jobs/", "Headroom /headroom"].forEach(function (needle) {
-    if (logins.indexOf(needle) < 0) fail("tile set " + logins.join(" | "));
+  TILE_LOGINS.forEach(function (expected) {
+    const found = logins.some(function (row) {
+      return row[0] === expected[0] && row[1] === expected[1] && row[2] === expected[2];
+    });
+    if (!found) fail("tile set " + logins.map(function (row) { return row.join(" "); }).join(" | "));
   });
-  ["AI spend control", "CV×Jobs", "n8n", "LiteLLM"].forEach(function (label) {
-    openSection(page.document, label);
-    const found = loginControls(page.panel);
-    if (found.length) fail(label + " section showed " + found.map(function (node) { return node.textContent; }).join(", "));
-  });
+  assertSectionLooks(page, "live");
+  openSection(page.document, "CV×Jobs");
+  const walk = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a walkthrough"; })[0];
+  if (!walk || walk.className !== "btn" || walk.href !== "console.html?state=form") fail("live changed Request a walkthrough");
 }
 
 Promise.resolve()
