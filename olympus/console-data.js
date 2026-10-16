@@ -62,6 +62,8 @@ window.OLYMPUS_CONSOLE = {
   litellm: {
     title: "LiteLLM",
     subline: "Every CV×Jobs AI request goes through here.",
+    cta: "admin login",
+    ctaHref: "/litellm",
   },
   dashboards: {
     title: "Live dashboards",
@@ -69,7 +71,6 @@ window.OLYMPUS_CONSOLE = {
     cta: "Request a look",
     ctaHref: "console.html?state=form",
     tiles: [
-      { label: "LiteLLM", href: "/litellm" },
       { label: "n8n", href: "https://n8n.levkesha.com" },
       { label: "CV×Jobs", href: "/cv-jobs/" },
       { label: "Headroom", href: "/headroom" },
