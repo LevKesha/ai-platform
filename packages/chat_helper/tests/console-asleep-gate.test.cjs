@@ -205,7 +205,7 @@ const TILE_LOGINS = [
   ["LiteLLM", "/litellm", "admin login"],
   ["n8n", "https://n8n.levkesha.com", "admin login"],
   ["CV×Jobs", "/cv-jobs/", "Sign in"],
-  ["Headroom", "/headroom", "admin login"],
+  ["Headroom", "/headroom", "Sign in"],
 ];
 
 function openSection(doc, label) {

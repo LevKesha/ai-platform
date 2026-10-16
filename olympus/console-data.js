@@ -78,7 +78,7 @@ window.OLYMPUS_CONSOLE = {
       { label: "LiteLLM", href: "/litellm", login: "admin login" },
       { label: "n8n", href: "https://n8n.levkesha.com", login: "admin login" },
       { label: "CV×Jobs", href: "/cv-jobs/", login: "Sign in" },
-      { label: "Headroom", href: "/headroom", login: "admin login" },
+      { label: "Headroom", href: "/headroom", login: "Sign in" },
     ],
   },
   edgePaths: ["/cv-jobs", "/v1/demo", "/headroom", "/v1/hr"],
