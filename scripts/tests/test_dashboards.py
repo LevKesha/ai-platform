@@ -86,11 +86,14 @@ def test_soft_pages_match_the_copy_and_have_no_controls() -> None:
     spend = (ROOT / "olympus" / "diagrams" / "spend-loop.svg").read_text(encoding="utf-8")
     assert "wake-only" in spend
     assert "while live" not in spend
+    assert "compress" in spend
+    assert "n8n workflows" in spend
+    assert "M232,292 L376,244" not in spend
     assert "admin · Lev only" in spend
     data = (ROOT / "olympus" / "console-data.js").read_text(encoding="utf-8")
     assert "Wake-only." in data
     assert "admin · Lev only" in data
-    subline = "Every CV×Jobs AI request goes through one place, gets shortened, and gets counted."
+    subline = "Every CV×Jobs AI request goes through one place and gets counted."
     assert subline in data
     corpus = (ROOT / "olympus" / "chat-corpus.json").read_text(encoding="utf-8")
     assert subline in corpus

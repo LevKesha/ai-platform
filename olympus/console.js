@@ -116,7 +116,7 @@
       '<p class="panel-tag"><span class="badge">' +
       escapeHtml(s.badge) +
       "</span></p>" +
-      '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend: CV×Jobs and the automations can send requests through the LiteLLM gateway. Headroom shortens long prompts. Spend is logged in one place." width="1016" height="444" loading="lazy"></figure>' +
+      '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend: CV×Jobs sends requests through the LiteLLM gateway. n8n calls Headroom to compress. Spend is logged in one place." width="1016" height="444" loading="lazy"></figure>' +
       '<p class="anon-actions"><a class="btn btn-primary" href="/headroom">Sign in</a></p>' +
       '<ul class="panel-lines">' +
       lines +
