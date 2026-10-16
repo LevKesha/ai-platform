@@ -226,4 +226,43 @@
     var first = nav.querySelector("button");
     if (first) first.setAttribute("aria-current", "page");
   }
+
+  function dashboardsCard() {
+    var section = document.createElement("section");
+    section.className = "live-dashboards";
+    section.setAttribute("aria-labelledby", "live-dashboards-title");
+    var title = document.createElement("h2");
+    title.id = "live-dashboards-title";
+    title.textContent = "Live dashboards";
+    var note = document.createElement("p");
+    note.className = "demo-note";
+    note.textContent = "Demoed live by Lev.";
+    var list = document.createElement("ul");
+    list.className = "dash-tiles";
+    [
+      ["LiteLLM · admin login", "/litellm"],
+      ["n8n · admin login", "https://n8n.levkesha.com"],
+      ["CV×Jobs", "/cv-jobs/"],
+    ].forEach(function (tile) {
+      var item = document.createElement("li");
+      var link = document.createElement("a");
+      link.className = "dash-tile";
+      link.href = tile[1];
+      link.textContent = tile[0];
+      item.appendChild(link);
+      list.appendChild(item);
+    });
+    section.appendChild(title);
+    section.appendChild(note);
+    section.appendChild(list);
+    return section;
+  }
+
+  var column = document.querySelector(".console-column");
+  if (column && window.olympusWakeState) {
+    window.olympusWakeState.readWakeState().then(function (state) {
+      if (!state || !state.live || column.querySelector(".live-dashboards")) return;
+      column.appendChild(dashboardsCard());
+    });
+  }
 })();

@@ -131,11 +131,15 @@
 
     function addAnswer(text, label, withSwitch) {
       const block = el(doc, "div", { class: "chat-answer" });
-      const tagClass = label === policy.label_live ? "chat-label chat-label-live" : "chat-label";
+      const tagClass = label === policy.label_rag ? "chat-label chat-label-rag" : "chat-label";
       block.appendChild(el(doc, "p", { class: tagClass }, label));
       block.appendChild(el(doc, "p", { class: "chat-answer-text" }, text));
       log.appendChild(block);
       if (withSwitch) addDivider();
+    }
+
+    function addRetry(text) {
+      log.appendChild(el(doc, "p", { class: "chat-retry" }, text || policy.retry));
     }
 
     function showIdle() {
@@ -200,14 +204,18 @@
       }
       if (name === "live") {
         addQuestion(platformQ);
-        addAnswer(live, policy.label_live, false);
+        addAnswer(live, policy.label_rag, false);
       }
       if (name === "switch") {
         addQuestion(platformQ);
-        addAnswer(live, policy.label_live, false);
+        addAnswer(live, policy.label_rag, false);
         addDivider();
         addQuestion(certQ);
         addAnswer(cert, policy.label_cv, false);
+      }
+      if (name === "retry") {
+        addQuestion(platformQ);
+        addRetry(policy.retry);
       }
       if (name === "limit") showClosed();
     }
@@ -267,6 +275,8 @@
             addAnswer(payload.text, payload.label, payload.switch);
             turns.push({ role: "user", text: question });
             turns.push({ role: "assistant", text: payload.text });
+          } else if (payload.kind === "retry") {
+            addRetry(payload.text);
           }
         })
         .catch(function () {
@@ -296,7 +306,7 @@
 
     const fixture = fixtureName(doc, options);
     if (fixture) paintFixture(fixture);
-    return {
+    const api = {
       bubble: bubble,
       panel: panel,
       closer: closer,
@@ -307,16 +317,57 @@
       close: close,
       showClosed: showClosed,
       ask: ask,
+      wake: null,
       link: function () {
         return requestLink;
       },
     };
+    api.wakeReady = readSharedWake(options).then(function (state) {
+      api.wake = state;
+      return state;
+    });
+    return api;
+  }
+
+  function readSharedWake(options) {
+    const shared = typeof globalThis !== "undefined" ? globalThis.olympusWakeState : null;
+    if (!shared || typeof shared.readWakeState !== "function") return Promise.resolve(null);
+    if (!options.wakeFetch && typeof fetch !== "function") return Promise.resolve(null);
+    return shared.readWakeState(options.wakeFetch).then(
+      function (state) {
+        return state;
+      },
+      function () {
+        return null;
+      }
+    );
+  }
+
+  function ensureWake(doc, script) {
+    if (typeof globalThis !== "undefined" && globalThis.olympusWakeState) {
+      return Promise.resolve(globalThis.olympusWakeState);
+    }
+    if (!doc || !script || !script.src || !doc.createElement || typeof URL !== "function") {
+      return Promise.resolve(null);
+    }
+    return new Promise(function (resolve) {
+      const tag = doc.createElement("script");
+      tag.src = new URL("wake-state.js", script.src).href;
+      tag.onload = function () {
+        resolve((typeof globalThis !== "undefined" && globalThis.olympusWakeState) || null);
+      };
+      tag.onerror = function () {
+        resolve(null);
+      };
+      (doc.head || doc.body).appendChild(tag);
+    });
   }
 
   function mount(doc, script) {
     const policyUrl = new URL("chat-policy.json", script.src);
     const corpusUrl = new URL("chat-corpus.json", script.src);
-    return fetch(policyUrl)
+    return ensureWake(doc, script).then(function () {
+      return fetch(policyUrl)
       .then(function (response) {
         return response.json();
       })
@@ -343,6 +394,7 @@
             });
           });
       });
+    });
   }
 
   return { sha256Hex: sha256Hex, buildRequest: buildRequest, createWidget: createWidget, mount: mount };

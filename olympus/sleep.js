@@ -354,13 +354,10 @@
     show("asleep");
   }
 
-  if (!preview && (!asked || asked === "asleep")) {
-    fetch("/wake-status", { cache: "no-store" }).then(function (res) {
-      if (!res.ok) return null;
-      return res.json();
-    }).then(function (body) {
+  if (!preview && (!asked || asked === "asleep") && window.olympusWakeState) {
+    window.olympusWakeState.readWakeState().then(function (body) {
       if (!body || (body.state !== "requested" && body.state !== "scheduled" && body.state !== "waking" && body.state !== "live")) return;
       show(body.state, { approved: body.approved === true, wakeAt: body.wakeAt });
-    }).catch(function () {});
+    });
   }
 })();

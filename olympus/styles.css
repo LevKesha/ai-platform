@@ -764,6 +764,52 @@ tbody tr:last-child td {
   grid-template-columns: 14rem minmax(0, 1fr);
 }
 
+.console-column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.live-dashboards {
+  margin: 0;
+  padding: 0 1.25rem 2rem;
+}
+
+.live-dashboards h2 {
+  margin: 0 0 0.35rem;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.demo-note {
+  margin: 0 0 0.75rem;
+  color: #8a8a8a;
+  font-size: 0.9rem;
+}
+
+.dash-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dash-tile {
+  display: block;
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.75rem 0.85rem;
+  font-weight: 600;
+}
+
+.dash-tile:hover {
+  border-color: var(--accent);
+}
+
 .console-nav {
   display: flex;
   flex-direction: column;
@@ -942,6 +988,10 @@ tbody tr:last-child td {
     border-bottom: 1px solid var(--border);
     flex-direction: row;
     flex-wrap: wrap;
+  }
+
+  .dash-tiles {
+    grid-template-columns: 1fr;
   }
 
   .kvs {
@@ -2250,8 +2300,19 @@ body.sleep-shot #private-modal {
 .chat-label {
   display: block;
   margin-top: 0.35rem;
-  color: var(--accent);
+  color: #9ca3af;
   font-size: 0.8rem;
+}
+
+.chat-label-rag {
+  color: var(--accent);
+}
+
+.chat-retry {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
 .chat-switch {
@@ -2347,6 +2408,10 @@ body.page-console:has(.console-shell) .chat-bubble.dock-hidden {
     right: 0.75rem;
     bottom: 4.25rem;
     width: calc(100vw - 1.5rem);
+  }
+
+  .chat-label {
+    font-size: 13px;
   }
 }
 

@@ -19,6 +19,14 @@ window.OLYMPUS_CONSOLE = {
     badge: "Behind sign-in",
     lines: [
       {
+        label: "Routes",
+        text: "Wake-only.",
+      },
+      {
+        label: "Admin",
+        text: "admin · Lev only",
+      },
+      {
         label: "LiteLLM",
         text: "Every CV×Jobs AI request goes through here. This is where its spend is counted.",
       },

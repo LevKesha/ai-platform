@@ -360,7 +360,7 @@ def test_sixth_answer_is_haiku_when_theseus_is_on() -> None:
         payloads.append(_json(handle(_event(_ask(), idem=f"t{index}"), deps)))
     assert len(theseus.calls) == live
     assert len(haiku.calls) == 1
-    assert payloads[live - 1]["label"] == policy["label_live"]
+    assert payloads[live - 1]["label"] == policy["label_rag"]
     assert payloads[live - 1]["switch"] is True
     assert payloads[live]["label"] == policy["label_cv"]
     assert haiku.calls[0]["model_id"] == helper_model_id()
@@ -624,7 +624,7 @@ def test_chat_state_survives_a_cold_start(monkeypatch) -> None:
         deps = _deps(haiku, theseus=theseus, ledger=ledger)
         live = int(policy["live_answers"])
         for index in range(live):
-            assert _json(handle(_event(_ask(), idem=f"live{index}"), deps))["label"] == policy["label_live"]
+            assert _json(handle(_event(_ask(), idem=f"live{index}"), deps))["label"] == policy["label_rag"]
         assert ledger.write_unanswered("What is Lev's salary?", NOW)["text"] == "What is Lev's salary?"
         cold = TableLedger("chat", client, policy)
         assert cold.read_turns("c1", NOW) == live
