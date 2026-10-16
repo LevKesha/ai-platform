@@ -116,7 +116,7 @@ const panel = createWidget(sequence, {
 const text = panel.log.textContent;
 const platformQuestion = text.indexOf(policy.suggested[2]);
 const certQuestion = text.indexOf(policy.suggested[1]);
-const liveTag = text.indexOf(policy.label_live);
+const liveTag = text.indexOf(policy.label_rag);
 const liveAnswer = text.indexOf(live);
 const divider = text.indexOf(policy.switch);
 const cvTag = text.indexOf(policy.label_cv);
@@ -144,6 +144,25 @@ if (!panel.log.children.some(function (node) { return node.attrs.class === "chat
 }
 if (text.indexOf("live look") !== -1 || text.indexOf("walkthrough") !== -1) {
   fail("panel answered with the hero geo note");
+}
+if (answerBlocks[0].children[0].attrs.class !== "chat-label chat-label-rag") {
+  fail("live chip is not the teal class");
+}
+if (answerBlocks[1].children[0].attrs.class !== "chat-label") {
+  fail("cv chip is not the grey class");
+}
+const retryPanel = createWidget(document(), { policy: policy, fixture: "retry" });
+if (retryPanel.log.textContent.indexOf(policy.retry) < 0) fail("retry line missing");
+const retryBubble = retryPanel.log.children.find(function (node) {
+  return node.attrs.class === "chat-answer";
+});
+if (!retryBubble) fail("retry line is not an answer bubble");
+const retryText = retryBubble.children.find(function (node) {
+  return node.attrs.class === "chat-answer-text" && node.textContent === policy.retry;
+});
+if (!retryText) fail("retry line is not the answer text");
+if (retryPanel.log.children.some(function (node) { return node.attrs.class === "chat-retry"; })) {
+  fail("retry line is a bare paragraph");
 }
 
 function chatFetch(status) {

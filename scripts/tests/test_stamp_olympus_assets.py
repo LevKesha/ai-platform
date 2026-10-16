@@ -194,7 +194,9 @@ def test_cache_metadata_for_each_uploaded_olympus_file() -> None:
             continue
         cache, ctype = mod.cache_metadata(rel)
         seen.add(rel)
-        if rel.endswith((".html", ".json")) or rel == "auth/hosted-ui.css":
+        if Path(rel).name in {"asleep.html", "asleep-n8n.html"}:
+            assert cache == "no-store", rel
+        elif rel.endswith((".html", ".json")) or rel == "auth/hosted-ui.css":
             assert cache == "no-cache", rel
         if rel.endswith((".js", ".png", ".svg")) or rel == "styles.css":
             assert cache == mod.ASSET_CACHE, rel

@@ -36,7 +36,7 @@
     <p class="console-s1-intro" id="console-s1-heading">The platform you open after you sign in, with automations beside it.</p>
     <div class="hub-frame">
       <figure class="hub">
-        <figcaption id="hub-caption" class="visually-hidden">Hub. Visitors come in through the public site, then sign in, then the place where the services run. Inside, after sign-in: CV×Jobs and AI spend control. AI spend control counts what you spend, with a helper beside it that shortens long prompts. CV×Jobs can take an extra stop into AI spend control when that path is on. Beside this, outside sign-in: n8n, on its own front door, with a link into AI spend control.</figcaption>
+        <figcaption id="hub-caption" class="visually-hidden">Hub. Visitors come in through the public site, then sign in, then the place where the services run. Inside, after sign-in: CV×Jobs and AI spend control. AI spend control counts what you spend, with a helper beside it that shortens long prompts. CV×Jobs can take an extra stop into AI spend control when that path is on. Beside this, outside sign-in: n8n, on its own front door, with compress into Headroom.</figcaption>
         <svg class="hub-diagram" viewBox="0 0 1200 440" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <marker id="hub-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
@@ -90,7 +90,7 @@
             <path d="M440 230 H480"></path>
             <path d="M700 200 V260"></path>
             <path d="M980 230 H920"></path>
-            <path d="M1070 280 V340 H890"></path>
+            <path d="M1070 280 V354 H865"></path>
           </g>
           <g fill="#0a0a0a" stroke="#2dd4bf" stroke-width="1">
             <rect x="921" y="198" width="58" height="22" rx="11"></rect>
@@ -98,7 +98,7 @@
           </g>
           <g fill="#2dd4bf" font-family="Segoe UI, system-ui, sans-serif" font-size="11" text-anchor="middle">
             <text x="950" y="213">beside</text>
-            <text x="1070" y="325">webhook</text>
+            <text x="1070" y="325">compress</text>
           </g>
         </svg>
         <noscript>
@@ -111,6 +111,7 @@
 
   <div class="console-shell">
     <nav class="console-nav" id="console-nav" aria-label="Console views"></nav>
+    <div class="console-column">
     <main id="console-panel" class="console-panel" tabindex="-1">
       <section class="hub-glossary" aria-labelledby="hub-glossary-title">
         <h2 id="hub-glossary-title">Glossary</h2>
@@ -128,13 +129,14 @@
           <dd>Every CV×Jobs AI request goes through here.</dd>
           <dt>sidecar</dt>
           <dd>A helper that runs next to the main service.</dd>
-          <dt>webhook</dt>
-          <dd>A link that starts an automation when something calls it.</dd>
+          <dt>compress</dt>
+          <dd>Trims a big prompt before it's sent.</dd>
           <dt>public door</dt>
           <dd>The public entry for the automations (n8n).</dd>
         </dl>
       </section>
     </main>
+    </div>
   </div>
   <div id="console-live" class="visually-hidden" aria-live="polite"></div>
 
@@ -148,6 +150,7 @@
     </div>
   </div>
 
+  <script src="wake-state.js"></script>
   <script src="sleep.js"></script>
   <script src="console-data.js"></script>
   <script src="console.js"></script>

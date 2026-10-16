@@ -60,15 +60,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="c-n8n-l" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;dashed=1;dashPattern=4 4;endArrow=block;endFill=1;fontFamily=Helvetica;strokeColor=#8a8a8a;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;" edge="1" parent="1" source="n8n" target="litellm">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="860" y="170" />
-              <mxPoint x="854" y="170" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="c-n8n-h" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;dashed=1;dashPattern=4 4;endArrow=block;endFill=1;fontFamily=Helvetica;strokeColor=#8a8a8a;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;" edge="1" parent="1" source="n8n" target="headroom">
+        <mxCell id="c-n8n-h" value="compress" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;dashed=1;dashPattern=4 4;endArrow=block;endFill=1;fontFamily=Helvetica;fontSize=11;strokeColor=#8a8a8a;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#8a8a8a;labelBackgroundColor=#0a0a0a;" edge="1" parent="1" source="n8n" target="headroom">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="465" y="112" />

@@ -15,9 +15,17 @@ window.OLYMPUS_CONSOLE = {
   },
   spend: {
     title: "AI spend control",
-    subline: "Every AI request goes through one place, gets shortened, and gets counted.",
+    subline: "Every CV×Jobs AI request goes through one place and gets counted.",
     badge: "Behind sign-in",
     lines: [
+      {
+        label: "Routes",
+        text: "Wake-only.",
+      },
+      {
+        label: "Admin",
+        text: "admin · Lev only",
+      },
       {
         label: "LiteLLM",
         text: "Every CV×Jobs AI request goes through here. This is where its spend is counted.",

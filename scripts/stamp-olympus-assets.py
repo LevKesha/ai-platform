@@ -68,6 +68,8 @@ def cache_metadata(rel: str) -> tuple[str, str]:
         raise ValueError("README.md is not uploaded")
     name = path.rsplit("/", 1)[-1]
     if path.endswith(".html"):
+        if name in {"asleep.html", "asleep-n8n.html"}:
+            return "no-store", "text/html; charset=utf-8"
         return HTML_CACHE, "text/html; charset=utf-8"
     if path.endswith(".js"):
         return ASSET_CACHE, "text/javascript; charset=utf-8"

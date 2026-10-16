@@ -22,6 +22,7 @@ from chat_helper.corpus import (
 from chat_helper.ledger import LedgerError, MemoryLedger, ledger_from_env
 from chat_helper.policy import load_policy
 from chat_helper.pricing import (
+    MAX_INPUT_TOKENS,
     actual_micro,
     bound_question,
     fit_input,
@@ -53,12 +54,17 @@ class Deps:
     now: Callable[[], datetime]
     helper_model_id: str
     live_model_id: str
+    rag_enabled: bool = False
+    rag_invoke: Callable[[str, list], dict] | None = None
 
 
-def log_event(name: str) -> None:
+def log_event(name: str, path: str | None = None) -> None:
     if name not in LOG_EVENTS:
         name = "denied"
-    sys.stdout.write(json.dumps({"event": name}) + "\n")
+    body: dict[str, str] = {"event": name}
+    if path in {"rag", "cv", "retry"}:
+        body["path"] = path
+    sys.stdout.write(json.dumps(body) + "\n")
 
 
 def payload_hash(raw: str) -> str:
@@ -159,9 +165,105 @@ def _converse(backend, model_id: str, system: str, question: str, history: list)
     )
 
 
-def _finish(status: int, body: dict, event_name: str) -> dict:
-    log_event(event_name)
+def retry_body(policy: dict) -> dict:
+    return {"kind": "retry", "text": policy["retry"], "input_enabled": True}
+
+
+def _finish(status: int, body: dict, event_name: str, path: str | None = None) -> dict:
+    log_event(event_name, path)
     return _http(status, body)
+
+
+def _rag_invoker(source: dict) -> Callable[[str, list], dict]:
+    name = str(source.get("RAG_FUNCTION_NAME") or "")
+
+    def invoke(question: str, history: list) -> dict:
+        if not name:
+            return {"kind": "retry"}
+        import boto3
+
+        try:
+            raw = boto3.client("lambda").invoke(
+                FunctionName=name,
+                InvocationType="RequestResponse",
+                Payload=json.dumps({"question": question, "history": history}).encode("utf-8"),
+            )
+        except Exception:
+            return {"kind": "retry"}
+        if raw.get("FunctionError"):
+            return {"kind": "retry"}
+        payload = raw.get("Payload")
+        try:
+            parsed = json.loads(payload.read() if hasattr(payload, "read") else payload or b"{}")
+        except Exception:
+            return {"kind": "retry"}
+        if not isinstance(parsed, dict):
+            return {"kind": "retry"}
+        return parsed
+
+    return invoke
+
+
+def _rag_branch(deps: Deps, question: str, history: list, chat_id: str, idem: str, now: datetime, policy: dict) -> dict | None:
+    """RAG draft, retry, or None when the cluster is not live (CV fallthrough).
+
+    The hold uses a separate idem so an asleep fallthrough can still reserve
+    the visitor idem. publishable() and the ledger stay here.
+    """
+    month = f"SPEND#{now.strftime('%Y-%m')}"
+    rag_idem = idem + "#rag"
+    worst = worst_case_micro(question, history, " " * (MAX_INPUT_TOKENS * 4), "helper")
+    try:
+        hold = deps.ledger.reserve(month, rag_idem, worst)
+    except LedgerError:
+        return _finish(200, closed_body(policy), "closed")
+    if not hold.ok:
+        deps.ledger.mark_closed(chat_id, now)
+        return _finish(200, closed_body(policy), "closed")
+    if hold.settled and hold.response:
+        if hold.response.get("kind") == "cv":
+            return None
+        event = "answer" if hold.response.get("kind") == "answer" else "retry"
+        path = "rag" if event == "answer" else "retry"
+        return _finish(200, hold.response, event, path)
+    invoke = deps.rag_invoke
+    try:
+        outcome = invoke(question, history) if invoke is not None else {"kind": "retry"}
+    except Exception:
+        outcome = {"kind": "retry"}
+    if not isinstance(outcome, dict):
+        outcome = {"kind": "retry"}
+    if outcome.get("kind") == "cv":
+        deps.ledger.settle(month, rag_idem, 0, {"kind": "cv"})
+        return None
+    if outcome.get("kind") != "draft":
+        body = retry_body(policy)
+        deps.ledger.settle(month, rag_idem, 0, body)
+        return _finish(200, body, "retry", "retry")
+    raw_chunks = outcome.get("chunks")
+    lines = []
+    if isinstance(raw_chunks, list):
+        for index, chunk in enumerate(raw_chunks):
+            text = str(chunk).strip()
+            if text:
+                lines.append({"id": str(index), "source": "rag", "section": "platform", "text": text})
+    text = str(outcome.get("text") or "").strip()
+    if not publishable(text, lines):
+        body = retry_body(policy)
+        deps.ledger.settle(month, rag_idem, 0, body)
+        return _finish(200, body, "retry", "retry")
+    usage = outcome.get("usage") if isinstance(outcome.get("usage"), dict) else {}
+    actual = actual_micro(
+        {
+            "input_tokens": int(usage.get("input_tokens") or 0),
+            "output_tokens": int(usage.get("output_tokens") or 0),
+        },
+        "helper",
+    )
+    body = answer_body(policy, text, policy["label_rag"], False)
+    deps.ledger.settle(month, rag_idem, actual, body)
+    deps.ledger.bump(chat_id, now)
+    return _finish(200, body, "answer", "rag")
 
 
 def handle(event: dict, deps: Deps) -> dict:
@@ -197,6 +299,11 @@ def handle(event: dict, deps: Deps) -> dict:
         deps.ledger.mark_closed(chat_id, now)
         return _finish(200, closed_body(policy), "closed")
 
+    if deps.rag_enabled:
+        rag_response = _rag_branch(deps, question, history, chat_id, idem, now, policy)
+        if rag_response is not None:
+            return rag_response
+
     kind, lines = classify(question, deps.corpus)
     if kind in {"off_topic", "not_in_cv"}:
         deps.ledger.write_unanswered(question, now)
@@ -224,7 +331,7 @@ def handle(event: dict, deps: Deps) -> dict:
     if hold.settled and hold.response:
         return _finish(200, hold.response, "answer")
     if hold.replay:
-        return _finish(200, {"kind": "retry", "input_enabled": True}, "retry")
+        return _finish(200, retry_body(policy), "retry", "retry")
 
     model_id = deps.live_model_id if live else deps.helper_model_id
     try:
@@ -240,18 +347,18 @@ def handle(event: dict, deps: Deps) -> dict:
             deps.ledger.mark_closed(chat_id, now)
             return _finish(200, closed_body(policy), "closed")
         except ModelTimeout:
-            return _finish(200, {"kind": "retry", "input_enabled": True}, "retry")
+            return _finish(200, retry_body(policy), "retry", "retry")
         used_live = False
     except ModelTimeout:
         if not live:
-            return _finish(200, {"kind": "retry", "input_enabled": True}, "retry")
+            return _finish(200, retry_body(policy), "retry", "retry")
         try:
             result = _converse(deps.haiku, deps.helper_model_id, system, question, history)
         except ModelDenied:
             deps.ledger.mark_closed(chat_id, now)
             return _finish(200, closed_body(policy), "closed")
         except ModelTimeout:
-            return _finish(200, {"kind": "retry", "input_enabled": True}, "retry")
+            return _finish(200, retry_body(policy), "retry", "retry")
         used_live = False
 
     text = (result.text or "").strip()
@@ -263,14 +370,14 @@ def handle(event: dict, deps: Deps) -> dict:
         deps.ledger.settle(month, idem, 0, body)
         return _finish(200, body, "abstain")
 
-    label = policy["label_live"] if used_live else policy["label_cv"]
+    label = policy["label_rag"] if used_live else policy["label_cv"]
     show_switch = used_live and completed == live_answers - 1
     body = answer_body(policy, text, label, show_switch)
     usage = getattr(result, "usage", None) or {"input_tokens": 0, "output_tokens": 0}
     actual = actual_micro(usage, "default" if used_live else "helper")
     deps.ledger.settle(month, idem, actual, body)
     deps.ledger.bump(chat_id, now)
-    return _finish(200, body, "answer")
+    return _finish(200, body, "answer", "cv")
 
 
 class BedrockModel:
@@ -323,6 +430,7 @@ def deps_from_env(env: dict | None = None) -> Deps:
     theseus = None
     if source.get("THESEUS_HANDOFF") == "1":
         theseus = BedrockModel(live_model_id())
+    rag_enabled = source.get("CHAT_RAG_ENABLED") == "1"
     return Deps(
         policy=policy,
         corpus=corpus,
@@ -333,6 +441,8 @@ def deps_from_env(env: dict | None = None) -> Deps:
         now=lambda: datetime.now(timezone.utc),
         helper_model_id=helper_model_id(),
         live_model_id=live_model_id(),
+        rag_enabled=rag_enabled,
+        rag_invoke=_rag_invoker(dict(source)) if rag_enabled else None,
     )
 
 
