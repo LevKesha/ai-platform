@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="Electron" version="29.6.1" agent="Olympus Platform" type="device">
+  <diagram name="Soft-down / teardown" id="olympus-soft-down-restore-v4">
+    <mxGraphModel dx="1600" dy="1100" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1500" pageHeight="980" math="0" shadow="0" background="#0a0a0a">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontFamily=Helvetica;fontColor=#f5f5f5;" value="Soft-down · teardown" vertex="1" parent="1">
+          <mxGeometry x="60" y="20" width="480" height="36" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane-top" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;fontFamily=Helvetica;fontColor=#f5f5f5;" value="TOP · Soft-down / restore-and-enter" vertex="1" parent="1">
+          <mxGeometry x="60" y="88" width="360" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tb1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=9;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1.5;fontColor=#8a8a8a;" value="static CF stays 200" vertex="1" parent="1">
+          <mxGeometry x="460" y="88" width="120" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tb2" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=9;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1.5;fontColor=#8a8a8a;" value="Cognito stays" vertex="1" parent="1">
+          <mxGeometry x="592" y="88" width="100" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tb3" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=9;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1.5;fontColor=#8a8a8a;" value="EKS stays · still bills" vertex="1" parent="1">
+          <mxGeometry x="704" y="88" width="130" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tb4" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=9;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1.5;fontColor=#8a8a8a;" value="n8n 503 when down" vertex="1" parent="1">
+          <mxGeometry x="846" y="88" width="120" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t-rds" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="RDS stop&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;n8n · rag · litellm&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="60" y="130" width="170" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t-scale" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="Scale min&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;nodegroup · Deploy 0&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="340" y="130" width="170" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="t-restore" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="Restore&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;RDS start → scale → edge&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="620" y="130" width="200" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="te1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Helvetica;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2dd4bf;fontColor=#8a8a8a;" edge="1" parent="1" source="t-rds" target="t-scale">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="te2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Helvetica;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2dd4bf;fontColor=#8a8a8a;" edge="1" parent="1" source="t-scale" target="t-restore">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tui1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="Ops · RDS stop&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;3 DBs · stopped not deleted&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="60" y="230" width="170" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="tui2" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="Ops · scale&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;nodegroup min · ns Deploy 0&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="340" y="230" width="170" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="tui3" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="Ops · restore-and-enter&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;RDS start first · then scale&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="620" y="230" width="200" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tu1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=none;strokeColor=#2dd4bf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontColor=#8a8a8a;" edge="1" parent="1" source="t-rds" target="tui1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="tu2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=none;strokeColor=#2dd4bf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontColor=#8a8a8a;" edge="1" parent="1" source="t-scale" target="tui2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="tu3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=none;strokeColor=#2dd4bf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontColor=#8a8a8a;" edge="1" parent="1" source="t-restore" target="tui3"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="cap-a1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;" value="&lt;b&gt;A1 soft-down&lt;/b&gt;  Stop 3 RDS → scale min · CF + Cognito + EKS stay" vertex="1" parent="1">
+          <mxGeometry x="60" y="304" width="420" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="cap-a2" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;" value="&lt;b&gt;A2 restore-and-enter&lt;/b&gt;  RDS start → scale up → edge green" vertex="1" parent="1">
+          <mxGeometry x="500" y="304" width="320" height="28" as="geometry" />
+        </mxCell>
+
+        
+        <mxCell id="diff" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#8a8a8a;strokeWidth=1;dashed=1;dashPattern=6 4;fontColor=#8a8a8a;spacingLeft=10;" value="&lt;b&gt;diff&lt;/b&gt;  soft: EKS/VPC/RDS stay (RDS stopped) · tear: VPC + EKS + RDS &lt;b&gt;gone&lt;/b&gt; · ECR &lt;b&gt;preserved&lt;/b&gt; · CF stays 200 = soft-only" vertex="1" parent="1">
+          <mxGeometry x="60" y="352" width="900" height="32" as="geometry" />
+        </mxCell>
+
+        
+        <mxCell id="lane-bot" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;fontFamily=Helvetica;fontColor=#f5f5f5;" value="BOTTOM · Teardown / restore-after-teardown" vertex="1" parent="1">
+          <mxGeometry x="60" y="408" width="400" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bb1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=9;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1.5;fontColor=#8a8a8a;" value="VPC / EKS / RDS gone" vertex="1" parent="1">
+          <mxGeometry x="500" y="408" width="140" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="bb2" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=9;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1.5;fontColor=#8a8a8a;" value="ECR preserved" vertex="1" parent="1">
+          <mxGeometry x="654" y="408" width="110" height="22" as="geometry" />
+        </mxCell>
+
+        
+        <mxCell id="b-tear" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="Teardown&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;Helm/Ingress drain · TF destroy&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="60" y="450" width="200" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="b-verify" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="Verify gone&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;VPC · EKS · RDS&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="360" y="450" width="170" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="b-restore" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=2;fontColor=#f5f5f5;" value="Restore&lt;div style=&quot;font-size:9px;color:#8a8a8a;font-weight:normal&quot;&gt;terraform-dev · ship Helm&lt;/div&gt;" vertex="1" parent="1">
+          <mxGeometry x="630" y="450" width="220" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="be1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Helvetica;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2dd4bf;fontColor=#8a8a8a;" edge="1" parent="1" source="b-tear" target="b-verify">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;endArrow=block;endFill=1;fontFamily=Helvetica;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2dd4bf;fontColor=#8a8a8a;" edge="1" parent="1" source="b-verify" target="b-restore">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bui1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="Ops · destroy-dev&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;GHA confirm · drain · TF destroy&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="60" y="550" width="200" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="bui2" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="Ops · verify-dev-destroyed&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;fail if VPC/EKS/RDS remain&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="360" y="550" width="170" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="bui3" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;spacingTop=6;" value="Ops · terraform-dev apply&lt;br&gt;&lt;font style=&quot;font-size:8px;color:#8a8a8a&quot;&gt;bootstrap EKS · import ECR · ship&lt;/font&gt;" vertex="1" parent="1">
+          <mxGeometry x="630" y="550" width="220" height="56" as="geometry" />
+        </mxCell>
+
+        <mxCell id="bu1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=none;strokeColor=#2dd4bf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontColor=#8a8a8a;" edge="1" parent="1" source="b-tear" target="bui1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="bu2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=none;strokeColor=#2dd4bf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontColor=#8a8a8a;" edge="1" parent="1" source="b-verify" target="bui2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="bu3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1;endArrow=none;strokeColor=#2dd4bf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;fontColor=#8a8a8a;" edge="1" parent="1" source="b-restore" target="bui3"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="cap-b1" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;" value="&lt;b&gt;B1 teardown&lt;/b&gt;  confirm destroy-dev → drain → TF destroy · ECR kept" vertex="1" parent="1">
+          <mxGeometry x="60" y="628" width="440" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="cap-b2" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;fillColor=#141414;strokeColor=#2dd4bf;strokeWidth=1;fontColor=#8a8a8a;spacingLeft=8;" value="&lt;b&gt;B2 restore-after-teardown&lt;/b&gt;  terraform-dev · not soft scale-up" vertex="1" parent="1">
+          <mxGeometry x="520" y="628" width="330" height="28" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
