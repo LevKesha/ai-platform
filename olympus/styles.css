@@ -1674,6 +1674,22 @@ body.page-overview {
   height: auto;
 }
 
+.sleep-panel .panel-diagram img.sleep-strip-phone {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .sleep-panel .panel-diagram img.sleep-strip-desk {
+    display: none;
+  }
+
+  .sleep-panel .panel-diagram img.sleep-strip-phone {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
 .page-console .sleep-card {
   grid-template-columns: minmax(0, 1fr);
 }

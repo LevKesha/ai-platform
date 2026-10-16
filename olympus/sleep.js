@@ -79,12 +79,22 @@
   function renderAsleep() {
     var figure = el("figure", "panel-diagram");
     var img = document.createElement("img");
-    img.src = "diagrams/soft-down.svg";
-    img.alt = "Asleep, with the site and sign-in still up. On request, Lev approves, databases start, services come up, and it is live in about 15 minutes. After an hour with no use, it goes back to sleep.";
+    img.src = "diagrams/soft-down.png";
+    var caption = "Asleep, with the site and sign-in still up. On request, Lev approves, databases start, services come up, and it is live in about 7 min. After an hour with no use, it goes back to sleep.";
+    img.className = "sleep-strip-desk";
+    img.alt = caption;
     img.width = 1014;
     img.height = 203;
     img.loading = "lazy";
+    var phone = document.createElement("img");
+    phone.className = "sleep-strip-phone";
+    phone.src = "diagrams/soft-down-phone.png";
+    phone.alt = caption;
+    phone.width = 360;
+    phone.height = 560;
+    phone.loading = "lazy";
     figure.appendChild(img);
+    figure.appendChild(phone);
     panel.appendChild(figure);
     panel.appendChild(pill("", "Asleep. Request a look."));
     var button = el("button", "btn btn-primary sleep-cta is-marked", "Request a look");
@@ -101,7 +111,7 @@
   }
 
   function renderWaking(approved) {
-    panel.appendChild(pill("is-wait", "Waking up. This takes about 15 minutes. We'll email you when it's live."));
+    panel.appendChild(pill("is-wait", "Waking up. This takes about 7 min. We'll email you when it's live."));
     panel.appendChild(el("h2", null, "The console, live"));
     if (approved) {
       var bar = el("div", "sleep-bar");
