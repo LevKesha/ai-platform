@@ -42,7 +42,7 @@ Hosted UI and managed login cannot set the strings "The Olympus" or "Sign in to 
 
 ## Console
 
-`console.js` switches views from `console-data.js`. Views: Glossary, CV×Jobs, AI spend control, n8n. Unknown hashes open Glossary. CV×Jobs and `gated.html` show a read-only sample with no live figures. AI spend control does not. CV×Jobs has one sign-in button to `/cv-jobs/`. AI spend control has one Sign in button to `/headroom` under the diagram. The asleep page keeps one quiet sign-in link, and Request a look is the only main button. The sample does not call those apps and does not include credentials.
+`console.js` switches views from `console-data.js`. Views: Glossary, CV×Jobs, AI spend control, n8n, LiteLLM, Live dashboards. Unknown hashes open Glossary. CV×Jobs has no preview sample. CV×Jobs, n8n, LiteLLM, and AI spend control have no login button. Each of those sections shows Request a look to `console.html?state=form` in every state. CV×Jobs also keeps Request a walkthrough. Live dashboards is the only login surface: four tiles when `/wake-status` says live (LiteLLM `admin login` `/litellm`, n8n `admin login` `https://n8n.levkesha.com`, CV×Jobs Sign in `/cv-jobs/`, Headroom Sign in `/headroom`). Any other status, a failed read, or a missing wake script shows one plain Request a look to `console.html?state=form` and no tiles. `gated.html` still shows its own read-only sample.
 
 Verified copy lives in `public-data.js`. Do not invent metrics or extra public URLs.
 

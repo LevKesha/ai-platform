@@ -39,29 +39,16 @@
     return glossaryMarkup;
   }
 
-  function anonPreview(caption, labels) {
-    var rows = labels
-      .map(function (label) {
-        return (
-          '<div class="anon-row"><span>' +
-          escapeHtml(label) +
-          '</span><span class="anon-mark">Sample</span></div>'
-        );
-      })
-      .join("");
+  var clusterLive = false;
+  var viewId = "glossary";
+
+  function requestLook(href) {
     return (
-      '<aside class="anon-preview" aria-label="Read-only preview">' +
-      '<p class="anon-kicker">Preview</p>' +
-      '<p class="anon-note">' +
-      escapeHtml(caption) +
-      "</p>" +
-      rows +
-      "</aside>"
+      '<p><a class="btn btn-primary" href="' +
+      escapeHtml(href) +
+      '">Request a look</a></p>'
     );
   }
-
-  var previewNote =
-    "Read-only sample. This is not your data. Sign in for the full view.";
 
   function renderCvJobs() {
     var cj = data.cvjobs;
@@ -82,13 +69,13 @@
       badges +
       "</p>" +
       '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg" alt="CV×Jobs: a master CV, the jobs you paste, a fit report, a tailored CV, and an export, with a model call and a role focus." width="1016" height="444" loading="lazy"></figure>' +
-      anonPreview(previewNote, ["Master CV", "Job inbox", "Fit report"]) +
-      '<p class="anon-actions"><a class="btn btn-primary" href="/cv-jobs/">Sign in</a></p>' +
       '<p><a class="btn" href="' +
       escapeHtml(cj.ctaHref) +
       '">' +
       escapeHtml(cj.cta) +
-      "</a></p></section>"
+      "</a></p>" +
+      requestLook(cj.lookHref) +
+      "</section>"
     );
   }
 
@@ -117,10 +104,11 @@
       escapeHtml(s.badge) +
       "</span></p>" +
       '<figure class="panel-diagram"><img src="diagrams/spend-loop.svg" alt="Spend: CV×Jobs sends requests through the LiteLLM gateway. n8n calls Headroom to compress. Spend is logged in one place." width="1016" height="444" loading="lazy"></figure>' +
-      '<p class="anon-actions"><a class="btn btn-primary" href="/headroom">Sign in</a></p>' +
       '<ul class="panel-lines">' +
       lines +
-      "</ul></section>"
+      "</ul>" +
+      requestLook(s.lookHref) +
+      "</section>"
     );
   }
 
@@ -151,11 +139,64 @@
       '<div class="flow-cards">' +
       cards +
       "</div>" +
-      '<p><a class="btn btn-primary" href="' +
-      escapeHtml(n.ctaHref) +
-      '">' +
-      escapeHtml(n.cta) +
-      "</a></p></section>"
+      requestLook(n.ctaHref) +
+      "</section>"
+    );
+  }
+
+  function renderLiteLLM() {
+    var lt = data.litellm;
+    return (
+      '<section class="hub-glossary" aria-labelledby="pv-t">' +
+      '<h2 id="pv-t">' +
+      escapeHtml(lt.title) +
+      "</h2>" +
+      '<p class="console-subline">' +
+      escapeHtml(lt.subline) +
+      "</p>" +
+      requestLook(lt.lookHref) +
+      "</section>"
+    );
+  }
+
+  function renderDashboards() {
+    var board = data.dashboards;
+    var body;
+    if (!clusterLive) {
+      body =
+        '<p><a href="' +
+        escapeHtml(board.ctaHref) +
+        '">' +
+        escapeHtml(board.cta) +
+        "</a></p>";
+    } else {
+      body =
+        '<ul class="dash-tiles">' +
+        (board.tiles || [])
+          .map(function (tile) {
+            return (
+              '<li><div class="dash-tile"><span class="dash-name">' +
+              escapeHtml(tile.label) +
+              '</span><a class="btn btn-primary" href="' +
+              escapeHtml(tile.href) +
+              '">' +
+              escapeHtml(tile.login) +
+              "</a></div></li>"
+            );
+          })
+          .join("") +
+        "</ul>";
+    }
+    return (
+      '<section class="hub-glossary" aria-labelledby="pv-t">' +
+      '<h2 id="pv-t">' +
+      escapeHtml(board.title) +
+      "</h2>" +
+      '<p class="demo-note">' +
+      escapeHtml(board.note) +
+      "</p>" +
+      body +
+      "</section>"
     );
   }
 
@@ -164,6 +205,8 @@
     cvjobs: renderCvJobs,
     spend: renderSpend,
     n8n: renderN8n,
+    litellm: renderLiteLLM,
+    dashboards: renderDashboards,
   };
 
   function setView(id) {
@@ -174,6 +217,7 @@
       view = data.views[0];
       id = view.id;
     }
+    viewId = id;
     nav.querySelectorAll("button").forEach(function (btn) {
       if (btn.getAttribute("data-view") === id) {
         btn.setAttribute("aria-current", "page");
@@ -227,42 +271,14 @@
     if (first) first.setAttribute("aria-current", "page");
   }
 
-  function dashboardsCard() {
-    var section = document.createElement("section");
-    section.className = "live-dashboards";
-    section.setAttribute("aria-labelledby", "live-dashboards-title");
-    var title = document.createElement("h2");
-    title.id = "live-dashboards-title";
-    title.textContent = "Live dashboards";
-    var note = document.createElement("p");
-    note.className = "demo-note";
-    note.textContent = "Demoed live by Lev.";
-    var list = document.createElement("ul");
-    list.className = "dash-tiles";
-    [
-      ["LiteLLM · admin login", "/litellm"],
-      ["n8n · admin login", "https://n8n.levkesha.com"],
-      ["CV×Jobs", "/cv-jobs/"],
-    ].forEach(function (tile) {
-      var item = document.createElement("li");
-      var link = document.createElement("a");
-      link.className = "dash-tile";
-      link.href = tile[1];
-      link.textContent = tile[0];
-      item.appendChild(link);
-      list.appendChild(item);
-    });
-    section.appendChild(title);
-    section.appendChild(note);
-    section.appendChild(list);
-    return section;
+  function applyWake(state) {
+    var liveNow = !!(state && state.live);
+    if (liveNow === clusterLive) return;
+    clusterLive = liveNow;
+    if (viewId === "dashboards") setView(viewId);
   }
 
-  var column = document.querySelector(".console-column");
-  if (column && window.olympusWakeState) {
-    window.olympusWakeState.readWakeState().then(function (state) {
-      if (!state || !state.live || column.querySelector(".live-dashboards")) return;
-      column.appendChild(dashboardsCard());
-    });
+  if (window.olympusWakeState) {
+    window.olympusWakeState.readWakeState().then(applyWake);
   }
 })();

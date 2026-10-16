@@ -35,8 +35,9 @@ if (!labelRule.includes("font-size: 13px")) fail("label is not 13px");
 if (labelRule.includes("0.8rem")) fail("label uses rem");
 if (!css.includes("color: #8a8a8a")) fail("demo note grey missing");
 
-const consoleJs = require("fs").readFileSync(require("path").join(__dirname, "../../../olympus/console.js"), "utf8");
-["LiteLLM · admin login", "n8n · admin login", "CV×Jobs", "Demoed live by Lev.", "olympusWakeState"].forEach(function (needle) {
+const consoleJs = require("fs").readFileSync(require("path").join(__dirname, "../../../olympus/console.js"), "utf8") +
+  require("fs").readFileSync(require("path").join(__dirname, "../../../olympus/console-data.js"), "utf8");
+["Live dashboards", "admin login", "Headroom", "Demoed live by Lev.", "olympusWakeState"].forEach(function (needle) {
   if (consoleJs.indexOf(needle) < 0) fail("console missing " + needle);
 });
 
