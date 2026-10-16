@@ -9,7 +9,7 @@
   <text x="190" y="58" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">site &amp; sign-in up</text>
   <text x="190" y="78" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">databases stopped</text>
   <text x="190" y="98" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">services at zero</text>
-  <text x="190" y="144" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">request &#8594; Lev approves</text>
+  <text x="190" y="144" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">Wakes at your time.</text>
   <path d="M190,152 V180" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" marker-end="url(#a)"/>
   <rect x="28" y="188" width="324" height="72" rx="12" fill="none" stroke="#2dd4bf" stroke-width="2"/>
   <text x="190" y="220" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" fill="#f5f5f5" text-anchor="middle">Databases</text>
@@ -22,6 +22,8 @@
   <rect x="28" y="420" width="324" height="72" rx="12" fill="none" stroke="#2dd4bf" stroke-width="2"/>
   <text x="190" y="450" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#f5f5f5" text-anchor="middle">Live</text>
   <text x="190" y="474" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">checked &#183; about 7 min</text>
-  <text x="190" y="528" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">1h idle &#8594; back to sleep</text>
+  <text x="190" y="508" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">You pick a time. Lev approves.</text>
+  <text x="190" y="528" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">It starts then and is live</text>
+  <text x="190" y="548" font-family="Segoe UI, system-ui, Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#9ca3af" text-anchor="middle">in about 7 min.</text>
   <path d="M28,456 H12 V62 H28" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" marker-end="url(#a)"/>
 </svg>
