@@ -82,14 +82,14 @@
     img.src = "diagrams/soft-down.png";
     var caption = "You pick a time. Lev approves. It starts then and is live in about 7 min.";
     img.className = "sleep-strip-desk";
-    img.alt = caption;
+    img.alt = caption + " Sleeps after 1h idle.";
     img.width = 1014;
     img.height = 203;
     img.loading = "lazy";
     var phone = document.createElement("img");
     phone.className = "sleep-strip-phone";
     phone.src = "diagrams/soft-down-phone.png";
-    phone.alt = caption;
+    phone.alt = caption + " Sleeps after 1h idle.";
     phone.width = 360;
     phone.height = 560;
     phone.loading = "lazy";

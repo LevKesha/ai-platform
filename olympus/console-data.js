@@ -20,7 +20,7 @@ window.OLYMPUS_CONSOLE = {
     lines: [
       {
         label: "LiteLLM",
-        text: "Every AI request goes through here. This is where spend is counted.",
+        text: "Every CV×Jobs AI request goes through here. This is where its spend is counted.",
       },
       {
         label: "Headroom",
