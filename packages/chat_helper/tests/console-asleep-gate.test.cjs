@@ -197,8 +197,13 @@ const SECTIONS = [
   ["CV×Jobs", "cvjobs"],
   ["n8n", "n8n"],
   ["LiteLLM", "litellm"],
-  ["Live dashboards", "dashboards"],
 ];
+const EXPECTED_LOGINS = {
+  "AI spend control": { text: "Sign in", href: "/headroom" },
+  "CV×Jobs": { text: "Sign in", href: "/cv-jobs/" },
+  n8n: { text: "admin login", href: "https://n8n.levkesha.com" },
+  LiteLLM: { text: "admin login", href: "/litellm" },
+};
 const LOGIN_HREFS = ["/litellm", "https://n8n.levkesha.com", "/cv-jobs/", "/headroom"];
 
 function openSection(doc, label) {
@@ -278,26 +283,21 @@ function fetchFor(mode) {
   };
 }
 
-function assertClosed(page, label) {
-  if (!page.document.querySelectorAll("button").some(function (node) { return node.textContent === "Live dashboards"; })) {
-    fail(label + " missing Live dashboards nav");
-  }
-  SECTIONS.forEach(function (section) {
-    openSection(page.document, section[0]);
-    const found = loginControls(page.column).map(function (node) { return node.textContent.trim(); });
-    if (found.length) fail(label + " " + section[0] + " showed " + found.join(", "));
+function assertNoDashboards(page, label) {
+  const nav = page.document.querySelectorAll("button").filter(function (node) {
+    return node.textContent === "Live dashboards";
   });
-  openSection(page.document, "Live dashboards");
-  const looks = page.panel.querySelectorAll("a").filter(function (node) {
-    return node.textContent.trim() === "Request a look";
+  if (nav.length) fail(label + " still has a Live dashboards nav");
+  [".live-dashboards", ".dash-tiles", ".dash-tile"].forEach(function (selector) {
+    if (page.document.querySelector(selector)) fail(label + " still has " + selector);
   });
-  if (looks.length !== 1 || looks[0].href !== "console.html?state=form") {
-    fail(label + " dashboards Request a look " + looks.map(function (node) { return node.href; }).join(","));
-  }
+}
+
+function assertRequests(page, label) {
   openSection(page.document, "CV×Jobs");
   if (page.panel.textContent.indexOf("Request a walkthrough") < 0) fail(label + " dropped Request a walkthrough");
   const walk = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a walkthrough"; })[0];
-  if (!walk || walk.className !== "btn") fail(label + " changed Request a walkthrough");
+  if (!walk || walk.className !== "btn" || walk.href !== "console.html?state=form") fail(label + " changed Request a walkthrough");
   openSection(page.document, "n8n");
   const look = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a look"; })[0];
   if (!look || look.className !== "btn btn-primary" || look.href !== "console.html?state=form") {
@@ -305,50 +305,34 @@ function assertClosed(page, label) {
   }
 }
 
-function litellmAdminLogins(root) {
-  return root.querySelectorAll("a").filter(function (node) {
-    return visible(node) && node.textContent.replace(/\s+/g, " ").trim() === "admin login" && node.href === "/litellm";
+function assertClosed(page, label) {
+  assertNoDashboards(page, label);
+  SECTIONS.forEach(function (section) {
+    openSection(page.document, section[0]);
+    const found = loginControls(page.column).map(function (node) { return node.textContent.trim() + " " + node.href; });
+    if (found.length) fail(label + " " + section[0] + " showed " + found.join(", "));
   });
+  assertRequests(page, label);
 }
 
 function assertOpen(page) {
-  if (!page.document.querySelectorAll("button").some(function (node) { return node.textContent === "Live dashboards"; })) {
-    fail("live missing Live dashboards nav");
-  }
-  let litellmLogins = 0;
+  assertNoDashboards(page, "live");
   SECTIONS.forEach(function (section) {
     openSection(page.document, section[0]);
-    litellmLogins += litellmAdminLogins(page.panel).length;
-  });
-  if (litellmLogins !== 1) fail("awake /litellm admin login count " + litellmLogins);
-  openSection(page.document, "LiteLLM");
-  const sectionLogin = litellmAdminLogins(page.panel);
-  if (sectionLogin.length !== 1 || sectionLogin[0].className !== "btn btn-primary") {
-    fail("LiteLLM section is not the /litellm admin login");
-  }
-  openSection(page.document, "Live dashboards");
-  if (litellmAdminLogins(page.panel).length) fail("Live dashboards still has a /litellm admin login");
-  const tiles = page.panel.querySelectorAll(".dash-tile");
-  if (tiles.length !== 3) fail("expected 3 tiles, saw " + tiles.length);
-  const logins = tiles.map(function (tile) {
-    const buttons = tile.querySelectorAll("a");
-    if (buttons.length !== 1 || buttons[0].textContent.trim() !== "admin login") {
-      fail("tile login count " + buttons.map(function (node) { return node.textContent; }).join(","));
-    }
-    const name = tile.querySelector(".dash-name");
-    return (name ? name.textContent.trim() : "") + " " + buttons[0].href;
-  });
-  ["n8n https://n8n.levkesha.com", "CV×Jobs /cv-jobs/", "Headroom /headroom"].forEach(function (needle) {
-    if (logins.indexOf(needle) < 0) fail("tile set " + logins.join(" | "));
-  });
-  if (logins.some(function (line) { return line.indexOf("/litellm") >= 0 || line.indexOf("LiteLLM") === 0; })) {
-    fail("LiteLLM tile still present " + logins.join(" | "));
-  }
-  ["AI spend control", "CV×Jobs", "n8n"].forEach(function (label) {
-    openSection(page.document, label);
     const found = loginControls(page.panel);
-    if (found.length) fail(label + " section showed " + found.map(function (node) { return node.textContent; }).join(", "));
+    const expect = EXPECTED_LOGINS[section[0]];
+    if (found.length !== 1) {
+      fail(section[0] + " login count " + found.map(function (node) { return node.textContent.trim() + " " + node.href; }).join(", "));
+    }
+    const login = found[0];
+    if (login.textContent.trim() !== expect.text || login.href !== expect.href || login.className !== "btn btn-primary") {
+      fail(section[0] + " login " + login.textContent.trim() + " " + login.href + " " + login.className);
+    }
   });
+  openSection(page.document, "Glossary");
+  const glossaryLogins = loginControls(page.panel);
+  if (glossaryLogins.length) fail("glossary showed a login");
+  assertRequests(page, "live");
 }
 
 Promise.resolve()

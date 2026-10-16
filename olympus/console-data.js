@@ -6,12 +6,12 @@ window.OLYMPUS_CONSOLE = {
     { id: "spend", label: "AI spend control" },
     { id: "n8n", label: "n8n" },
     { id: "litellm", label: "LiteLLM" },
-    { id: "dashboards", label: "Live dashboards" },
   ],
   cvjobs: {
     title: "CV×Jobs",
     subline: "Score a CV against the jobs you paste, then tailor it for the one you want.",
     badges: ["Behind sign-in", "Not LinkedIn auto-apply"],
+    signInHref: "/cv-jobs/",
     cta: "Request a walkthrough",
     ctaHref: "console.html?state=form",
   },
@@ -19,6 +19,7 @@ window.OLYMPUS_CONSOLE = {
     title: "AI spend control",
     subline: "Every CV×Jobs AI request goes through one place and gets counted.",
     badge: "Behind sign-in",
+    signInHref: "/headroom",
     lines: [
       {
         label: "Routes",
@@ -44,6 +45,7 @@ window.OLYMPUS_CONSOLE = {
     pill: "Request a look.",
     cta: "Request a look",
     ctaHref: "console.html?state=form",
+    loginHref: "https://n8n.levkesha.com",
     workflows: [
       {
         label: "One request in, the right service answers",
@@ -64,17 +66,6 @@ window.OLYMPUS_CONSOLE = {
     subline: "Every CV×Jobs AI request goes through here.",
     cta: "admin login",
     ctaHref: "/litellm",
-  },
-  dashboards: {
-    title: "Live dashboards",
-    note: "Demoed live by Lev.",
-    cta: "Request a look",
-    ctaHref: "console.html?state=form",
-    tiles: [
-      { label: "n8n", href: "https://n8n.levkesha.com" },
-      { label: "CV×Jobs", href: "/cv-jobs/" },
-      { label: "Headroom", href: "/headroom" },
-    ],
   },
   edgePaths: ["/cv-jobs", "/v1/demo", "/headroom", "/v1/hr"],
   empty: {
