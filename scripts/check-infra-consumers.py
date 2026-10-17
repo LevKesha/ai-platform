@@ -92,6 +92,8 @@ def file_errors(data: dict) -> list[str]:
         path = PARENT / rel
         for subnet in data["public_subnet_ids"]:
             must_contain(path, subnet, errors)
+        must_contain(path, data["litellm_acm_certificate_arn"], errors)
+        must_contain(path, data["litellm_cognito_user_pool_arn"], errors)
     errors.extend(cloudfront_sg_errors(data))
     return errors
 

@@ -2,7 +2,7 @@
 """Vendor packages/platform_common into sibling service build contexts.
 
 SSOT: ai-platform/packages/platform_common/
-Do not edit copies under agent-api / rag-service / mcp-server / agents / claude-router.
+Do not edit copies under agent-api / rag-service / mcp-server / agents / claude-router / llm-cost/spend.
 
 Usage:
   python scripts/sync-platform-common.py          # copy
@@ -25,6 +25,7 @@ TARGETS = [
     PARENT / "mcp-server" / "platform_common",
     ROOT / "claude-router" / "platform_common",
     ROOT / "agents" / "support-runbook-copilot" / "platform_common",
+    PARENT / "llm-cost" / "spend" / "platform_common",
 ]
 
 
