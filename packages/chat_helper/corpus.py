@@ -63,6 +63,7 @@ HTML_PAGES = (
     "olympus/console.html",
     "olympus/404.html",
     "olympus/gated.html",
+    "olympus/development-story.html",
 )
 JS_PAGES = ("olympus/public-data.js", "olympus/console-data.js")
 
