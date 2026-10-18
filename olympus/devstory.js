@@ -233,7 +233,6 @@
       kick();
     });
     stage.addEventListener("focusin", function (event) {
-      if (event.target === pauseBtn && !reasons.user) return;
       reasons.focus = true;
       kick();
     });
@@ -261,6 +260,12 @@
       syncMotionClass();
       kick();
     });
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(function () {
+        if (reasons.reduced || reasons.skip) showFinal();
+        else renderActive();
+      }).observe(stage);
+    }
     narrowQuery.addEventListener("change", function () {
       var next = layoutKind();
       if (next === kind) return;
@@ -275,7 +280,7 @@
     kick();
 
     function layoutKind() {
-      if (variant === "embed") return "desktop";
+      if (variant === "embed" && !narrowQuery.matches) return "desktop";
       return narrowQuery.matches ? "mobile" : "desktop";
     }
 
@@ -400,18 +405,24 @@
 
     function measures(mobile, scene) {
       var w = size.w;
+      var k = (stage.getBoundingClientRect().width || w) / w;
+      var embed = variant === "embed" && !mobile;
+      var f = function (s, floor) { return mobile ? s : Math.max(s, (floor || 13) / k); };
       var capY = mobile ? 510 : 560;
-      if (scene.headline) capY = mobile ? 552 : 598;
+      if (scene.headline) capY = mobile ? 552 : Math.max(598, 548 + 1.3 * Math.max(22, 14 / k));
       return {
         mobile: mobile,
+        embed: embed,
         r: mobile ? 11 : 13,
-        label: mobile ? 16 : 13,
-        kicker: mobile ? 16 : 13,
-        caption: mobile ? 16 : 22,
-        captionLh: mobile ? 26 : 32,
-        proof: mobile ? 16 : 14,
-        headSize: mobile ? 26 : 32,
-        dateSize: mobile ? 20 : 24,
+        label: mobile ? 16 : f(13),
+        kicker: mobile ? 16 : f(13),
+        tick: f(13),
+        caption: mobile ? 16 : f(22, 14),
+        captionLh: mobile ? 26 : f(22, 14) * 1.45,
+        proof: mobile ? 16 : f(14),
+        headSize: mobile ? 26 : f(32, 16),
+        dateSize: mobile ? 20 : f(24, 14),
+        labelGap: mobile ? 20 : Math.max(20, f(13) + 7),
         graph: mobile ? [34, 110, w - 40, 420] : [40, 110, w - 40, 450],
         capY: capY,
         timelineY: mobile ? 740 : 708,
@@ -429,7 +440,7 @@
         return;
       }
       text(group, 40, 44, story.kicker, { size: m.kicker, fill: GREY, family: SANS, spacing: "2" });
-      text(group, 40, 76, date, { size: m.dateSize, fill: TEXT, family: MONO, weight: "700" });
+      text(group, 40, Math.max(76, 44 + m.dateSize * 1.25), date, { size: m.dateSize, fill: TEXT, family: MONO, weight: "700" });
     }
 
     function stateOf(scene, burst) {
@@ -537,6 +548,12 @@
       }
     }
 
+    function fitX(x, m, str) {
+      if (m.mobile) return x;
+      var half = 0.6 * m.label * String(str).length / 2;
+      return Math.min(size.w - 12 - half, Math.max(12 + half, x));
+    }
+
     function drawNode(group, node, point, mode, m, local, t) {
       var x = point[0];
       var y = point[1];
@@ -547,20 +564,21 @@
       if (mode === "scramble") {
         circle(group, x, y, m.r + 2, BG, TEAL, "2");
         text(group, x, y + 5, glyphAt(t, node.x), { size: m.label, fill: TEAL, family: MONO, anchor: "middle" });
-        label(group, node, x, y + m.r + 20, TEAL, m.label, local, t, true);
+        label(group, node, fitX(x, m, node.label), y + m.r + m.labelGap, TEAL, m.label, local, t, true);
         return;
       }
       if (mode === "fill") {
         var p = easeOut(clamp((local - SCRAMBLE_MS) / FILL_MS));
         circle(group, x, y, m.r + 9, TEAL, null, null, (0.13 * p).toFixed(3));
         circle(group, x, y, m.r, TEAL, null, null, p.toFixed(3));
-        label(group, node, x, y + m.r + 20, TEAL, m.label, local, t, false);
+        label(group, node, fitX(x, m, node.label), y + m.r + m.labelGap, TEAL, m.label, local, t, false);
         return;
       }
       var fill = mode === "new" ? TEAL : GREY;
       if (mode === "new") circle(group, x, y, m.r + 9, TEAL, null, null, "0.13");
       circle(group, x, y, m.r, fill, null, null);
-      text(group, x, y + m.r + 20, node.label, { size: m.label, fill: fill, family: MONO, anchor: "middle" });
+      if (m.embed && mode !== "new") return;
+      text(group, fitX(x, m, node.label), y + m.r + m.labelGap, node.label, { size: m.label, fill: fill, family: MONO, anchor: "middle" });
     }
 
     function label(group, node, x, y, fill, size, local, t, scramble) {
@@ -610,7 +628,7 @@
       var proofAt = lines.reduce(function (sum, line) { return sum + line.length; }, 0);
       var proofTake = finalFrame ? scene.proof.length : Math.max(0, Math.min(scene.proof.length, typed - proofAt));
       if (proofTake <= 0) return;
-      text(group, size.w / 2, m.capY + Math.max(0, lines.length - 1) * m.captionLh + (m.mobile ? 28 : 30), scene.proof.slice(0, proofTake), {
+      text(group, size.w / 2, m.capY + Math.max(0, lines.length - 1) * m.captionLh + (m.mobile ? 28 : Math.max(30, m.proof * 1.6)), scene.proof.slice(0, proofTake), {
         size: m.proof,
         fill: GREY,
         family: SANS,
@@ -657,7 +675,8 @@
         tick.setAttribute("y2", String(y + 28));
         tick.setAttribute("stroke", "#555");
         group.appendChild(tick);
-        text(group, x + 4, y + 44, year.label, { size: m.mobile ? 16 : 13, fill: GREY, family: MONO });
+        if (m.embed && String(scene.date).indexOf(year.label) === -1) return;
+        text(group, x + 4, y + 30 + (m.mobile ? 14 : m.tick), year.label, { size: m.mobile ? 16 : m.tick, fill: GREY, family: MONO });
       });
       if (scene.branch) {
         var progress = finalFrame ? 1 : easeOut(clamp(t / 600));
@@ -706,11 +725,11 @@
         rect.setAttribute("fill", mode === "new" ? TEAL : mode === "old" ? GREY : GHOST);
         if (mode === "ghost") rect.setAttribute("stroke", BORD);
         group.appendChild(rect);
-        if (m.mobile && index !== activeLabel) return;
+        if ((m.mobile || m.embed) && index !== activeLabel) return;
         var color = mode === "new" ? TEAL : mode === "old" ? GREY : "#8a8a8a";
         var lx = m.mobile ? xa + w / 2 : xa;
         text(group, lx, y - 8, burst.label, {
-          size: m.mobile ? 16 : 13,
+          size: m.mobile ? 16 : m.tick,
           fill: color,
           family: MONO,
           anchor: m.mobile ? "middle" : "start",
@@ -727,7 +746,7 @@
       marker.setAttribute("stroke-width", "2");
       group.appendChild(marker);
       circle(group, mx, y - 6, 4, TEXT, null, null);
-      text(group, mx - 8, y + 44, story.timeline.wakeLabel, { size: m.mobile ? 16 : 13, fill: TEXT, family: MONO, anchor: "end" });
+      text(group, mx - 8, y + 30 + (m.mobile ? 14 : m.tick), story.timeline.wakeLabel, { size: m.mobile ? 16 : m.tick, fill: TEXT, family: MONO, anchor: "end" });
     }
 
     function dateX(iso, x0, x1) {
