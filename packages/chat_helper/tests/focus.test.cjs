@@ -165,24 +165,25 @@ if (retryPanel.log.children.some(function (node) { return node.attrs.class === "
   fail("retry line is a bare paragraph");
 }
 
-function chatFetch(status) {
+function chatFetch(status, body) {
   return function (url) {
     if (url !== policy.api_path) fail("request path was " + url + " not " + policy.api_path);
     return Promise.resolve({
       url: url,
       status: status,
       json: function () {
-        throw new Error("not json");
+        if (body === undefined) throw new Error("not json");
+        return Promise.resolve(body);
       },
     });
   };
 }
 
-function askAndCheck(status, expectClosed) {
+function askAndCheck(status, expectClosed, body) {
   const doc = document();
   const widget = createWidget(doc, {
     policy: policy,
-    fetchImpl: chatFetch(status),
+    fetchImpl: chatFetch(status, body),
   });
   return widget.ask(policy.suggested[0]).then(function () {
     const closed = widget.log.textContent.indexOf(policy.closed) !== -1;
@@ -198,8 +199,12 @@ function askAndCheck(status, expectClosed) {
   });
 }
 
-askAndCheck(500, false).then(function () {
+askAndCheck(500, false, { kind: "retry", text: policy.retry }).then(function () {
   return askAndCheck(403, true);
+}).then(function () {
+  return askAndCheck(404, true);
+}).then(function () {
+  return askAndCheck(200, true);
 }).catch(function (error) {
   fail(error && error.message ? error.message : "waf test failed");
 });

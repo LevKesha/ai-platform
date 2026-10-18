@@ -49,7 +49,6 @@
         <p class="ev-tag">Built in agent-api</p>
         <h3 id="cvjobs">CV×Jobs</h3>
         <p class="ev-product-line">Score a CV against the jobs you paste, then tailor it for the one you want. A full product, built and run on this platform.</p>
-        <div class="ev-actions"><a class="btn" href="console.html?state=form">Request a walkthrough</a></div>
       </article>
     </section>
 
@@ -85,8 +84,18 @@
     </div>
 
     <footer class="ev-foot">
-      <p class="ev-verified"><span aria-hidden="true">✓</span> Verified 2026-10-11</p>
+      <p class="ev-verified"><span aria-hidden="true">✓</span> Verified <time id="ev-verified-date"></time></p>
     </footer>
   </main>
+  <script src="console-data.js"></script>
+  <script>
+    (function () {
+      var data = window.OLYMPUS_CONSOLE;
+      var node = document.getElementById("ev-verified-date");
+      if (!data || !data.verifiedOn || !node) return;
+      node.dateTime = data.verifiedOn;
+      node.textContent = data.verifiedOn;
+    })();
+  </script>
 </body>
 </html>

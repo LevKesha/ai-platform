@@ -94,6 +94,29 @@ Promise.resolve()
   .then(function (state) {
     if (state.live !== false || state.state !== "asleep") fail("http failure was not asleep");
   })
+  .then(function () {
+    return wake.readWakeState(function (url, options) {
+      if (url !== "/wake-status") fail("url " + url);
+      if (!options || options.cache !== "no-store") fail("missing no-store");
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: function () { throw new Error("<html>Page not found.</html>"); },
+      });
+    });
+  })
+  .then(function (state) {
+    if (state.state !== "asleep") fail("html wake-status was not asleep");
+  })
+  .then(function () {
+    return wake.readWakeState(function (url) {
+      if (url !== "/wake-status") fail("url " + url);
+      return Promise.resolve({ ok: false, status: 404, json: function () { throw new Error("html"); } });
+    });
+  })
+  .then(function (state) {
+    if (state.state !== "asleep") fail("404 wake-status was not asleep");
+  })
   .then(function () { return widget.wakeReady; })
   .then(function (state) {
     if (seen !== 1) fail("chat did not read the shared wake state");

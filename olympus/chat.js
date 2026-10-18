@@ -258,12 +258,25 @@
           });
         })
         .then(function (response) {
-          if (isChatApi(chatPath) && response.status === 403) {
+          if (isChatApi(chatPath) && response && (response.status === 403 || response.status === 404)) {
             dots.remove();
             showClosed();
             return null;
           }
-          return response.json();
+          return Promise.resolve()
+            .then(function () {
+              if (!response || typeof response.json !== "function") throw new Error("not json");
+              return response.json();
+            })
+            .then(function (body) {
+              return body;
+            }, function () {
+              if (isChatApi(chatPath)) {
+                dots.remove();
+                showClosed();
+              }
+              return null;
+            });
         })
         .then(function (payload) {
           if (!payload) return;

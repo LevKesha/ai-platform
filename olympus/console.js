@@ -69,11 +69,6 @@
       badges +
       "</p>" +
       '<figure class="panel-diagram"><img src="diagrams/cv-jobs-flow.svg" alt="CV×Jobs: a master CV, the jobs you paste, a fit report, a tailored CV, and an export, with a model call and a role focus." width="1016" height="444" loading="lazy"></figure>' +
-      '<p><a class="btn" href="' +
-      escapeHtml(cj.ctaHref) +
-      '">' +
-      escapeHtml(cj.cta) +
-      "</a></p>" +
       requestLook(cj.lookHref) +
       "</section>"
     );
@@ -279,6 +274,8 @@
   }
 
   if (window.olympusWakeState) {
-    window.olympusWakeState.readWakeState().then(applyWake);
+    window.olympusWakeState.readWakeState().then(applyWake, function () {
+      applyWake(null);
+    });
   }
 })();

@@ -30,6 +30,19 @@
     };
   }
 
+  function readJson(res) {
+    return Promise.resolve()
+      .then(function () {
+        if (!res || typeof res.json !== "function") throw new Error("not json");
+        return res.json();
+      })
+      .then(function (body) {
+        return body && typeof body === "object" ? body : null;
+      }, function () {
+        return null;
+      });
+  }
+
   function readWakeState(fetchImpl) {
     if (!fetchImpl && inflight) return inflight;
     var fetchFn = fetchImpl || (typeof fetch === "function" ? fetch : null);
@@ -39,8 +52,10 @@
         return fetchFn("/wake-status", { cache: "no-store" });
       })
       .then(function (res) {
-        if (!res || !res.ok) return asleep();
-        return Promise.resolve(res.json()).then(normalize, asleep);
+        if (!res || !res.ok || res.status === 403 || res.status === 404) return asleep();
+        return readJson(res).then(function (body) {
+          return body ? normalize(body) : asleep();
+        });
       })
       .catch(asleep);
     if (!fetchImpl) inflight = promise;
