@@ -11,7 +11,7 @@ function fail(message) {
 
 const root = path.join(__dirname, "../../..");
 const html = fs.readFileSync(path.join(root, "olympus/console.html"), "utf8");
-const scripts = ["wake-state.js", "sleep.js", "console-data.js", "console.js"];
+const scripts = ["wake-state.js", "console-data.js", "sleep.js", "console.js"];
 const loaded = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(function (match) {
   return match[1];
 });
@@ -321,9 +321,8 @@ function assertClosed(page, label) {
     }).join(","));
   }
   openSection(page.document, "CV×Jobs");
-  if (page.panel.textContent.indexOf("Request a walkthrough") < 0) fail(label + " dropped Request a walkthrough");
-  const walk = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a walkthrough"; })[0];
-  if (!walk || walk.className !== "btn" || walk.href !== "console.html?state=form") fail(label + " changed Request a walkthrough");
+  const walk = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a walkthrough"; });
+  if (walk.length) fail(label + " still shows Request a walkthrough");
 }
 
 function assertOpen(page) {
@@ -349,8 +348,8 @@ function assertOpen(page) {
   });
   assertSectionLooks(page, "live");
   openSection(page.document, "CV×Jobs");
-  const walk = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a walkthrough"; })[0];
-  if (!walk || walk.className !== "btn" || walk.href !== "console.html?state=form") fail("live changed Request a walkthrough");
+  const walk = page.panel.querySelectorAll("a").filter(function (node) { return node.textContent.trim() === "Request a walkthrough"; });
+  if (walk.length) fail("live still shows Request a walkthrough");
 }
 
 Promise.resolve()

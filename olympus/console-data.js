@@ -1,5 +1,7 @@
 /** Demo fixtures for the read-only console. Not live telemetry. */
 window.OLYMPUS_CONSOLE = {
+  verifiedOn: "2026-10-17",
+  wakeWithin: "about 7 min",
   views: [
     { id: "glossary", label: "Glossary" },
     { id: "cvjobs", label: "CV×Jobs" },
@@ -11,9 +13,7 @@ window.OLYMPUS_CONSOLE = {
   cvjobs: {
     title: "CV×Jobs",
     subline: "Score a CV against the jobs you paste, then tailor it for the one you want.",
-    badges: ["Behind sign-in", "Not LinkedIn auto-apply"],
-    cta: "Request a walkthrough",
-    ctaHref: "console.html?state=form",
+    badges: ["Behind sign-in"],
     look: "Request a look",
     lookHref: "console.html?state=form",
   },
@@ -38,7 +38,7 @@ window.OLYMPUS_CONSOLE = {
       },
       {
         label: "Headroom",
-        text: "Sits beside that gateway and shortens long prompts.",
+        text: "Sits beside that gateway and trims big prompts.",
       },
     ],
   },

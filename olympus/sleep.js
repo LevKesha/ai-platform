@@ -19,6 +19,12 @@
     return node;
   }
 
+  function wakeWithin() {
+    var data = window.OLYMPUS_CONSOLE;
+    if (!data || !data.wakeWithin) throw new Error("OLYMPUS_CONSOLE.wakeWithin missing");
+    return data.wakeWithin;
+  }
+
   var gated = document.getElementById("gated-panel");
   if (gated) {
     var part = params.get("part") || "";
@@ -80,7 +86,7 @@
     var figure = el("figure", "panel-diagram");
     var img = document.createElement("img");
     img.src = "diagrams/soft-down.png";
-    var caption = "You pick a time. Lev approves. It starts then and is live in about 7 min.";
+    var caption = "You pick a time. Lev approves. It starts then and is live in " + wakeWithin() + ".";
     img.className = "sleep-strip-desk";
     img.alt = caption + " Sleeps after 1h idle.";
     img.width = 1014;
@@ -111,7 +117,7 @@
   }
 
   function renderWaking(approved) {
-    panel.appendChild(pill("is-wait", "Waking up. This takes about 7 min. We'll email you when it's live."));
+    panel.appendChild(pill("is-wait", "Waking up. This takes " + wakeWithin() + ". We'll email you when it's live."));
     panel.appendChild(el("h2", null, "The console, live"));
     if (approved) {
       var bar = el("div", "sleep-bar");
@@ -326,18 +332,23 @@
     }
     var send = form.querySelector("button[type=submit]");
     if (send) send.disabled = true;
+    function showSendError() {
+      if (send) send.disabled = false;
+      error.hidden = false;
+      error.textContent = "The request did not send. Lev has not received it.";
+    }
     fetch(endpoint, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(data)
     }).then(function (res) {
-      if (!res.ok) throw new Error("status " + res.status);
+      var type = res && res.headers && typeof res.headers.get === "function" ? String(res.headers.get("content-type") || "") : "";
+      if (!res || !res.ok || res.status === 403 || res.status === 404 || type.indexOf("text/html") !== -1) {
+        showSendError();
+        return;
+      }
       show("requested");
-    }).catch(function () {
-      if (send) send.disabled = false;
-      error.hidden = false;
-      error.textContent = "The request did not send. Lev has not received it.";
-    });
+    }).catch(showSendError);
   }
 
   function allowed(name) {
