@@ -341,7 +341,230 @@
       api.wake = state;
       return state;
     });
+    bindPortalChrome(doc, bubble);
     return api;
+  }
+
+  function bindPortalChrome(doc, bubble) {
+    var view = doc.defaultView;
+    if (!view || typeof doc.querySelector !== "function" || !bubble || !bubble.classList) return;
+    var narrow = view.matchMedia("(max-width: 499px)");
+    if (doc.body && doc.body.classList && doc.body.classList.contains("page-architecture")) {
+      bubble.classList.add("chat-bubble--icon");
+    }
+
+    function centerNav() {
+      if (!narrow.matches) return;
+      var nav = doc.querySelector(".site-nav");
+      var current = nav && nav.querySelector('[aria-current="page"]');
+      if (!current || typeof current.offsetLeft !== "number") return;
+      nav.scrollLeft = Math.max(0, current.offsetLeft - (nav.clientWidth - current.offsetWidth) / 2);
+    }
+
+    function near(a, b, gap) {
+      return a.right >= b.left - gap && a.left <= b.right + gap && a.bottom >= b.top - gap && a.top <= b.bottom + gap;
+    }
+
+    var seen = new Set();
+    function placePill() {
+      if (bubble.classList.contains("chat-bubble--icon")) {
+        bubble.classList.remove("mp-hidden");
+        return;
+      }
+      var pill = bubble.getBoundingClientRect();
+      var hit = false;
+      seen.forEach(function (node) {
+        if (near(pill, node.getBoundingClientRect(), 8)) hit = true;
+      });
+      bubble.classList.toggle("mp-hidden", hit);
+      if (bubble.classList.contains("dock-hidden")) return;
+      if (hit) bubble.setAttribute("tabindex", "-1");
+      else bubble.removeAttribute("tabindex");
+    }
+
+    var watch = doc.querySelectorAll("figure img, figure svg, .hub-diagram, .hub-zoom, .cursor-diagram img, .ds-stage, .ds-controls");
+    if ("IntersectionObserver" in view) {
+      var watcher = new view.IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) seen.add(entry.target);
+          else seen.delete(entry.target);
+        });
+        placePill();
+      });
+      Array.prototype.forEach.call(watch, function (node) { watcher.observe(node); });
+    }
+    view.addEventListener("scroll", placePill, true);
+    view.addEventListener("resize", function () {
+      centerNav();
+      placePill();
+    });
+    centerNav();
+    placePill();
+
+    var overlay = doc.querySelector(".diagram-zoom");
+    if (!overlay) {
+      overlay = doc.createElement("div");
+      overlay.className = "diagram-zoom";
+      overlay.hidden = true;
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
+      overlay.setAttribute("aria-label", "Enlarged diagram");
+      var bar = doc.createElement("div");
+      bar.className = "diagram-zoom-bar";
+      var closer = doc.createElement("button");
+      closer.type = "button";
+      closer.className = "diagram-zoom-close";
+      closer.textContent = "Close";
+      var stage = doc.createElement("div");
+      stage.className = "diagram-zoom-stage";
+      stage.tabIndex = -1;
+      var shot = doc.createElement("img");
+      shot.alt = "";
+      bar.appendChild(closer);
+      stage.appendChild(shot);
+      overlay.appendChild(bar);
+      overlay.appendChild(stage);
+      doc.body.appendChild(overlay);
+      var trigger = null;
+      var pointers = new Map();
+      var scale = 1;
+      var panX = 0;
+      var panY = 0;
+      var startScale = 1;
+      var startDist = 0;
+      var startPan = { x: 0, y: 0 };
+      var startAt = null;
+
+      function paint() {
+        shot.style.setProperty("--diagram-zoom", String(scale));
+        shot.style.setProperty("--diagram-pan-x", panX + "px");
+        shot.style.setProperty("--diagram-pan-y", panY + "px");
+      }
+
+      function resetZoom() {
+        scale = 1;
+        panX = 0;
+        panY = 0;
+        startDist = 0;
+        pointers.clear();
+        paint();
+      }
+
+      function sourceOf(node) {
+        if (!node) return null;
+        if (node.tagName === "IMG") return { src: node.currentSrc || node.getAttribute("src"), alt: node.getAttribute("alt") || "", trigger: node };
+        var img = node.querySelector && node.querySelector("img");
+        if (img) return { src: img.currentSrc || img.getAttribute("src"), alt: img.getAttribute("alt") || "", trigger: node };
+        var href = node.getAttribute && node.getAttribute("href");
+        if (href) return { src: href, alt: node.getAttribute("aria-label") || "", trigger: node };
+        return null;
+      }
+
+      function openZoom(node) {
+        var source = sourceOf(node);
+        if (!source || !source.src) return;
+        trigger = source.trigger;
+        shot.src = source.src;
+        shot.alt = source.alt;
+        resetZoom();
+        overlay.hidden = false;
+        closer.focus();
+      }
+
+      function closeZoom() {
+        overlay.hidden = true;
+        shot.removeAttribute("src");
+        if (trigger && trigger.focus) trigger.focus();
+        trigger = null;
+      }
+
+      function focusable() {
+        return [closer, stage];
+      }
+
+      closer.addEventListener("click", closeZoom);
+      stage.addEventListener("pointerdown", function (event) {
+        if (stage.setPointerCapture) stage.setPointerCapture(event.pointerId);
+        pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        var pts = Array.from(pointers.values());
+        if (pts.length >= 2) {
+          startDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+          startScale = scale;
+        } else {
+          startPan = { x: panX, y: panY };
+          startAt = pts[0];
+        }
+      });
+      stage.addEventListener("pointermove", function (event) {
+        if (!pointers.has(event.pointerId)) return;
+        pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        var pts = Array.from(pointers.values());
+        if (pts.length >= 2 && startDist) {
+          var dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) || 1;
+          scale = Math.min(4, Math.max(1, startScale * (dist / startDist)));
+          paint();
+        } else if (pts.length === 1 && scale > 1 && startAt) {
+          panX = startPan.x + (pts[0].x - startAt.x);
+          panY = startPan.y + (pts[0].y - startAt.y);
+          paint();
+        }
+      });
+      function release(event) {
+        pointers.delete(event.pointerId);
+        if (pointers.size < 2) startDist = 0;
+        if (!pointers.size) startAt = null;
+      }
+      stage.addEventListener("pointerup", release);
+      stage.addEventListener("pointercancel", release);
+      doc.addEventListener("keydown", function (event) {
+        if (overlay.hidden) return;
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeZoom();
+          return;
+        }
+        if (event.key !== "Tab") return;
+        var items = focusable();
+        var first = items[0];
+        var last = items[items.length - 1];
+        if (event.shiftKey && doc.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && doc.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+      doc.addEventListener("click", function (event) {
+        if (!narrow.matches || !overlay.hidden) return;
+        var node = event.target.closest && event.target.closest(".arch-block a, a.hub-zoom, .cursor-diagram img, .viewer-shot img, .page-evidence figure img");
+        if (!node || overlay.contains(node)) return;
+        event.preventDefault();
+        openZoom(node);
+      });
+      doc.addEventListener("keydown", function (event) {
+        if (!narrow.matches || !overlay.hidden) return;
+        if (event.key !== "Enter" && event.key !== " ") return;
+        var node = event.target;
+        if (!node || !node.matches || !node.matches(".cursor-diagram img, .viewer-shot img, .page-evidence figure img")) return;
+        event.preventDefault();
+        openZoom(node);
+      });
+    }
+
+    function armImages() {
+      Array.prototype.forEach.call(doc.querySelectorAll(".cursor-diagram img, .viewer-shot img, .page-evidence figure img"), function (img) {
+        if (narrow.matches) {
+          img.tabIndex = 0;
+          img.setAttribute("role", "button");
+        } else {
+          img.removeAttribute("tabindex");
+          img.removeAttribute("role");
+        }
+      });
+    }
+    armImages();
+    if (narrow.addEventListener) narrow.addEventListener("change", armImages);
   }
 
   function readSharedWake(options) {

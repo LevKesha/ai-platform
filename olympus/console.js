@@ -1,4 +1,5 @@
 (function () {
+  compensateHubLabels();
   var data = window.OLYMPUS_CONSOLE;
   var nav = document.getElementById("console-nav");
   var panel = document.getElementById("console-panel");
@@ -10,6 +11,31 @@
   var glossaryMarkup = panel ? panel.innerHTML : "";
 
   if (!data || !nav || !panel) return;
+
+  function compensateHubLabels() {
+    var svg = document.querySelector(".hub-diagram");
+    if (!svg || !svg.viewBox || !svg.viewBox.baseVal) return;
+    var box = svg.viewBox.baseVal.width;
+    var nodes = svg.querySelectorAll("text");
+    Array.prototype.forEach.call(nodes, function (node) {
+      if (!node.hasAttribute("data-hub-size")) {
+        node.setAttribute("data-hub-size", node.getAttribute("font-size") || "13");
+      }
+    });
+    function apply() {
+      var width = svg.getBoundingClientRect().width;
+      if (!width || !box) return;
+      var scale = width / box;
+      Array.prototype.forEach.call(nodes, function (node) {
+        var base = Number(node.getAttribute("data-hub-size"));
+        var next = Math.max(base, 13 / scale);
+        node.setAttribute("font-size", String(Math.ceil(next * 100) / 100));
+      });
+    }
+    apply();
+    if ("ResizeObserver" in window) new ResizeObserver(apply).observe(svg);
+    else window.addEventListener("resize", apply);
+  }
 
   function announce(text) {
     if (live) live.textContent = text;
