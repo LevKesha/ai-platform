@@ -423,29 +423,13 @@
     }
 
     function header(group, date, m) {
-      var w = size.w;
       if (m.mobile) {
         text(group, 20, 34, story.kicker, { size: m.kicker, fill: GREY, family: SANS, spacing: "2" });
         text(group, 20, 62, date, { size: m.dateSize, fill: TEXT, family: MONO, weight: "700" });
-        if (story.placeholders) {
-          text(group, w - 20, 34, story.placeholderLabel, { size: m.kicker, fill: GREY, family: MONO, anchor: "end" });
-        }
         return;
       }
       text(group, 40, 44, story.kicker, { size: m.kicker, fill: GREY, family: SANS, spacing: "2" });
       text(group, 40, 76, date, { size: m.dateSize, fill: TEXT, family: MONO, weight: "700" });
-      if (story.placeholders) {
-        var badge = svgEl("rect");
-        badge.setAttribute("x", String(w - 200));
-        badge.setAttribute("y", "28");
-        badge.setAttribute("width", "160");
-        badge.setAttribute("height", "26");
-        badge.setAttribute("rx", "4");
-        badge.setAttribute("fill", "none");
-        badge.setAttribute("stroke", BORD);
-        group.appendChild(badge);
-        text(group, w - 120, 46, story.placeholderLabel, { size: 13, fill: GREY, family: MONO, anchor: "middle" });
-      }
     }
 
     function stateOf(scene, burst) {

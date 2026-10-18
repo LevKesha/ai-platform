@@ -83,8 +83,6 @@ window.OLYMPUS_CONSOLE = {
   },
   edgePaths: ["/cv-jobs", "/v1/demo", "/headroom", "/v1/hr"],
   developmentStory: {
-    placeholders: true,
-    placeholderLabel: "placeholder names",
     kicker: "SUCCESS STORY",
     headline: "I gave it a pulse.",
     serviceHeading: "TOP 5 AWS + BEDROCK",
