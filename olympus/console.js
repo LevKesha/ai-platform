@@ -19,10 +19,35 @@
     var nodes = svg.querySelectorAll("text");
     Array.prototype.forEach.call(nodes, function (node) {
       if (!node.hasAttribute("data-hub-size")) {
-        node.setAttribute("data-hub-size", node.getAttribute("font-size") || "13");
+        var own = node.getAttribute("font-size");
+        node.setAttribute("data-hub-size", own || "13");
+        if (!own) node.setAttribute("data-hub-inherited", "1");
       }
     });
+    var narrowQuery = window.matchMedia("(max-width: 499px)");
+    function restoreAuthored() {
+      Array.prototype.forEach.call(nodes, function (node) {
+        if (node.getAttribute("data-hub-inherited") === "1") node.removeAttribute("font-size");
+        else node.setAttribute("font-size", node.getAttribute("data-hub-size"));
+      });
+    }
     function apply() {
+      // Below 499px the diagram keeps viewBox width inside .hub-frame.
+      // Inflating font-size here leaves the boxes at the scaled geometry, so labels collide.
+      if (narrowQuery.matches) {
+        if (svg.style.width !== box + "px") {
+          svg.style.width = box + "px";
+          svg.style.minWidth = box + "px";
+          svg.style.maxWidth = "none";
+        }
+        restoreAuthored();
+        return;
+      }
+      if (svg.style.width) {
+        svg.style.width = "";
+        svg.style.minWidth = "";
+        svg.style.maxWidth = "";
+      }
       var width = svg.getBoundingClientRect().width;
       if (!width || !box) return;
       var scale = width / box;
@@ -35,6 +60,7 @@
     apply();
     if ("ResizeObserver" in window) new ResizeObserver(apply).observe(svg);
     else window.addEventListener("resize", apply);
+    if (narrowQuery.addEventListener) narrowQuery.addEventListener("change", apply);
   }
 
   function announce(text) {
