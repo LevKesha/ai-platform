@@ -164,6 +164,19 @@
     svg.appendChild(rainG);
     svg.appendChild(backG);
     svg.appendChild(frontG);
+
+    var topbar = document.createElement("div");
+    topbar.className = "ds-topbar";
+    var copy = document.createElement("div");
+    copy.className = "ds-topbar-copy";
+    var kickerEl = document.createElement("p");
+    kickerEl.className = "ds-topbar-kicker";
+    var dateEl = document.createElement("p");
+    dateEl.className = "ds-topbar-date";
+    copy.appendChild(kickerEl);
+    copy.appendChild(dateEl);
+    topbar.appendChild(copy);
+    stage.appendChild(topbar);
     stage.appendChild(svg);
 
     var sr = document.createElement("p");
@@ -183,7 +196,8 @@
     skipBtn.setAttribute("aria-label", "Skip the animation");
     controls.appendChild(pauseBtn);
     controls.appendChild(skipBtn);
-    stage.appendChild(controls);
+    topbar.appendChild(controls);
+    syncHeaderOffset();
 
     var reasons = { hover: false, focus: false, off: true, tab: document.hidden, user: false, reduced: reducedQuery.matches, skip: false };
     var kind = layoutKind();
@@ -262,10 +276,12 @@
     });
     if ("ResizeObserver" in window) {
       new ResizeObserver(function () {
+        syncHeaderOffset();
         if (reasons.reduced || reasons.skip) showFinal();
         else renderActive();
       }).observe(stage);
     }
+    window.addEventListener("resize", syncHeaderOffset);
     narrowQuery.addEventListener("change", function () {
       var next = layoutKind();
       if (next === kind) return;
@@ -435,8 +451,8 @@
 
     function header(group, date, m) {
       if (m.mobile) {
-        text(group, 20, 34, story.kicker, { size: m.kicker, fill: GREY, family: SANS, spacing: "2" });
-        text(group, 20, 62, date, { size: m.dateSize, fill: TEXT, family: MONO, weight: "700" });
+        kickerEl.textContent = story.kicker;
+        dateEl.textContent = date;
         return;
       }
       text(group, 40, 44, story.kicker, { size: m.kicker, fill: GREY, family: SANS, spacing: "2" });
@@ -835,6 +851,13 @@
       glyph.el.setAttribute("fill-opacity", opacity.toFixed(2));
       glyph.el.textContent = glyph.ch;
     }
+  }
+
+  function syncHeaderOffset() {
+    var header = document.querySelector(".site-header");
+    if (!header) return;
+    var height = Math.ceil(header.getBoundingClientRect().height);
+    document.documentElement.style.setProperty("--site-header-h", height + "px");
   }
 
   function day(iso) {
