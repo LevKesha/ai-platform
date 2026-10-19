@@ -2945,7 +2945,6 @@ body.ds-motion .ds-cursor {
 
   .ds-stage, .page-devstory .ds-stage, .ov-story .ds-stage {
     aspect-ratio: auto; max-width: none; width: 100%;
-    max-height: 70vh;
   }
   .ds-svg { height: auto; }
   .ds-controls, .ov-story .ds-controls { top: 8px; right: 8px; bottom: auto; gap: 4px; }

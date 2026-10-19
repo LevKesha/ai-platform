@@ -390,7 +390,7 @@
       var m = measures(mobile, scene);
       header(group, scene.date, m);
       graph(group, scene, t, m, finalFrame);
-      if (scene.headline) {
+      if (scene.headline && !mobile) {
         text(group, size.w / 2, m.headlineY, scene.headline, {
           size: m.headSize,
           anchor: "middle",
@@ -409,7 +409,7 @@
       var embed = variant === "embed" && !mobile;
       var f = function (s, floor) { return mobile ? s : Math.max(s, (floor || 13) / k); };
       var capY = mobile ? 510 : 560;
-      if (scene.headline) capY = mobile ? 552 : Math.max(598, 548 + 1.3 * Math.max(22, 14 / k));
+      if (scene.headline && !mobile) capY = Math.max(598, 548 + 1.3 * Math.max(22, 14 / k));
       return {
         mobile: mobile,
         embed: embed,
