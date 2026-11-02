@@ -21,9 +21,16 @@ function fail(message) {
   process.exit(1);
 }
 
-function flush() {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, 20);
+// The send path awaits crypto.subtle and fetch, so wait for the panel to settle
+// instead of sleeping a fixed time.
+function settle(done) {
+  const deadline = Date.now() + 5000;
+  return new Promise(function (resolve, reject) {
+    (function poll() {
+      if (done()) return resolve();
+      if (Date.now() > deadline) return reject(new Error("timed out waiting for the response to render"));
+      setTimeout(poll, 10);
+    })();
   });
 }
 
@@ -162,7 +169,11 @@ function chatSubmit(status, typedText) {
   widget.input.value = typedText;
   const form = widget.input.parent;
   (form.listeners.submit || []).forEach(function (fn) { fn({ preventDefault: function () {} }); });
-  return flush().then(function () { return { doc: doc, widget: widget }; });
+  return settle(function () {
+    return widget.log.all().some(function (node) {
+      return node.getAttribute("role") === "status" || node.className === "chat-closed";
+    });
+  }).then(function () { return { doc: doc, widget: widget }; });
 }
 
 function assertChatBlocked(page) {
@@ -241,7 +252,9 @@ function renderWakeForm(status) {
   const error = form.all().filter(function (node) { return node.className === "sleep-error"; })[0];
   if (!send || !error) fail("wake form is missing the submit button or the error line");
   (form.listeners.submit || []).forEach(function (fn) { fn({ preventDefault: function () {} }); });
-  return flush().then(function () { return { form: form, send: send, error: error }; });
+  return settle(function () {
+    return error.hidden === false || form.all().some(function (node) { return node.getAttribute("role") === "status"; });
+  }).then(function () { return { form: form, send: send, error: error }; });
 }
 
 function assertWakeBlocked(page) {
