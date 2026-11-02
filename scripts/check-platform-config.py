@@ -1,7 +1,23 @@
 #!/usr/bin/env python3
-"""Fail if sibling repos drift from platform-config.yaml LLM and edge SSOT."""
+"""Fail if sibling repos drift from platform-config.yaml LLM and edge SSOT.
+
+Sibling clones (agent-api, rag-service, llm-cost) are read from the directory
+next to this repo by default. A sibling that is not cloned is skipped with a
+message; a present clone with a missing file still fails.
+
+Environment:
+  PLATFORM_CONFIG_SIBLINGS_DIR   directory holding the sibling clones
+                                 (default: the parent of this repo)
+  PLATFORM_CONFIG_REQUIRE_SIBLINGS=1
+                                 every sibling the check reads must be present;
+                                 a missing clone is an error (exit 1). CI sets
+                                 this so the sibling checks cannot be skipped.
+
+Usage: python3 scripts/check-platform-config.py
+"""
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -15,7 +31,8 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "platform-config.yaml"
-PARENT = ROOT.parent
+PARENT = Path(os.environ.get("PLATFORM_CONFIG_SIBLINGS_DIR") or ROOT.parent).resolve()
+REQUIRE_SIBLINGS = os.environ.get("PLATFORM_CONFIG_REQUIRE_SIBLINGS", "") == "1"
 sys.path.insert(0, str(ROOT / "packages"))
 
 from platform_common.registry import SLOT_NAMES, load_model_mix  # noqa: E402
@@ -149,6 +166,12 @@ def litellm_rows(text: str) -> list[tuple[str, str]]:
             rows.append((name, m.group(1)))
             name = None
     return rows
+
+
+def sibling_repos() -> list[str]:
+    """Sibling clones the check reads, in order. CI checks out exactly these."""
+    repos = [repo for repo, _rel, _kind in CHECKS + PROBE_CHECKS + SHORT_ID_CHECKS]
+    return sorted({repo for repo in repos if repo != "ai-platform"})
 
 
 def resolve(repo: str, rel: str) -> Path | None:
@@ -433,6 +456,12 @@ def main() -> int:
         if max_found and max_found != [want_max]:
             errors.append(f"{path}: maxModelId want={[want_max]!r} got={max_found!r}")
 
+    if skipped and REQUIRE_SIBLINGS:
+        for repo in sorted(skipped):
+            errors.append(
+                f"required sibling repo not present: {PARENT / repo} "
+                "(PLATFORM_CONFIG_REQUIRE_SIBLINGS=1)"
+            )
     if errors:
         print("SSOT drift detected:")
         for e in errors:
