@@ -1,5 +1,16 @@
 name: AI Platform CI
 
+# platform-config-siblings clones the sibling repos that
+# scripts/check-platform-config.py reads and runs it with
+# PLATFORM_CONFIG_REQUIRE_SIBLINGS=1, so a missing clone fails instead of
+# being skipped. It needs the Actions secret SIBLING_REPOS_READ_TOKEN:
+# a read-only token (contents: read) scoped to only those sibling repos,
+# as a fine-grained personal access token or a GitHub App installation
+# token. The token is used only by the checkout steps of that job and is
+# never passed to a script. The job fails with "sibling token not
+# available" until the secret exists, including for pull requests from
+# forks, which do not receive repository secrets.
+
 on:
   push:
     branches: [dev, main]
@@ -90,3 +101,54 @@ jobs:
           for test in packages/chat_helper/tests/*.cjs; do
             node "$test"
           done
+
+  platform-config-siblings:
+    name: Platform config across sibling repos
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Require the sibling read token
+        env:
+          TOKEN_PRESENT: ${{ secrets.SIBLING_REPOS_READ_TOKEN != '' }}
+        run: |
+          set -euo pipefail
+          if [[ "$TOKEN_PRESENT" != "true" ]]; then
+            echo "::error::sibling token not available: set the Actions secret SIBLING_REPOS_READ_TOKEN (fork pull requests do not receive it)"
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          path: ai-platform
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/agent-api
+          token: ${{ secrets.SIBLING_REPOS_READ_TOKEN }}
+          persist-credentials: false
+          path: siblings/agent-api
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/rag-service
+          token: ${{ secrets.SIBLING_REPOS_READ_TOKEN }}
+          persist-credentials: false
+          path: siblings/rag-service
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/llm-cost
+          token: ${{ secrets.SIBLING_REPOS_READ_TOKEN }}
+          persist-credentials: false
+          path: siblings/llm-cost
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check platform config against sibling repos
+        working-directory: ai-platform
+        env:
+          PLATFORM_CONFIG_SIBLINGS_DIR: ${{ github.workspace }}/siblings
+          PLATFORM_CONFIG_REQUIRE_SIBLINGS: "1"
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pyyaml
+          python3 scripts/check-platform-config.py
