@@ -44,6 +44,18 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Olympus tree has no dotfiles
+        run: |
+          set -euo pipefail
+          bad="$(git ls-files -z -- olympus | tr '\0' '\n' | grep -E '(^|/)\.' || true)"
+          if [[ -n "$bad" ]]; then
+            while IFS= read -r path; do
+              echo "::error file=${path}::dot-prefixed path under olympus/ is not allowed"
+            done <<< "$bad"
+            exit 1
+          fi
+          echo "olympus/: no dot-prefixed paths"
+
       - name: Run CI over present services
         run: |
           set -euo pipefail
