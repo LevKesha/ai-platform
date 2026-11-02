@@ -90,11 +90,16 @@ def cache_metadata(rel: str) -> tuple[str, str]:
     raise ValueError(f"no cache rule for {path}")
 
 
+def has_dot_segment(rel: str) -> bool:
+    """True when any path part starts with a dot. Such paths are never uploaded."""
+    return any(part.startswith(".") for part in rel.split("/"))
+
+
 def iter_cache_manifest(root: Path) -> list[tuple[str, str, str]]:
     rows: list[tuple[str, str, str]] = []
     for path in sorted(p for p in root.rglob("*") if p.is_file()):
         rel = path.relative_to(root).as_posix()
-        if rel == "README.md":
+        if rel == "README.md" or has_dot_segment(rel):
             continue
         cache, ctype = cache_metadata(rel)
         rows.append((rel, cache, ctype))
