@@ -78,6 +78,7 @@ class Node {
   remove() {
     if (!this.parent) return;
     this.parent.children = this.parent.children.filter(function (child) { return child !== this; }, this);
+    this.parent = null;
   }
   addEventListener(type, fn) {
     (this.listeners[type] || (this.listeners[type] = [])).push(fn);
@@ -249,7 +250,7 @@ function assertWakeBlocked(page) {
   if (notes[0].textContent !== SENTENCE) fail("wake 421 sentence was " + JSON.stringify(notes[0].textContent));
   if (notes[0].children.length !== 0) fail("wake 421 status slot has child nodes");
   if (notes[0].className !== "sleep-tiny") fail("wake 421 note class " + notes[0].className);
-  if (page.send.hidden !== true) fail("wake 421 left the submit button visible");
+  if (page.send.parent || page.form.querySelector("button[type=submit]")) fail("wake 421 left the submit button in the form");
   if (page.error.hidden !== true) fail("wake 421 left the failure line visible");
   const text = page.form.textContent;
   if (text.indexOf("did not send") !== -1 || text.indexOf("has not received") !== -1) fail("wake 421 showed the failure copy");
@@ -262,7 +263,7 @@ function assertWakeFailed(page, status) {
   if (page.error.textContent !== "The request did not send. Lev has not received it.") {
     fail("wake " + status + " failure copy changed: " + page.error.textContent);
   }
-  if (page.send.hidden !== false || page.send.disabled !== false) fail("wake " + status + " submit button changed");
+  if (page.send.parent !== page.form || page.send.hidden !== false || page.send.disabled !== false) fail("wake " + status + " submit button changed");
   if (page.form.textContent.indexOf(SENTENCE) !== -1) fail("wake " + status + " showed the blocked sentence");
 }
 

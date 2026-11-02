@@ -342,9 +342,10 @@
       var note = el("p", "sleep-tiny");
       note.setAttribute("role", "status");
       note.textContent = text;
+      // .btn sets display, which outranks the [hidden] default, so drop the button instead.
       if (send) {
-        send.hidden = true;
         form.insertBefore(note, send);
+        send.remove();
       } else {
         form.appendChild(note);
       }
