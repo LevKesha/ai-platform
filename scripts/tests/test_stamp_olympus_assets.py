@@ -219,6 +219,20 @@ def test_manifest_matches_cache_metadata() -> None:
         assert (cache, ctype) == mod.cache_metadata(rel)
 
 
+def test_manifest_skips_dot_segments(tmp_path: Path) -> None:
+    mod = load()
+    (tmp_path / "d").mkdir()
+    (tmp_path / "index.html").write_text("<html></html>", encoding="utf-8")
+    (tmp_path / "d" / "app.js").write_text("", encoding="utf-8")
+    (tmp_path / ".x.js").write_text("", encoding="utf-8")
+    (tmp_path / "d" / ".y").write_text("", encoding="utf-8")
+    rels = [rel for rel, _cache, _ctype in mod.iter_cache_manifest(tmp_path)]
+    assert rels == ["d/app.js", "index.html"]
+    assert mod.has_dot_segment(".x.js")
+    assert mod.has_dot_segment("d/.y")
+    assert not mod.has_dot_segment("d/app.js")
+
+
 def test_deploy_workflow_stamps_uploads_headers_and_invalidates() -> None:
     text = (ROOT / ".github/workflows/deploy-olympus.yml").read_text(encoding="utf-8")
     assert 'python3 scripts/stamp-olympus-assets.py olympus --version "${GITHUB_SHA:0:7}"' in text

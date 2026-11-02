@@ -337,11 +337,31 @@
       error.hidden = false;
       error.textContent = "The request did not send. Lev has not received it.";
     }
+    function showBlocked(text) {
+      error.hidden = true;
+      var note = el("p", "sleep-tiny");
+      note.setAttribute("role", "status");
+      note.textContent = text;
+      // .btn sets display, which outranks the [hidden] default, so drop the button instead.
+      if (send) {
+        form.insertBefore(note, send);
+        send.remove();
+      } else {
+        form.appendChild(note);
+      }
+    }
     fetch(endpoint, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(data)
     }).then(function (res) {
+      var blocked = window.olympusWakeState && typeof window.olympusWakeState.blockedMessage === "function"
+        ? window.olympusWakeState.blockedMessage(res)
+        : "";
+      if (blocked) {
+        showBlocked(blocked);
+        return;
+      }
       var type = res && res.headers && typeof res.headers.get === "function" ? String(res.headers.get("content-type") || "") : "";
       if (!res || !res.ok || res.status === 403 || res.status === 404 || type.indexOf("text/html") !== -1) {
         showSendError();

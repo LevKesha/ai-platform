@@ -66,7 +66,7 @@ jobs:
           aws s3api head-bucket --bucket "${BUCKET}"
           # Delete removed keys first. cp below sets Cache-Control from cache_metadata()
           # even when the bytes did not change. Do not sync again after these copies.
-          aws s3 sync olympus/ "s3://${BUCKET}/" --delete --exclude README.md
+          aws s3 sync olympus/ "s3://${BUCKET}/" --delete --exclude README.md --exclude '.*' --exclude '*/.*'
           manifest="$(python3 scripts/stamp-olympus-assets.py olympus --print-cache-manifest)"
           while IFS=$'\t' read -r rel cache ctype; do
             [[ -n "$rel" ]] || continue

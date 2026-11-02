@@ -6,6 +6,12 @@
   root.olympusWakeState = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   var inflight = null;
+  var BLOCKED_TEXT = "This part is open to visitors in Israel only.";
+
+  // 421 is the only status that means this. The body is static HTML and is never read.
+  function blockedMessage(res) {
+    return res && res.status === 421 ? BLOCKED_TEXT : "";
+  }
 
   function asleep() {
     return { state: "asleep", live: false, approved: false, wakeAt: null };
@@ -62,5 +68,5 @@
     return promise;
   }
 
-  return { readWakeState: readWakeState };
+  return { readWakeState: readWakeState, blockedMessage: blockedMessage };
 });
