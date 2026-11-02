@@ -181,6 +181,15 @@
       open();
     }
 
+    function showBlocked(text, question, typed) {
+      input.disabled = true;
+      send.disabled = true;
+      if (typed && !input.value) input.value = question;
+      const note = el(doc, "p", { class: "chat-note", role: "status" });
+      note.textContent = text;
+      log.appendChild(note);
+    }
+
     function paintFixture(name) {
       const certQ = policy.suggested[1];
       const platformQ = policy.suggested[2];
@@ -238,7 +247,7 @@
 
     const turns = Array.isArray(options.history) ? options.history.slice() : [];
 
-    function ask(question) {
+    function ask(question, typed) {
       if (input.disabled) return Promise.resolve();
       addQuestion(question);
       const dots = showTyping();
@@ -261,6 +270,12 @@
           if (isChatApi(chatPath) && response && (response.status === 403 || response.status === 404)) {
             dots.remove();
             showClosed();
+            return null;
+          }
+          const blocked = blockedMessage(response);
+          if (blocked) {
+            dots.remove();
+            showBlocked(blocked, question, typed);
             return null;
           }
           return Promise.resolve()
@@ -313,7 +328,7 @@
       const question = input.value.trim();
       if (!question) return;
       input.value = "";
-      ask(question);
+      ask(question, true);
     });
     doc.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && !panel.hidden) close();
@@ -565,6 +580,12 @@
     }
     armImages();
     if (narrow.addEventListener) narrow.addEventListener("change", armImages);
+  }
+
+  function blockedMessage(response) {
+    const shared = typeof globalThis !== "undefined" ? globalThis.olympusWakeState : null;
+    if (!shared || typeof shared.blockedMessage !== "function") return "";
+    return shared.blockedMessage(response);
   }
 
   function readSharedWake(options) {
