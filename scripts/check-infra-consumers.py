@@ -8,7 +8,9 @@ must fail even when a chart still has the same old ids.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -19,6 +21,9 @@ from cloudfront_sg import require_sg_id
 ROOT = Path(__file__).resolve().parents[1]
 PARENT = ROOT.parent
 INFRA = ROOT / "platform-infra.dev.json"
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from platform_repos import PLATFORM_REPOS  # noqa: E402
 
 PATH_INGRESS_VALUES = (
     "agent-api/k8s/helm/values.yaml",
@@ -226,6 +231,40 @@ def live_errors(data: dict) -> list[str]:
     return errors
 
 
+def snapshot_key_errors(data: dict) -> list[str]:
+    """Snapshot keys must be the infrastructure export list, plus its meta and camelCase alias."""
+    script = PARENT / "infrastructure" / "scripts" / "export-platform-outputs.py"
+    if not script.is_file():
+        if os.environ.get("PLATFORM_CONFIG_REQUIRE_SIBLINGS") == "1":
+            return [f"missing {script}"]
+        print("skip infrastructure export key list (clone not present)")
+        return []
+    spec = importlib.util.spec_from_file_location("export_platform_outputs", script)
+    if spec is None or spec.loader is None:
+        return [f"could not load {script}"]
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    allowed = set(module.KEYS) | {"_source", "_note", "retrieveTokenSecretArn"}
+    return [
+        f"platform-infra.dev.json key {key} is not in infrastructure export KEYS"
+        for key in data
+        if key not in allowed
+    ]
+
+
+def missing_repo_errors() -> list[str]:
+    if os.environ.get("PLATFORM_CONFIG_REQUIRE_SIBLINGS") != "1":
+        return []
+    errors: list[str] = []
+    for name in PLATFORM_REPOS:
+        if name == "ai-platform":
+            continue
+        path = PARENT / name
+        if not path.is_dir():
+            errors.append(f"required sibling repo not present: {path}")
+    return errors
+
+
 def main() -> int:
     self_test()
     parser = argparse.ArgumentParser()
@@ -238,6 +277,8 @@ def main() -> int:
     data = json.loads(INFRA.read_text(encoding="utf-8"))
     errors = live_errors(data) if args.live else []
     errors.extend(file_errors(data))
+    errors.extend(snapshot_key_errors(data))
+    errors.extend(missing_repo_errors())
     if errors:
         print("infra SSOT drift:")
         for error in errors:
@@ -247,6 +288,7 @@ def main() -> int:
         print("OK: live AWS matches platform-infra.dev.json and consumers")
     else:
         print("OK: consumers match platform-infra.dev.json")
+        print("repos: " + ", ".join(PLATFORM_REPOS))
     return 0
 
 

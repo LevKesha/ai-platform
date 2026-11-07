@@ -1,22 +1,28 @@
 #!/usr/bin/env python3
 """Fail if sibling repos drift from platform-config.yaml LLM and edge SSOT.
 
-Sibling clones (agent-api, rag-service, llm-cost) are read from the directory
-next to this repo by default. A sibling that is not cloned is skipped with a
-message; a present clone with a missing file still fails.
+Every repo in scripts/platform_repos.py is in this check. Consumer files are
+compared to the model registry. Other repos are still required: a present
+clone is scanned for deprecated model ids, and a missing clone fails when
+PLATFORM_CONFIG_REQUIRE_SIBLINGS=1.
+
+Outside GitHub Actions the check also runs `gh repo list LevKesha` and fails
+if that set differs from platform_repos.PLATFORM_REPOS.
 
 Environment:
   PLATFORM_CONFIG_SIBLINGS_DIR   directory holding the sibling clones
                                  (default: the parent of this repo)
   PLATFORM_CONFIG_REQUIRE_SIBLINGS=1
-                                 every sibling the check reads must be present;
+                                 every sibling repo must be present;
                                  a missing clone is an error (exit 1). CI sets
                                  this so the sibling checks cannot be skipped.
+  PLATFORM_CONFIG_SKIP_GITHUB=1  do not compare the repo list to GitHub
 
 Usage: python3 scripts/check-platform-config.py
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
@@ -33,7 +39,10 @@ ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "platform-config.yaml"
 PARENT = Path(os.environ.get("PLATFORM_CONFIG_SIBLINGS_DIR") or ROOT.parent).resolve()
 REQUIRE_SIBLINGS = os.environ.get("PLATFORM_CONFIG_REQUIRE_SIBLINGS", "") == "1"
+sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "packages"))
+
+from platform_repos import OWNER, PLATFORM_REPOS, repo_set_errors  # noqa: E402
 
 from platform_common.registry import SLOT_NAMES, load_model_mix  # noqa: E402
 
@@ -169,9 +178,8 @@ def litellm_rows(text: str) -> list[tuple[str, str]]:
 
 
 def sibling_repos() -> list[str]:
-    """Sibling clones the check reads, in order. CI checks out exactly these."""
-    repos = [repo for repo, _rel, _kind in CHECKS + PROBE_CHECKS + SHORT_ID_CHECKS]
-    return sorted({repo for repo in repos if repo != "ai-platform"})
+    """Every LevKesha repo except this one. CI checks out exactly these."""
+    return [name for name in PLATFORM_REPOS if name != "ai-platform"]
 
 
 def resolve(repo: str, rel: str) -> Path | None:
@@ -226,6 +234,61 @@ def deprecated_hits(text: str, deprecated: list[str]) -> list[str]:
         if re.search(rf"(?<![\w.]){re.escape(dep)}(?![\w])", text):
             found.append(dep)
     return found
+
+
+def scan_git_deprecated(repo: Path, deprecated: list[str]) -> list[str]:
+    """Deprecated model ids in tracked files. Skips a directory that is not a git repo."""
+    if not (repo / ".git").exists():
+        return []
+    proc = subprocess.run(
+        ["git", "ls-files", "-z"],
+        cwd=repo,
+        check=False,
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        return [f"{repo}: git ls-files failed"]
+    errors: list[str] = []
+    for raw in proc.stdout.decode().split("\0"):
+        if not raw:
+            continue
+        path = repo / raw
+        if not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        for dep in deprecated_hits(text, deprecated):
+            errors.append(f"{repo.name}/{raw}: deprecated model id {dep}")
+    return errors
+
+
+def github_list_errors() -> list[str]:
+    """Fail when the committed repo list and GitHub disagree.
+
+    Actions does not get the sibling token inside this script, so the
+    checkout list is the CI copy of this check.
+    """
+    if os.environ.get("PLATFORM_CONFIG_SKIP_GITHUB") == "1":
+        return []
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        print("github repo list: skipped on Actions; checkout set is the list")
+        return []
+    proc = subprocess.run(
+        ["gh", "repo", "list", OWNER, "--limit", "100", "--json", "name"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout).strip()
+        return [f"gh repo list {OWNER} failed: {detail}"]
+    live = {item["name"] for item in json.loads(proc.stdout)}
+    errors = repo_set_errors(set(PLATFORM_REPOS), live)
+    if not errors:
+        print(f"github repo list: matches {OWNER} ({len(live)})")
+    return errors
 
 
 def scan_deprecated(deprecated: list[str]) -> list[str]:
@@ -456,6 +519,19 @@ def main() -> int:
         if max_found and max_found != [want_max]:
             errors.append(f"{path}: maxModelId want={[want_max]!r} got={max_found!r}")
 
+    deprecated_ids = [str(item) for item in deprecated] if isinstance(deprecated, list) else []
+    consumers = {repo for repo, _rel, _kind in CHECKS + PROBE_CHECKS + SHORT_ID_CHECKS}
+    for repo in sibling_repos():
+        base = PARENT / repo
+        if not base.is_dir():
+            skipped.add(repo)
+            continue
+        errors.extend(scan_git_deprecated(base, deprecated_ids))
+        if repo not in consumers:
+            print(f"repo {repo}: no platform-config consumer files")
+
+    errors.extend(github_list_errors())
+
     if skipped and REQUIRE_SIBLINGS:
         for repo in sorted(skipped):
             errors.append(
@@ -470,6 +546,7 @@ def main() -> int:
     if skipped:
         print("skip siblings (clone not present): " + ", ".join(sorted(skipped)))
     print("OK: platform-config.yaml LLM SSOT matches checked consumers")
+    print("repos: " + ", ".join(PLATFORM_REPOS))
     return 0
 
 

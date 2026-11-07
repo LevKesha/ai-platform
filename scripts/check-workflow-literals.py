@@ -5,8 +5,8 @@ Owner: infrastructure outputs exported to platform-infra.dev.json
 (aws_account_id, aws_region, cluster_name, github_oidc_role_arn). Workflows
 read them through secrets (AWS_OIDC_ROLE_ARN, AWS_REGION, EKS_CLUSTER_NAME).
 
-Scans .github/workflows/*.yml|*.yaml in every platform repo (sibling clones
-next to ai-platform, cicd included) for:
+Scans .github/workflows/*.yml|*.yaml in every repo in scripts/platform_repos.py
+(sibling clones next to ai-platform) for:
   - an IAM role ARN
   - an AWS account id (the exported one, or any 12-digit id inside an ARN or ECR host)
   - an AWS region name
@@ -27,7 +27,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PARENT = ROOT.parent
 INFRA = ROOT / "platform-infra.dev.json"
-REPOS = ("ai-platform", "agent-api", "llm-cost", "cicd", "infrastructure", "rag-service", "mcp-server")
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from platform_repos import PLATFORM_REPOS  # noqa: E402
+
+REPOS = PLATFORM_REPOS
 
 ROLE_ARN = re.compile(r"arn:aws:iam::\d{12}:role/[\w+=,.@/-]+")
 ACCOUNT_IN_ARN_OR_ECR = re.compile(r"(?:arn:aws:[a-z0-9-]*:[a-z0-9-]*:)(\d{12})|\b(\d{12})\.dkr\.ecr\.")

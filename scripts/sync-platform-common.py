@@ -11,6 +11,7 @@ Usage:
 from __future__ import annotations
 
 import filecmp
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -18,6 +19,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "packages" / "platform_common"
 PARENT = ROOT.parent
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from platform_repos import PLATFORM_REPOS  # noqa: E402
+
+# Repos that vendor platform_common. The other PLATFORM_REPOS must not grow a copy.
+VENDOR_REPOS = ("agent-api", "rag-service", "mcp-server", "llm-cost")
 
 TARGETS = [
     PARENT / "agent-api" / "platform_common",
@@ -59,15 +66,35 @@ def main() -> int:
         print(f"missing SSOT {SRC}", file=sys.stderr)
         return 1
     check = "--check" in sys.argv
+    require = os.environ.get("PLATFORM_CONFIG_REQUIRE_SIBLINGS") == "1"
     ok = True
     for dest in TARGETS:
         if not dest.parent.is_dir():
             print(f"skip (no parent): {dest}")
+            if require:
+                ok = False
             continue
         if check:
             ok = check_one(dest) and ok
         else:
             sync_one(dest)
+    for name in PLATFORM_REPOS:
+        if name in VENDOR_REPOS or name == "ai-platform":
+            continue
+        repo = PARENT / name
+        if not repo.is_dir():
+            if require:
+                print(f"MISSING {repo}", file=sys.stderr)
+                ok = False
+            else:
+                print(f"skip (no repo): {name}")
+            continue
+        extra = repo / "platform_common"
+        if extra.is_dir():
+            print(f"DRIFT unexpected {extra}", file=sys.stderr)
+            ok = False
+        else:
+            print(f"ok no vendor {name}")
     return 0 if ok else 1
 
 

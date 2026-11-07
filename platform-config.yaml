@@ -1,7 +1,9 @@
 # Platform model / LLM registry — SINGLE SOURCE OF TRUTH (GA: LevKesha/ai-platform)
 #
-# Consumers (agent-api, rag-service, mcp-server, claude-router, agents/*, llm-cost) MUST mirror
+# Consumers (agent-api, rag-service, claude-router, agents/*, llm-cost) MUST mirror
 # these values in agent-spec.yaml, k8s/helm values, and .env.example.
+# Every LevKesha repo is in scripts/platform_repos.py. Repos with no consumer
+# files (athena-labs, cicd, infrastructure, mcp-server) are still scanned.
 # Do not invent a second model ID in app code or charts.
 #
 # llm.model_id is the alias of llm.slots.default.bedrock_id (live invoke).
@@ -16,7 +18,7 @@
 # Verify:
 #   python scripts/check-platform-config.py
 #   python scripts/check-infra-consumers.py
-# Sibling clones expected under ../agent-api, ../rag-service, ../mcp-server, ../infrastructure
+# Sibling clones: every name in scripts/platform_repos.py except ai-platform
 
 aws:
   region: eu-central-1

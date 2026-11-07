@@ -1,7 +1,7 @@
 name: AI Platform CI
 
-# platform-config-siblings clones the sibling repos that
-# scripts/check-platform-config.py reads and runs it with
+# platform-config-siblings clones every sibling in scripts/platform_repos.py
+# and runs scripts/check-platform-config.py with
 # PLATFORM_CONFIG_REQUIRE_SIBLINGS=1, so a missing clone fails instead of
 # being skipped. It needs the Actions secret SIBLING_REPOS_READ_TOKEN:
 # a read-only token (contents: read) scoped to only those sibling repos,
@@ -139,6 +139,30 @@ jobs:
           token: ${{ secrets.SIBLING_REPOS_READ_TOKEN }}
           persist-credentials: false
           path: siblings/llm-cost
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/cicd
+          token: ${{ secrets.SIBLING_REPOS_READ_TOKEN }}
+          persist-credentials: false
+          path: siblings/cicd
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/infrastructure
+          token: ${{ secrets.SIBLING_REPOS_READ_TOKEN }}
+          persist-credentials: false
+          path: siblings/infrastructure
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/mcp-server
+          token: ${{ secrets.SIBLING_REPOS_READ_TOKEN }}
+          persist-credentials: false
+          path: siblings/mcp-server
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/athena-labs
+          token: ${{ secrets.SIBLING_REPOS_READ_TOKEN }}
+          persist-credentials: false
+          path: siblings/athena-labs
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

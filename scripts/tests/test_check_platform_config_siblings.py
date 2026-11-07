@@ -25,6 +25,7 @@ def _checker():
 def _run(siblings_dir: Path, require: bool) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
     env["PLATFORM_CONFIG_SIBLINGS_DIR"] = str(siblings_dir)
+    env["PLATFORM_CONFIG_SKIP_GITHUB"] = "1"
     env.pop("PLATFORM_CONFIG_REQUIRE_SIBLINGS", None)
     if require:
         env["PLATFORM_CONFIG_REQUIRE_SIBLINGS"] = "1"
@@ -38,11 +39,26 @@ def _run(siblings_dir: Path, require: bool) -> subprocess.CompletedProcess[str]:
     )
 
 
-def test_sibling_list_covers_rag_service() -> None:
+def test_sibling_list_is_every_github_repo_except_this_one() -> None:
     checker = _checker()
     repos = checker.sibling_repos()
+    assert repos == [name for name in checker.PLATFORM_REPOS if name != "ai-platform"]
+    assert "athena-labs" in repos
+    assert "cicd" in repos
+    assert "infrastructure" in repos
+    assert "mcp-server" in repos
     assert "rag-service" in repos
     assert "ai-platform" not in repos
+
+
+def test_github_repo_set_must_match() -> None:
+    checker = _checker()
+    expected = set(checker.PLATFORM_REPOS)
+    assert checker.repo_set_errors(expected, expected) == []
+    extra = checker.repo_set_errors(expected, expected | {"microservices"})
+    assert any("microservices" in item for item in extra)
+    missing = checker.repo_set_errors(expected, expected - {"athena-labs"})
+    assert any("athena-labs" in item for item in missing)
     covered = {(repo, rel) for repo, rel, _kind in checker.CHECKS}
     assert ("rag-service", "agent-spec.yaml") in covered
     assert ("rag-service", "k8s/helm/values.yaml") in covered
