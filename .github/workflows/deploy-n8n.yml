@@ -76,8 +76,8 @@ jobs:
             --name "$EKS_CLUSTER_NAME" \
             --region "$AWS_REGION"
 
-      # Soft-downed EKS still answers the API with 0 Ready nodes. rollout status would wait
-      # for a pod that cannot schedule. Skip the apply instead of stretching the timeout.
+      # Asleep cluster fails this job, same outcome as LevKesha/cicd reusable-helm-deploy.yml.
+      # Soft-downed EKS still answers the API with 0 Ready nodes.
       - name: Count Ready nodes
         id: nodes
         run: |
@@ -86,8 +86,9 @@ jobs:
           ready="$(kubectl get nodes -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' | awk '$0=="True"{n++} END{print n+0}')"
           echo "Ready nodes: ${ready}"
           if [ "${ready}" -eq 0 ]; then
-            echo "::notice::cluster asleep (0 Ready nodes): skipping n8n apply; rollout would hang until the cluster is restored"
-            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            echo "::error::cluster asleep (0 nodes) - Helm not applied; wake first (infrastructure wake-sleep-dev.yml action=wake) and rerun the deploy"
+            echo "cluster asleep (0 nodes) - Helm not applied; wake first (infrastructure wake-sleep-dev.yml action=wake) and rerun the deploy" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           else
             echo "deploy=true" >> "$GITHUB_OUTPUT"
           fi
