@@ -74,20 +74,26 @@ jobs:
         run: |
           aws eks update-kubeconfig \
             --name "$EKS_CLUSTER_NAME" \
-            --region "$AWS_REGION"
+            --region "$AWS_REGION" >/dev/null
 
-      # Soft-downed EKS still answers the API with 0 Ready nodes. rollout status would wait
-      # for a pod that cannot schedule. Skip the apply instead of stretching the timeout.
+      # Asleep cluster fails this job, same outcome as LevKesha/cicd reusable-helm-deploy.yml.
+      # Soft-downed EKS still answers the API with 0 Ready nodes.
       - name: Count Ready nodes
         id: nodes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           # pipefail: a failed kubectl must not look like 0 Ready nodes
           set -euo pipefail
           ready="$(kubectl get nodes -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' | awk '$0=="True"{n++} END{print n+0}')"
           echo "Ready nodes: ${ready}"
-          if [ "${ready}" -eq 0 ]; then
-            echo "::notice::cluster asleep (0 Ready nodes): skipping n8n apply; rollout would hang until the cluster is restored"
+          if [ "${ready}" -eq 0 ] && [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "::warning::cluster asleep (0 nodes) - dry-run skipped; manifests not validated"
             echo "deploy=false" >> "$GITHUB_OUTPUT"
+          elif [ "${ready}" -eq 0 ]; then
+            echo "::error::cluster asleep (0 nodes) - manifests not applied; wake first (infrastructure wake-sleep-dev.yml action=wake) and rerun the deploy"
+            echo "cluster asleep (0 nodes) - manifests not applied; wake first (infrastructure wake-sleep-dev.yml action=wake) and rerun the deploy" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           else
             echo "deploy=true" >> "$GITHUB_OUTPUT"
           fi
