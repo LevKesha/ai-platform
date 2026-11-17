@@ -72,9 +72,31 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-session-name: github-actions-ecr
 
+      # Login prints the registry host. mask-password covers only the docker password.
+      # Register the host before that step so build and push logs are masked too.
+      - name: Mask registry host
+        run: |
+          set -euo pipefail
+          export AWS_PAGER=""
+          if [ -z "${AWS_REGION}" ]; then
+            echo "::error::AWS region is empty"
+            exit 1
+          fi
+          account="$(aws sts get-caller-identity --query Account --output text)"
+          if [ -z "$account" ] || [ "$account" = "None" ]; then
+            echo "::error::could not resolve the registry host"
+            exit 1
+          fi
+          registry="${account}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          echo "::add-mask::https://${registry}"
+          echo "::add-mask::${registry}"
+          echo "::add-mask::${account}"
+
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: true
 
       - name: Build, tag & push image
         id: meta
