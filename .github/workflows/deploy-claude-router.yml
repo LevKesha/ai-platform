@@ -82,9 +82,9 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./claude-router
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" ./claude-router
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: Deploy to EKS
@@ -129,10 +129,7 @@ jobs:
         run: |
           aws eks update-kubeconfig \
             --name "$CLUSTER" \
-            --region "$REGION"
-
-      - name: Verify cluster connection
-        run: kubectl get nodes
+            --region "$REGION" >/dev/null
 
       # Asleep cluster fails this job, same outcome as LevKesha/cicd reusable-helm-deploy.yml.
       # Soft-downed EKS still answers the API with 0 Ready nodes.
@@ -156,7 +153,10 @@ jobs:
           fi
 
       - name: Ensure namespace
-        if: steps.nodes.outputs.deploy == 'true'
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          steps.nodes.outputs.deploy == 'true' &&
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         env:
           NAMESPACE: ${{ env.K8S_NAMESPACE }}
         run: |
@@ -165,7 +165,10 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Apply manifests
-        if: steps.nodes.outputs.deploy == 'true'
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          steps.nodes.outputs.deploy == 'true' &&
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         env:
           IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
         run: |
@@ -174,7 +177,10 @@ jobs:
           kubectl apply -f claude-router/k8s/service.yaml
 
       - name: Wait for rollout
-        if: steps.nodes.outputs.deploy == 'true'
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          steps.nodes.outputs.deploy == 'true' &&
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         env:
           SERVICE: ${{ env.SERVICE_NAME }}
           NAMESPACE: ${{ env.K8S_NAMESPACE }}
