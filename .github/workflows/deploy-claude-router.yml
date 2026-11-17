@@ -82,7 +82,13 @@ jobs:
             echo "::error::AWS region is empty"
             exit 1
           fi
-          account="$(aws sts get-caller-identity --query Account --output text)"
+          err="$(mktemp)"
+          if ! account="$(aws sts get-caller-identity --query Account --output text 2>"$err")"; then
+            rm -f "$err"
+            echo "::error::STS identity lookup failed"
+            exit 1
+          fi
+          rm -f "$err"
           if [ -z "$account" ] || [ "$account" = "None" ]; then
             echo "::error::could not resolve the registry host"
             exit 1
